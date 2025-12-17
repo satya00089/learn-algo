@@ -473,13 +473,38 @@ export function LinearRegressionPlayground() {
 
   // Tooltip component
   const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
+    const [show, setShow] = useState(false)
+    const tooltipRef = useRef<HTMLDivElement>(null)
+    const buttonRef = useRef<HTMLDivElement>(null)
+
     return (
-      <div className="relative group">
+      <div
+        ref={buttonRef}
+        className="relative inline-block"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+      >
         {children}
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-50">
-          {text}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-        </div>
+        {show && (
+          <div
+            ref={tooltipRef}
+            className="fixed px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded whitespace-nowrap pointer-events-none"
+            style={{
+              zIndex: 9999,
+              bottom: 'auto',
+              left: buttonRef.current
+                ? `${buttonRef.current.getBoundingClientRect().left + buttonRef.current.offsetWidth / 2}px`
+                : '0',
+              top: buttonRef.current
+                ? `${buttonRef.current.getBoundingClientRect().top - 8}px`
+                : '0',
+              transform: 'translate(-50%, -100%)',
+            }}
+          >
+            {text}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+          </div>
+        )}
       </div>
     )
   }
@@ -507,7 +532,7 @@ export function LinearRegressionPlayground() {
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
           {/* Left Side: Canvas with Controls on Top */}
-          <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0">
+          <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0 overflow-visible">
             {/* Controls Above Canvas - Single Line */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
@@ -674,11 +699,7 @@ export function LinearRegressionPlayground() {
 
             {/* Canvas */}
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-center justify-center min-h-0">
-              <Canvas
-                canvasRef={canvasRef}
-                config={canvasConfig}
-                className="w-full h-full"
-              />
+              <Canvas canvasRef={canvasRef} config={canvasConfig} className="w-full h-full" />
             </div>
           </div>
 
