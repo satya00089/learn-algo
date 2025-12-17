@@ -19,7 +19,7 @@ export default function DSAPage() {
       href: '/dsa/quick-sort',
       icon: '⚡',
       difficulty: 'Intermediate',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: 'Binary Search Tree',

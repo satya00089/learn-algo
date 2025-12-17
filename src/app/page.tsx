@@ -19,16 +19,16 @@ export default function Home() {
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-gradient">
               learn-algo.dev
             </h1>
-            
+
             {/* Subtitle */}
             <p className="text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-200 mb-4 font-medium">
               Master Algorithms Through Interactive Visualization
             </p>
-            
+
             {/* Description */}
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-3xl mx-auto">
-              Step through code, watch data transform, and understand how algorithms work under the hood.
-              No more black boxes—see every step in real-time.
+              Step through code, watch data transform, and understand how algorithms work under the
+              hood. No more black boxes—see every step in real-time.
             </p>
 
             {/* Feature Pills */}
@@ -53,16 +53,16 @@ export default function Home() {
               <Link href="/dsa" className="group">
                 <div className="relative bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-600 dark:to-pink-700 rounded-2xl p-1 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1">
                   <div className="bg-white dark:bg-gray-800 rounded-xl p-6 h-full">
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">🧩</div>
-                    <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
-                      DSA
-                    </h2>
+                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
+                      🧩
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">DSA</h2>
                     <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
                       Sorting, Trees, Graphs & More
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                        Coming Soon
+                      <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-1 rounded font-semibold">
+                        Available ✓
                       </span>
                       <span className="text-purple-600 dark:text-purple-400 font-bold group-hover:translate-x-2 transition-transform">
                         →
@@ -79,7 +79,9 @@ export default function Home() {
                     <div className="absolute -top-3 -right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                       LIVE NOW
                     </div>
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">📈</div>
+                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
+                      📈
+                    </div>
                     <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
                       Machine Learning
                     </h2>
@@ -102,10 +104,10 @@ export default function Home() {
               <Link href="/ai" className="group">
                 <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl p-1 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:rotate-1">
                   <div className="bg-white dark:bg-gray-800 rounded-xl p-6 h-full">
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">🤖</div>
-                    <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
-                      AI
-                    </h2>
+                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
+                      🤖
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">AI</h2>
                     <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
                       Search, Game Theory & More
                     </p>
