@@ -8,7 +8,7 @@ import type { Point2D } from '../types'
  * Handles user interactions and state management
  */
 export function useLinearRegressionPlayground() {
-  const [points, setPoints] = useState<Point2D[]>(generateRandomPoints(20))
+  const [points, setPoints] = useState<Point2D[]>(generateRandomPoints(50))
   const [learningRate, setLearningRate] = useState(0.01)
   const [maxIterations, setMaxIterations] = useState(100)
   const [showErrorLines, setShowErrorLines] = useState(true)

@@ -66,11 +66,17 @@ export function LinearRegressionPlayground() {
     [allPoints]
   )
 
-  // Canvas configuration (memoized)
+  // Calculate best-fit WITHOUT outliers for comparison
+  const bestFitWithoutOutliers = useMemo(
+    () => (points.length > 0 ? closedFormSolution(points) : null),
+    [points]
+  )
+
+  // Canvas configuration - will be sized by container
   const canvasConfig = useMemo(
     () => ({
-      width: 800,
-      height: 600,
+      width: 1200,
+      height: 550,
       padding: { top: 40, right: 40, bottom: 40, left: 40 },
     }),
     []
@@ -330,7 +336,21 @@ export function LinearRegressionPlayground() {
         ctx.restore()
       }
     },
-    [points, outliers, allPoints, engineState, showErrorLines, isDebugMode, showBestFit, bestFitParams, canvasConfig, xMin, xMax, yMin, yMax]
+    [
+      points,
+      outliers,
+      allPoints,
+      engineState,
+      showErrorLines,
+      isDebugMode,
+      showBestFit,
+      bestFitParams,
+      canvasConfig,
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+    ]
   )
 
   // Helper function to map values (defined inline since it's used in draw)
@@ -465,10 +485,10 @@ export function LinearRegressionPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="h-full flex flex-col">
         {/* Header with Back Button and Theme Toggle */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push('/ml')}
@@ -476,18 +496,18 @@ export function LinearRegressionPlayground() {
             >
               <span>←</span> Back to ML
             </button>
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
           </div>
           <ThemeToggle />
         </div>
 
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
+        <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Watch gradient descent optimize a line to fit the data points
         </p>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
           {/* Left Side: Canvas with Controls on Top */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0">
             {/* Controls Above Canvas - Single Line */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
@@ -614,7 +634,7 @@ export function LinearRegressionPlayground() {
                 {/* Generate Data Button with Icon */}
                 <Tooltip text="Generate New Data Points">
                   <button
-                    onClick={() => generateNewPoints(20)}
+                    onClick={() => generateNewPoints(50)}
                     className="px-3 h-8 flex items-center gap-1.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs transition-colors"
                   >
                     <FaRandom size={12} />
@@ -653,13 +673,17 @@ export function LinearRegressionPlayground() {
             </div>
 
             {/* Canvas */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <Canvas canvasRef={canvasRef} config={canvasConfig} className="w-full" />
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-center justify-center min-h-0">
+              <Canvas
+                canvasRef={canvasRef}
+                config={canvasConfig}
+                className="w-full h-full"
+              />
             </div>
           </div>
 
           {/* Right Side: Information Panels */}
-          <div className="space-y-4">
+          <div className="space-y-3 overflow-y-auto min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
             {/* State Display - Compact */}
             {engineState && (
               <ControlGroup title="Current State">
@@ -739,14 +763,71 @@ export function LinearRegressionPlayground() {
             )}
 
             {/* Outlier Impact Panel */}
-            {outliers.length > 0 && (
+            {outliers.length > 0 && bestFitParams && bestFitWithoutOutliers && (
               <ControlGroup title="Outlier Impact">
                 <div className="space-y-2 text-xs">
                   <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded">
-                    <div className="text-gray-700 dark:text-gray-300">
-                      <span className="font-mono font-semibold">{outliers.length}</span> outlier point{outliers.length > 1 ? 's' : ''} affecting regression
+                    <div className="text-gray-700 dark:text-gray-300 mb-2">
+                      <span className="font-mono font-semibold text-red-600 dark:text-red-400">
+                        {outliers.length}
+                      </span>{' '}
+                      outlier point{outliers.length > 1 ? 's' : ''} detected
+                    </div>
+
+                    {/* Line Shift Visualization */}
+                    <div className="space-y-1.5 text-xs border-t border-red-200 dark:border-red-800 pt-2">
+                      <div className="font-semibold text-red-700 dark:text-red-300 mb-1">
+                        Line Shift:
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                        <span className="text-gray-600 dark:text-gray-400">Slope (m):</span>
+                        <div className="text-right">
+                          <div className="font-mono text-gray-500 dark:text-gray-400 line-through text-[10px]">
+                            {bestFitWithoutOutliers.slope.toFixed(3)}
+                          </div>
+                          <div className="font-mono text-red-600 dark:text-red-400 font-semibold">
+                            {bestFitParams.slope.toFixed(3)}
+                          </div>
+                          <div className="text-[9px] text-red-500 dark:text-red-400">
+                            {bestFitParams.slope > bestFitWithoutOutliers.slope ? '▲' : '▼'}{' '}
+                            {Math.abs(bestFitParams.slope - bestFitWithoutOutliers.slope).toFixed(
+                              3
+                            )}
+                          </div>
+                        </div>
+
+                        <span className="text-gray-600 dark:text-gray-400">Intercept (b):</span>
+                        <div className="text-right">
+                          <div className="font-mono text-gray-500 dark:text-gray-400 line-through text-[10px]">
+                            {bestFitWithoutOutliers.intercept.toFixed(3)}
+                          </div>
+                          <div className="font-mono text-red-600 dark:text-red-400 font-semibold">
+                            {bestFitParams.intercept.toFixed(3)}
+                          </div>
+                          <div className="text-[9px] text-red-500 dark:text-red-400">
+                            {bestFitParams.intercept > bestFitWithoutOutliers.intercept ? '▲' : '▼'}{' '}
+                            {Math.abs(
+                              bestFitParams.intercept - bestFitWithoutOutliers.intercept
+                            ).toFixed(3)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 pt-2 border-t border-red-200 dark:border-red-800">
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-400">Total Shift:</span>
+                          <span className="font-mono font-semibold text-red-600 dark:text-red-400">
+                            {(
+                              Math.abs(bestFitParams.slope - bestFitWithoutOutliers.slope) +
+                              Math.abs(bestFitParams.intercept - bestFitWithoutOutliers.intercept)
+                            ).toFixed(3)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
+
                   <button
                     onClick={clearOutliers}
                     className="w-full px-3 py-1.5 text-xs rounded border border-red-300 dark:border-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 transition-colors"
@@ -765,23 +846,131 @@ export function LinearRegressionPlayground() {
                     <p className="font-semibold text-blue-800 dark:text-blue-300 mb-1">
                       Gradient Descent
                     </p>
-                    <div className="space-y-0.5 font-mono text-gray-700 dark:text-gray-300">
+                    <div className="space-y-0.5 font-mono text-gray-700 dark:text-gray-300 text-[10px]">
                       <div>m = m - α × ∂Cost/∂m</div>
                       <div>b = b - α × ∂Cost/∂b</div>
                     </div>
                   </div>
+
+                  {/* Current Parameters */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 p-2 rounded">
+                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      Current Parameters:
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                      <span className="text-gray-600 dark:text-gray-400">Slope (m):</span>
+                      <span className="font-mono text-right">
+                        {engineState.params.slope.toFixed(6)}
+                      </span>
+                      <span className="text-gray-600 dark:text-gray-400">Intercept (b):</span>
+                      <span className="font-mono text-right">
+                        {engineState.params.intercept.toFixed(6)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Gradient Information */}
+                  {engineState.history.length > 0 && (
+                    <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded">
+                      <div className="font-semibold text-purple-700 dark:text-purple-300 mb-1">
+                        Current Gradients:
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                        <span className="text-gray-600 dark:text-gray-400">∂Cost/∂m:</span>
+                        <span className="font-mono text-right">
+                          {engineState.history.at(-1)!.gradientSlope.toFixed(6)}
+                        </span>
+                        <span className="text-gray-600 dark:text-gray-400">∂Cost/∂b:</span>
+                        <span className="font-mono text-right">
+                          {engineState.history.at(-1)!.gradientIntercept.toFixed(6)}
+                        </span>
+                        <span className="text-gray-600 dark:text-gray-400">Magnitude:</span>
+                        <span className="font-mono text-right">
+                          {Math.sqrt(
+                            Math.pow(engineState.history.at(-1)!.gradientSlope, 2) +
+                              Math.pow(engineState.history.at(-1)!.gradientIntercept, 2)
+                          ).toFixed(6)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Learning Progress */}
+                  <div className="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                    <div className="font-semibold text-orange-700 dark:text-orange-300 mb-1">
+                      Learning Progress:
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                      <span className="text-gray-600 dark:text-gray-400">Iterations:</span>
+                      <span className="font-mono text-right">
+                        {engineState.iteration} / {maxIterations}
+                      </span>
+                      <span className="text-gray-600 dark:text-gray-400">Progress:</span>
+                      <span className="font-mono text-right">
+                        {((engineState.iteration / maxIterations) * 100).toFixed(1)}%
+                      </span>
+                      <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                      <span className="text-right">
+                        {engineState.isConverged ? (
+                          <span className="text-green-600 dark:text-green-400">✓ Converged</span>
+                        ) : engineState.iteration >= maxIterations ? (
+                          <span className="text-yellow-600 dark:text-yellow-400">⚠ Max Iter</span>
+                        ) : (
+                          <span className="text-blue-600 dark:text-blue-400">⟳ Running</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Configuration Summary */}
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="bg-green-50 dark:bg-green-900/20 p-1.5 rounded text-center">
-                      <div className="text-green-700 dark:text-green-400 font-semibold">α</div>
-                      <div className="text-gray-700 dark:text-gray-300 font-mono">
+                      <div className="text-green-700 dark:text-green-400 font-semibold text-[10px]">
+                        Learning Rate (α)
+                      </div>
+                      <div className="text-gray-700 dark:text-gray-300 font-mono text-xs">
                         {learningRate}
                       </div>
                     </div>
                     <div className="bg-yellow-50 dark:bg-yellow-900/20 p-1.5 rounded text-center">
-                      <div className="text-yellow-700 dark:text-yellow-400 font-semibold">
-                        Points
+                      <div className="text-yellow-700 dark:text-yellow-400 font-semibold text-[10px]">
+                        Data Points
                       </div>
-                      <div className="text-gray-700 dark:text-gray-300">{allPoints.length}</div>
+                      <div className="text-gray-700 dark:text-gray-300 text-xs">
+                        {points.length} + {outliers.length} outlier
+                        {outliers.length !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cost Function Info */}
+                  <div className="bg-cyan-50 dark:bg-cyan-900/20 p-2 rounded text-[10px]">
+                    <div className="font-semibold text-cyan-700 dark:text-cyan-300 mb-1">
+                      Cost Function (MSE):
+                    </div>
+                    <div className="font-mono text-gray-700 dark:text-gray-300 mb-1">
+                      J = (1/2n) Σ(ŷᵢ - yᵢ)²
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                      <span className="text-gray-600 dark:text-gray-400">Current Cost:</span>
+                      <span className="font-mono text-right">{engineState.cost.toFixed(6)}</span>
+                      {engineState.history.length > 1 && (
+                        <>
+                          <span className="text-gray-600 dark:text-gray-400">Cost Change:</span>
+                          <span
+                            className={`font-mono text-right ${
+                              engineState.history.at(-2)!.cost > engineState.cost
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }`}
+                          >
+                            {engineState.history.at(-2)!.cost > engineState.cost ? '▼' : '▲'}{' '}
+                            {Math.abs(engineState.history.at(-2)!.cost - engineState.cost).toFixed(
+                              6
+                            )}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
