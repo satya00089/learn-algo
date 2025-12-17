@@ -11,7 +11,7 @@ export default function DSAPage() {
       href: '/dsa/bubble-sort',
       icon: '🫧',
       difficulty: 'Beginner',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: 'Quick Sort',
