@@ -27,7 +27,7 @@ export default function DSAPage() {
       href: '/dsa/binary-search-tree',
       icon: '🌳',
       difficulty: 'Intermediate',
-      comingSoon: true,
+      comingSoon: false,
     },
   ]
 
