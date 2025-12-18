@@ -14,7 +14,13 @@ interface ToggleProps {
  * Reusable Toggle component
  * No algorithm-specific logic - pure UI
  */
-export function Toggle({ label, checked, onChange, disabled = false, className = '' }: ToggleProps) {
+export function Toggle({
+  label,
+  checked,
+  onChange,
+  disabled = false,
+  className = '',
+}: ToggleProps) {
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
       <button

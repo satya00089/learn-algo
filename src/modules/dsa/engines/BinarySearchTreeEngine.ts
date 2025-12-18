@@ -377,10 +377,10 @@ export class BinarySearchTreeEngine {
     // Base width on actual node count and depth, with a max reasonable width
     const baseSpacing = 50 // Minimum horizontal spacing between nodes
     const maxWidth = 1100 // Max width to fit in canvas (with padding)
-    
+
     // Calculate ideal width based on depth, but cap it at maxWidth
     const idealWidth = Math.min(Math.pow(2, treeDepth) * baseSpacing, maxWidth)
-    
+
     this.assignPositions(this.state.root, idealWidth / 2, 50, idealWidth / 4, 0, treeDepth)
   }
 

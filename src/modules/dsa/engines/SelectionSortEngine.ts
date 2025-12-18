@@ -68,7 +68,7 @@ export class SelectionSortEngine {
       this.state.isSorted = true
       this.state.stepPhase = 'complete'
       this.state.array.forEach((el) => (el.state = 'sorted'))
-      
+
       this.state.history.push({
         iteration: this.state.history.length,
         array: this.cloneArray(),
@@ -76,7 +76,7 @@ export class SelectionSortEngine {
         swappingIndices: [],
         description: '✅ Array is fully sorted!',
       })
-      
+
       return
     }
 

@@ -73,7 +73,7 @@ export class QuickSortEngine {
     if (stepPhase === 'selecting') {
       // SELECTING PHASE: Pick pivot and initialize pointers
       const partition = partitionStack[0]
-      
+
       if (partition.low >= partition.high) {
         // Single element or invalid partition, mark as sorted
         if (partition.low === partition.high) {

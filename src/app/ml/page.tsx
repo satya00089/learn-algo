@@ -62,9 +62,7 @@ export default function MLPage() {
               >
                 <div
                   className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
-                    algo.comingSoon
-                      ? 'opacity-60'
-                      : 'hover:shadow-2xl hover:-translate-y-2'
+                    algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
                   <div className="text-4xl mb-3">{algo.icon}</div>
@@ -78,7 +76,9 @@ export default function MLPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">{algo.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
+                    {algo.description}
+                  </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {algo.difficulty}

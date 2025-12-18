@@ -75,7 +75,7 @@ export class BubbleSortEngine {
       this.state.currentPass++
       this.state.currentIndex = 0
       this.state.stepPhase = 'comparing'
-      
+
       // Reset all non-sorted states
       this.state.array.forEach((el) => {
         if (el.state !== 'sorted') {

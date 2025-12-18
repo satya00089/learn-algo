@@ -84,7 +84,7 @@ export class ArrayOperationsEngine {
     this.state.stepPhase = 'inserting'
     this.state.isOperationComplete = false
     this.state.targetIndex = this.state.array.length
-    
+
     this.addHistory(`Starting append: Add ${value} to end of array`)
   }
 
@@ -95,7 +95,7 @@ export class ArrayOperationsEngine {
     if (index < 0 || index > this.state.array.length) {
       return
     }
-    
+
     this.resetOperation()
     this.state.currentOperation = 'insert'
     this.state.operationValue = value
@@ -103,7 +103,7 @@ export class ArrayOperationsEngine {
     this.state.currentIndex = this.state.array.length - 1
     this.state.stepPhase = 'shifting'
     this.state.isOperationComplete = false
-    
+
     this.addHistory(`Starting insert: Add ${value} at index ${index}`)
   }
 
@@ -114,14 +114,14 @@ export class ArrayOperationsEngine {
     if (index < 0 || index >= this.state.array.length) {
       return
     }
-    
+
     this.resetOperation()
     this.state.currentOperation = 'delete'
     this.state.targetIndex = index
     this.state.currentIndex = index
     this.state.stepPhase = 'deleting'
     this.state.isOperationComplete = false
-    
+
     const value = this.state.array[index].value
     this.addHistory(`Starting delete: Remove element at index ${index} (value: ${value})`)
   }
@@ -133,7 +133,7 @@ export class ArrayOperationsEngine {
     if (index < 0 || index >= this.state.array.length) {
       return
     }
-    
+
     this.resetOperation()
     this.state.currentOperation = 'update'
     this.state.operationValue = value
@@ -141,7 +141,7 @@ export class ArrayOperationsEngine {
     this.state.currentIndex = index
     this.state.stepPhase = 'updating'
     this.state.isOperationComplete = false
-    
+
     const oldValue = this.state.array[index].value
     this.addHistory(`Starting update: Change index ${index} from ${oldValue} to ${value}`)
   }
@@ -157,7 +157,7 @@ export class ArrayOperationsEngine {
     this.state.stepPhase = 'searching'
     this.state.isOperationComplete = false
     this.state.foundIndex = null
-    
+
     this.addHistory(`Starting search: Looking for value ${value}`)
   }
 
@@ -171,14 +171,14 @@ export class ArrayOperationsEngine {
       this.addHistory(`Index ${index} out of bounds`)
       return
     }
-    
+
     this.resetOperation()
     this.state.currentOperation = 'indexSearch'
     this.state.targetIndex = index
     this.state.currentIndex = index
     this.state.stepPhase = 'found'
     this.state.isOperationComplete = false
-    
+
     this.addHistory(`Starting index access: Getting element at index ${index}`)
   }
 
@@ -192,7 +192,7 @@ export class ArrayOperationsEngine {
     this.state.targetIndex = this.state.array.length - 1
     this.state.stepPhase = 'shifting'
     this.state.isOperationComplete = false
-    
+
     this.addHistory('Starting reverse: Swapping elements from both ends')
   }
 
@@ -205,7 +205,7 @@ export class ArrayOperationsEngine {
     this.state.stepPhase = 'complete'
     this.state.array = []
     this.state.isOperationComplete = true
-    
+
     this.addHistory('Array cleared')
   }
 
@@ -254,9 +254,7 @@ export class ArrayOperationsEngine {
       state: 'comparing',
     })
 
-    this.addHistory(
-      `Appended ${this.state.operationValue} at index ${this.state.array.length - 1}`
-    )
+    this.addHistory(`Appended ${this.state.operationValue} at index ${this.state.array.length - 1}`)
 
     this.state.stepPhase = 'complete'
     this.state.isOperationComplete = true
@@ -269,7 +267,7 @@ export class ArrayOperationsEngine {
       // Shift elements to make space
       if (this.state.currentIndex >= this.state.targetIndex) {
         this.state.shifts++
-        
+
         if (this.state.currentIndex === this.state.array.length - 1) {
           // Add space at end
           this.state.array.push({
@@ -295,9 +293,7 @@ export class ArrayOperationsEngine {
     } else if (this.state.stepPhase === 'inserting') {
       // Insert the new value
       this.state.array[this.state.targetIndex].value = this.state.operationValue
-      this.addHistory(
-        `Inserted ${this.state.operationValue} at index ${this.state.targetIndex}`
-      )
+      this.addHistory(`Inserted ${this.state.operationValue} at index ${this.state.targetIndex}`)
 
       this.state.stepPhase = 'complete'
       this.state.isOperationComplete = true
@@ -307,9 +303,9 @@ export class ArrayOperationsEngine {
   private stepDelete(): void {
     if (this.state.stepPhase === 'deleting') {
       const deletedValue = this.state.array[this.state.targetIndex].value
-      
+
       this.addHistory(`Deleting element ${deletedValue} at index ${this.state.targetIndex}`)
-      
+
       this.state.stepPhase = 'shifting'
       this.state.currentIndex = this.state.targetIndex + 1
     } else if (this.state.stepPhase === 'shifting') {
@@ -318,7 +314,7 @@ export class ArrayOperationsEngine {
         this.state.array[this.state.currentIndex - 1].value =
           this.state.array[this.state.currentIndex].value
         this.state.shifts++
-        
+
         this.addHistory(
           `Shifted element ${this.state.array[this.state.currentIndex].value} from index ${this.state.currentIndex} to ${this.state.currentIndex - 1}`
         )
@@ -328,7 +324,7 @@ export class ArrayOperationsEngine {
         // Remove last element
         this.state.array.pop()
         this.addHistory('Removed last element after shifting')
-        
+
         this.state.stepPhase = 'complete'
         this.state.isOperationComplete = true
       }
@@ -378,9 +374,7 @@ export class ArrayOperationsEngine {
 
   private stepIndexSearch(): void {
     const value = this.state.array[this.state.targetIndex].value
-    this.addHistory(
-      `Accessed index ${this.state.targetIndex}: value = ${value}`
-    )
+    this.addHistory(`Accessed index ${this.state.targetIndex}: value = ${value}`)
     this.state.stepPhase = 'complete'
     this.state.isOperationComplete = true
   }
@@ -393,9 +387,7 @@ export class ArrayOperationsEngine {
         this.state.array[this.state.targetIndex].value
       this.state.array[this.state.targetIndex].value = temp
 
-      this.addHistory(
-        `Swapped indices ${this.state.currentIndex} and ${this.state.targetIndex}`
-      )
+      this.addHistory(`Swapped indices ${this.state.currentIndex} and ${this.state.targetIndex}`)
 
       this.state.currentIndex++
       this.state.targetIndex--

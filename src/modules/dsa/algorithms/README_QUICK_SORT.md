@@ -1,32 +1,38 @@
 # Quick Sort Algorithm
 
 ## Overview
+
 Quick Sort is a highly efficient, divide-and-conquer sorting algorithm that works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays according to whether they are less than or greater than the pivot.
 
 ## Algorithm Steps
 
 ### 1. Selecting Phase
+
 - Choose a pivot element (we use the last element)
 - Initialize left and right pointers
 - Highlight the pivot element
 
 ### 2. Comparing Phase
+
 - Compare elements at left and right pointers with pivot
 - Move left pointer right if element is smaller than pivot
 - Move right pointer left if element is greater than pivot
 - Identify elements that need to be swapped
 
 ### 3. Swapping Phase
+
 - Swap elements at left and right pointers
 - Move pointers inward
 - Continue partitioning
 
 ### 4. Pivoting Phase
+
 - Place pivot in its correct sorted position
 - All elements to the left are smaller
 - All elements to the right are greater
 
 ### 5. Recursing Phase
+
 - Create sub-partitions for left and right sides
 - Repeat the process recursively
 
@@ -57,6 +63,7 @@ Quick Sort is a highly efficient, divide-and-conquer sorting algorithm that work
 ## Implementation Details
 
 ### Multi-Phase Stepping
+
 The implementation uses a state machine approach with 5 distinct phases:
 
 1. **Selecting**: Pick pivot and initialize pointers
@@ -68,7 +75,9 @@ The implementation uses a state machine approach with 5 distinct phases:
 This allows users to see each operation separately and understand the algorithm's logic step-by-step.
 
 ### Partition Stack
+
 The algorithm maintains a stack of partitions to process:
+
 - Each partition has `low` and `high` indices
 - Sub-partitions are added after pivot placement
 - Algorithm completes when stack is empty
@@ -105,6 +114,7 @@ The algorithm maintains a stack of partitions to process:
 ## Educational Value
 
 Quick Sort is excellent for learning:
+
 - Divide and conquer strategy
 - Partitioning techniques
 - Recursion and stack management

@@ -2,14 +2,7 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-  FaRandom,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
@@ -35,9 +28,9 @@ export function MergeSortPlayground() {
   } = useMergeSortPlayground()
 
   const engineRef = useRef<MergeSortEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    MergeSortEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<MergeSortEngine['getState']> | null>(
+    null
+  )
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -244,7 +237,8 @@ export function MergeSortPlayground() {
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Divide and conquer: recursively split, sort, and merge arrays for guaranteed O(n log n) performance
+          Divide and conquer: recursively split, sort, and merge arrays for guaranteed O(n log n)
+          performance
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -362,7 +356,7 @@ export function MergeSortPlayground() {
               <div className="flex-1 flex items-center justify-center min-h-0">
                 <Canvas canvasRef={canvasRef} config={canvasConfig} className="w-full h-full" />
               </div>
-              
+
               {/* Color Legend */}
               <div className="flex items-center justify-center gap-6 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
@@ -445,7 +439,8 @@ export function MergeSortPlayground() {
                       </div>
                       {engineState.currentOperation && (
                         <div className="text-green-700 dark:text-green-300 text-[10px] mt-1">
-                          Range: [{engineState.currentOperation.start}..{engineState.currentOperation.end}]
+                          Range: [{engineState.currentOperation.start}..
+                          {engineState.currentOperation.end}]
                         </div>
                       )}
                     </div>
@@ -478,21 +473,24 @@ export function MergeSortPlayground() {
                         Action History:
                       </div>
                       <div className="space-y-1 max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                        {engineState.history.slice().reverse().map((step, idx) => (
-                          <div
-                            key={step.iteration}
-                            className={`text-[10px] p-1.5 rounded ${
-                              idx === 0
-                                ? 'bg-blue-100 dark:bg-blue-800/30 text-blue-900 dark:text-blue-100 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300'
-                            }`}
-                          >
-                            <span className="text-blue-600 dark:text-blue-400 font-mono">
-                              #{step.iteration}
-                            </span>{' '}
-                            {step.description}
-                          </div>
-                        ))}
+                        {engineState.history
+                          .slice()
+                          .reverse()
+                          .map((step, idx) => (
+                            <div
+                              key={step.iteration}
+                              className={`text-[10px] p-1.5 rounded ${
+                                idx === 0
+                                  ? 'bg-blue-100 dark:bg-blue-800/30 text-blue-900 dark:text-blue-100 font-semibold'
+                                  : 'text-gray-700 dark:text-gray-300'
+                              }`}
+                            >
+                              <span className="text-blue-600 dark:text-blue-400 font-mono">
+                                #{step.iteration}
+                              </span>{' '}
+                              {step.description}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}
@@ -504,14 +502,17 @@ export function MergeSortPlayground() {
             <ControlGroup title="How It Works">
               <div className="space-y-2 text-xs text-gray-600 dark:text-gray-300">
                 <p>
-                  Merge Sort uses a divide-and-conquer strategy: it recursively splits the array into smaller subarrays until each contains a single element.
+                  Merge Sort uses a divide-and-conquer strategy: it recursively splits the array
+                  into smaller subarrays until each contains a single element.
                 </p>
                 <p>
-                  Then it merges these sorted subarrays back together, comparing elements and placing them in the correct order, until the entire array is sorted.
+                  Then it merges these sorted subarrays back together, comparing elements and
+                  placing them in the correct order, until the entire array is sorted.
                 </p>
                 <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
                   <p className="text-yellow-800 dark:text-yellow-200 font-semibold text-[10px]">
-                    💡 Tip: Merge Sort guarantees O(n log n) time complexity in all cases, making it ideal for large datasets!
+                    💡 Tip: Merge Sort guarantees O(n log n) time complexity in all cases, making it
+                    ideal for large datasets!
                   </p>
                 </div>
               </div>

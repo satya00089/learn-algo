@@ -56,11 +56,7 @@ export function drawArray(
     ctx.font = 'bold 12px sans-serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'bottom'
-    ctx.fillText(
-      element.value.toString(),
-      x + barWidth / 2,
-      y - 5
-    )
+    ctx.fillText(element.value.toString(), x + barWidth / 2, y - 5)
 
     // Draw value inside bar (if bar is tall enough)
     if (barHeight > 30) {
@@ -68,11 +64,7 @@ export function drawArray(
       ctx.font = 'bold 14px sans-serif'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText(
-        element.value.toString(),
-        x + barWidth / 2,
-        y + barHeight / 2
-      )
+      ctx.fillText(element.value.toString(), x + barWidth / 2, y + barHeight / 2)
     }
   })
 

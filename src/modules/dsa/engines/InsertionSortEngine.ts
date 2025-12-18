@@ -73,7 +73,7 @@ export class InsertionSortEngine {
       this.state.isSorted = true
       this.state.stepPhase = 'complete'
       this.state.array.forEach((el) => (el.state = 'sorted'))
-      
+
       this.state.history.push({
         iteration: this.state.history.length,
         array: this.cloneArray(),
@@ -81,7 +81,7 @@ export class InsertionSortEngine {
         swappingIndices: [],
         description: '✅ Array is fully sorted!',
       })
-      
+
       return
     }
 

@@ -33,10 +33,7 @@ export function calculateCost(points: Point2D[], params: LinearRegressionParams)
 /**
  * Calculates gradient for slope (m)
  */
-export function calculateSlopeGradient(
-  points: Point2D[],
-  params: LinearRegressionParams
-): number {
+export function calculateSlopeGradient(points: Point2D[], params: LinearRegressionParams): number {
   const n = points.length
   if (n === 0) return 0
 

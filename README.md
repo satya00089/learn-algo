@@ -20,7 +20,7 @@ learn-algo.dev is built on the principle that algorithms should be learned throu
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
@@ -122,7 +122,7 @@ interface DebuggableAlgorithm<TState> {
 
 ### Artificial Intelligence
 
-- 🔜 A* Pathfinding
+- 🔜 A\* Pathfinding
 - 🔜 Minimax Algorithm
 - 🔜 Genetic Algorithms
 
@@ -174,6 +174,7 @@ MIT License - see [LICENSE](LICENSE) for details
 > **"If Copilot generates code that mixes algorithm logic, UI, and visualization — it is wrong and must be refactored."**
 
 This project prioritizes:
+
 - Clean architecture
 - Teachable code
 - Interactive learning

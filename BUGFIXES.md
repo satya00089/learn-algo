@@ -3,9 +3,11 @@
 ## Issues Found and Fixed
 
 ### 1. **Critical: Convergence Check Bug in Engine** ⚠️
+
 **Location**: `src/modules/ml/engines/LinearRegressionEngine.ts` - `step()` method
 
-**Problem**: 
+**Problem**:
+
 ```typescript
 // WRONG - this always compares 0 because state was already updated
 const costDifference = Math.abs(this.state.cost - newCost)
@@ -14,6 +16,7 @@ const costDifference = Math.abs(this.state.cost - newCost)
 The convergence check was comparing the **already updated** `this.state.cost` (which is `newCost`) against `newCost`, resulting in always getting a difference of 0.
 
 **Fix**:
+
 ```typescript
 // Store current cost before updating
 const currentCost = this.state.cost
@@ -37,9 +40,11 @@ if (costDifference < convergenceThreshold) {
 ---
 
 ### 2. **State Cloning Bug in Engine** ⚠️
+
 **Location**: `src/modules/ml/engines/LinearRegressionEngine.ts` - `getState()` method
 
 **Problem**:
+
 ```typescript
 // WRONG - shallow copy doesn't clone nested objects
 getState(): LinearRegressionState {
@@ -50,6 +55,7 @@ getState(): LinearRegressionState {
 This creates a shallow copy, so nested objects like `params` and `history` are still references to the original.
 
 **Fix**:
+
 ```typescript
 getState(): LinearRegressionState {
   return {
@@ -67,20 +73,25 @@ getState(): LinearRegressionState {
 ---
 
 ### 3. **Canvas Not Clearing in Playground** ⚙️
+
 **Location**: `src/modules/ml/playground/LinearRegressionPlayground.tsx` - `draw()` callback
 
 **Problem**: Canvas wasn't being cleared between frames, causing visual artifacts.
 
 **Fix**:
+
 ```typescript
-const draw = useCallback((ctx: CanvasRenderingContext2D) => {
-  const { width, height } = canvasConfig
-  
-  // Clear canvas first
-  ctx.clearRect(0, 0, width, height)
-  
-  // ... rest of drawing code
-}, [points, engineState, showErrorLines])
+const draw = useCallback(
+  (ctx: CanvasRenderingContext2D) => {
+    const { width, height } = canvasConfig
+
+    // Clear canvas first
+    ctx.clearRect(0, 0, width, height)
+
+    // ... rest of drawing code
+  },
+  [points, engineState, showErrorLines]
+)
 ```
 
 **Impact**: Better visual rendering without artifacts.
@@ -88,11 +99,13 @@ const draw = useCallback((ctx: CanvasRenderingContext2D) => {
 ---
 
 ### 4. **Play/Pause Edge Cases** ⚙️
+
 **Location**: `src/modules/ml/playground/LinearRegressionPlayground.tsx` - `handlePlayPause()` method
 
 **Problem**: Play could be triggered even when algorithm was already converged.
 
 **Fix**:
+
 ```typescript
 const handlePlayPause = () => {
   if (isPlaying) {
@@ -104,13 +117,13 @@ const handlePlayPause = () => {
     }
   } else {
     if (!engineRef.current) return
-    
+
     // Check if already converged before starting
     const currentState = engineRef.current.getState()
     if (currentState.isConverged || currentState.iteration >= maxIterations) {
       return // Don't start if already done
     }
-    
+
     // Start playback...
   }
 }
@@ -121,9 +134,11 @@ const handlePlayPause = () => {
 ---
 
 ### 5. **Added Safety Checks in Drawing** ⚙️
+
 **Location**: `src/modules/ml/playground/LinearRegressionPlayground.tsx` - `draw()` callback
 
 **Fix**: Added checks for empty points array before drawing:
+
 ```typescript
 // Draw data points
 if (points.length > 0) {
@@ -143,14 +158,16 @@ if (engineState && points.length > 0) {
 ## Verification
 
 ### Test the Algorithm
+
 Run the test file to verify math correctness:
+
 ```bash
 npx ts-node src/modules/ml/tests/linearRegressionTest.ts
 ```
 
 ### Expected Behavior Now
 
-1. **Initial State**: 
+1. **Initial State**:
    - Line starts at slope=0, intercept=0
    - Cost should be high
 
@@ -185,11 +202,11 @@ npx ts-node src/modules/ml/tests/linearRegressionTest.ts
 
 ## Summary of Changes
 
-| File | Lines Changed | Severity |
-|------|---------------|----------|
-| `LinearRegressionEngine.ts` | ~15 lines | **Critical** |
-| `LinearRegressionPlayground.tsx` | ~20 lines | Medium |
-| Created test file | New file | Verification |
+| File                             | Lines Changed | Severity     |
+| -------------------------------- | ------------- | ------------ |
+| `LinearRegressionEngine.ts`      | ~15 lines     | **Critical** |
+| `LinearRegressionPlayground.tsx` | ~20 lines     | Medium       |
+| Created test file                | New file      | Verification |
 
 ## Impact
 

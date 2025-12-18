@@ -2,14 +2,7 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-  FaRandom,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
@@ -36,9 +29,9 @@ export function QuickSortPlayground() {
   } = useQuickSortPlayground()
 
   const engineRef = useRef<QuickSortEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    QuickSortEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<QuickSortEngine['getState']> | null>(
+    null
+  )
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -372,9 +365,7 @@ export function QuickSortPlayground() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded bg-yellow-400 border border-gray-300 dark:border-gray-600"></div>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">
-                    Pivot/Comparing
-                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">Pivot/Comparing</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded bg-red-500 border border-gray-300 dark:border-gray-600"></div>
@@ -426,8 +417,8 @@ export function QuickSortPlayground() {
                 </ul>
 
                 <p className="mt-2">
-                  <strong className="text-gray-800 dark:text-white">Space Complexity:</strong>{' '}
-                  O(log n)
+                  <strong className="text-gray-800 dark:text-white">Space Complexity:</strong> O(log
+                  n)
                 </p>
 
                 <p className="mt-2">
@@ -487,21 +478,24 @@ export function QuickSortPlayground() {
                         Action History:
                       </div>
                       <div className="space-y-1 max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                        {engineState.history.slice().reverse().map((step, idx) => (
-                          <div
-                            key={step.iteration}
-                            className={`text-[10px] p-1.5 rounded ${
-                              idx === 0
-                                ? 'bg-blue-100 dark:bg-blue-800/30 text-blue-900 dark:text-blue-100 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300'
-                            }`}
-                          >
-                            <span className="text-blue-600 dark:text-blue-400 font-mono">
-                              #{step.iteration}
-                            </span>{' '}
-                            {step.description}
-                          </div>
-                        ))}
+                        {engineState.history
+                          .slice()
+                          .reverse()
+                          .map((step, idx) => (
+                            <div
+                              key={step.iteration}
+                              className={`text-[10px] p-1.5 rounded ${
+                                idx === 0
+                                  ? 'bg-blue-100 dark:bg-blue-800/30 text-blue-900 dark:text-blue-100 font-semibold'
+                                  : 'text-gray-700 dark:text-gray-300'
+                              }`}
+                            >
+                              <span className="text-blue-600 dark:text-blue-400 font-mono">
+                                #{step.iteration}
+                              </span>{' '}
+                              {step.description}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}

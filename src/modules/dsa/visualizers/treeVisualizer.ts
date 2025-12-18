@@ -18,25 +18,29 @@ export function drawTree(
     ctx.fillStyle = '#94a3b8'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText('Tree is empty. Insert nodes to get started!', options.canvasWidth / 2, options.canvasHeight / 2)
+    ctx.fillText(
+      'Tree is empty. Insert nodes to get started!',
+      options.canvasWidth / 2,
+      options.canvasHeight / 2
+    )
     ctx.restore()
     return
   }
 
   // Calculate bounding box of the tree
   const bounds = getTreeBounds(root)
-  
+
   // Calculate padding
   const padding = 40
-  
+
   // Calculate tree dimensions
   const treeWidth = bounds.maxX - bounds.minX
   const treeHeight = bounds.maxY - bounds.minY
-  
+
   // Calculate available space (canvas minus padding)
-  const availableWidth = options.canvasWidth - (padding * 2)
-  const availableHeight = options.canvasHeight - (padding * 2)
-  
+  const availableWidth = options.canvasWidth - padding * 2
+  const availableHeight = options.canvasHeight - padding * 2
+
   // Calculate scale factor if tree is too large
   let scale = 1
   if (treeWidth > availableWidth || treeHeight > availableHeight) {
@@ -44,7 +48,7 @@ export function drawTree(
     const scaleY = availableHeight / treeHeight
     scale = Math.min(scaleX, scaleY, 1) * 0.95 // Use 95% to add a small margin
   }
-  
+
   // Apply scaling transformation if needed
   if (scale < 1) {
     ctx.save()
@@ -52,9 +56,9 @@ export function drawTree(
     ctx.scale(scale, scale)
     ctx.translate(-options.canvasWidth / 2, -options.canvasHeight / 2)
   }
-  
+
   // Calculate offsets to center the tree
-  const offsetX = (options.canvasWidth / 2) - ((bounds.minX + bounds.maxX) / 2)
+  const offsetX = options.canvasWidth / 2 - (bounds.minX + bounds.maxX) / 2
   const offsetY = padding + 20 - bounds.minY
 
   // Draw edges first (so they appear behind nodes)
@@ -62,14 +66,19 @@ export function drawTree(
 
   // Draw nodes
   drawNodes(ctx, root, offsetX, offsetY)
-  
+
   // Restore context if we applied scaling
   if (scale < 1) {
     ctx.restore()
   }
 }
 
-function getTreeBounds(node: TreeNode | null): { minX: number; maxX: number; minY: number; maxY: number } {
+function getTreeBounds(node: TreeNode | null): {
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
+} {
   if (!node || node.x === undefined || node.y === undefined) {
     return { minX: 0, maxX: 0, minY: 0, maxY: 0 }
   }
@@ -95,7 +104,12 @@ function getTreeBounds(node: TreeNode | null): { minX: number; maxX: number; min
   return { minX, maxX, minY, maxY }
 }
 
-function drawEdges(ctx: CanvasRenderingContext2D, node: TreeNode, offsetX: number, offsetY: number): void {
+function drawEdges(
+  ctx: CanvasRenderingContext2D,
+  node: TreeNode,
+  offsetX: number,
+  offsetY: number
+): void {
   if (!node || node.x === undefined || node.y === undefined) return
 
   ctx.save()
@@ -126,7 +140,12 @@ function drawEdges(ctx: CanvasRenderingContext2D, node: TreeNode, offsetX: numbe
   ctx.restore()
 }
 
-function drawNodes(ctx: CanvasRenderingContext2D, node: TreeNode, offsetX: number, offsetY: number): void {
+function drawNodes(
+  ctx: CanvasRenderingContext2D,
+  node: TreeNode,
+  offsetX: number,
+  offsetY: number
+): void {
   if (!node || node.x === undefined || node.y === undefined) return
 
   // Draw left subtree first

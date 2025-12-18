@@ -75,7 +75,7 @@ export class MergeSortEngine {
       for (let start = 0; start < n; start += 2 * size) {
         const mid = Math.min(start + size - 1, n - 1)
         const end = Math.min(start + 2 * size - 1, n - 1)
-        
+
         if (mid < end) {
           operations.push({ start, mid, end })
         }
@@ -106,7 +106,7 @@ export class MergeSortEngine {
         this.state.isSorted = true
         this.state.stepPhase = 'complete'
         this.state.array.forEach((el) => (el.state = 'sorted'))
-        
+
         this.state.history.push({
           iteration: this.state.history.length,
           array: this.cloneArray(),
@@ -155,7 +155,8 @@ export class MergeSortEngine {
     }
 
     if (stepPhase === 'merging' && currentOperation) {
-      const { leftArray, rightArray, leftIndex, rightIndex, mergeIndex, start, end } = currentOperation
+      const { leftArray, rightArray, leftIndex, rightIndex, mergeIndex, start, end } =
+        currentOperation
 
       // Check if merge is complete
       if (leftIndex >= leftArray.length && rightIndex >= rightArray.length) {
@@ -196,7 +197,7 @@ export class MergeSortEngine {
       } else {
         // Compare and take smaller
         this.state.comparisons++
-        
+
         if (leftArray[leftIndex] <= rightArray[rightIndex]) {
           valueToPlace = leftArray[leftIndex]
           currentOperation.leftIndex++

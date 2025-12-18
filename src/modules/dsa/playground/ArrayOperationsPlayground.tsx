@@ -457,7 +457,7 @@ export function ArrayOperationsPlayground() {
               <div className="flex-1 flex items-center justify-center min-h-0">
                 <Canvas canvasRef={canvasRef} config={canvasConfig} className="w-full h-full" />
               </div>
-              
+
               {/* Color Legend */}
               <div className="flex items-center justify-center gap-6 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
@@ -726,21 +726,24 @@ export function ArrayOperationsPlayground() {
                         Action History:
                       </div>
                       <div className="space-y-1 max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                        {engineState.history.slice().reverse().map((step, idx) => (
-                          <div
-                            key={step.iteration}
-                            className={`text-[10px] p-1.5 rounded ${
-                              idx === 0
-                                ? 'bg-blue-100 dark:bg-blue-800/30 text-blue-900 dark:text-blue-100 font-semibold'
-                                : 'text-gray-700 dark:text-gray-300'
-                            }`}
-                          >
-                            <span className="text-blue-600 dark:text-blue-400 font-mono">
-                              #{step.iteration}
-                            </span>{' '}
-                            {step.description}
-                          </div>
-                        ))}
+                        {engineState.history
+                          .slice()
+                          .reverse()
+                          .map((step, idx) => (
+                            <div
+                              key={step.iteration}
+                              className={`text-[10px] p-1.5 rounded ${
+                                idx === 0
+                                  ? 'bg-blue-100 dark:bg-blue-800/30 text-blue-900 dark:text-blue-100 font-semibold'
+                                  : 'text-gray-700 dark:text-gray-300'
+                              }`}
+                            >
+                              <span className="text-blue-600 dark:text-blue-400 font-mono">
+                                #{step.iteration}
+                              </span>{' '}
+                              {step.description}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}

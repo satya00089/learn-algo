@@ -6,6 +6,33 @@ import { ThemeToggle } from '@/core/theme'
 export default function DSAPage() {
   const algorithms = [
     {
+      title: 'Array Operations',
+      description: 'Explore append, insert, delete, search, and update',
+      href: '/dsa/array-operations',
+      icon: '📊',
+      difficulty: 'Beginner',
+      complexity: 'O(1) - O(n)',
+      comingSoon: false,
+    },
+    {
+      title: 'Stack (LIFO)',
+      description: 'Last In First Out - push, pop, and peek operations',
+      href: '/dsa/stack',
+      icon: '📚',
+      difficulty: 'Beginner',
+      complexity: 'O(1)',
+      comingSoon: false,
+    },
+    {
+      title: 'Queue (FIFO)',
+      description: 'First In First Out - enqueue, dequeue, and peek operations',
+      href: '/dsa/queue',
+      icon: '🎟️',
+      difficulty: 'Beginner',
+      complexity: 'O(1)',
+      comingSoon: false,
+    },
+    {
       title: 'Bubble Sort',
       description: 'Watch elements bubble to their correct positions',
       href: '/dsa/bubble-sort',
@@ -68,15 +95,6 @@ export default function DSAPage() {
       complexity: 'O(log n)',
       comingSoon: false,
     },
-    {
-      title: 'Array Operations',
-      description: 'Explore append, insert, delete, search, and update',
-      href: '/dsa/array-operations',
-      icon: '📊',
-      difficulty: 'Beginner',
-      complexity: 'O(1) - O(n)',
-      comingSoon: false,
-    },
   ]
 
   return (
@@ -111,9 +129,7 @@ export default function DSAPage() {
               >
                 <div
                   className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
-                    algo.comingSoon
-                      ? 'opacity-60'
-                      : 'hover:shadow-2xl hover:-translate-y-2'
+                    algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
                   <div className="text-4xl mb-3">{algo.icon}</div>
@@ -127,7 +143,9 @@ export default function DSAPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">{algo.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
+                    {algo.description}
+                  </p>
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-gray-500 dark:text-gray-400">
