@@ -95,6 +95,33 @@ export default function DSAPage() {
       complexity: 'O(log n)',
       comingSoon: false,
     },
+    {
+      title: 'Bit Manipulation',
+      description: 'Bitwise operations: AND, OR, XOR, shifts, and bit tricks',
+      href: '/dsa/bit-manipulation',
+      icon: '💾',
+      difficulty: 'Intermediate',
+      complexity: 'O(1)',
+      comingSoon: false,
+    },
+    {
+      title: 'String Operations',
+      description: 'Reverse, palindrome, anagram, substring search',
+      href: '/dsa/strings',
+      icon: '📝',
+      difficulty: 'Beginner',
+      complexity: 'O(n)',
+      comingSoon: false,
+    },
+    {
+      title: 'Recursion',
+      description: 'Factorial, Fibonacci, Tower of Hanoi visualized',
+      href: '/dsa/recursion',
+      icon: '🔄',
+      difficulty: 'Intermediate',
+      complexity: 'O(2^n)',
+      comingSoon: false,
+    },
   ]
 
   return (
