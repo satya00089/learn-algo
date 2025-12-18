@@ -288,7 +288,7 @@ export function StringOperationsPlayground() {
                         {Array.from(engineState.charFrequency.entries()).map(([char, count]) => (
                           <div key={char} className="flex items-center gap-2 text-xs">
                             <span className="font-mono font-bold text-purple-700 dark:text-purple-400">
-                              '{char}'
+                              &apos;{char}&apos;
                             </span>
                             <span className="text-gray-600 dark:text-gray-400">: {count}</span>
                           </div>

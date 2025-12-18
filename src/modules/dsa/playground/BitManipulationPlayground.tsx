@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useCallback, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   FaPlay,

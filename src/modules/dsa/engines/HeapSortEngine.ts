@@ -185,7 +185,7 @@ export class HeapSortEngine {
   }
 
   private extractStep(): void {
-    const { array, heapSize } = this.state
+    const { heapSize } = this.state
 
     if (heapSize <= 1) {
       this.state.isSorted = true

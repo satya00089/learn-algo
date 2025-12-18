@@ -18,7 +18,7 @@ export default function MLPage() {
       href: '/ml/logistic-regression',
       icon: '📊',
       difficulty: 'Beginner',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: 'K-Means Clustering',
@@ -26,7 +26,7 @@ export default function MLPage() {
       href: '/ml/k-means',
       icon: '🎯',
       difficulty: 'Intermediate',
-      comingSoon: true,
+      comingSoon: false,
     },
   ]
 
