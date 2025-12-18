@@ -32,8 +32,10 @@ export function drawArray(
 
     // Determine color based on state
     let color = '#3b82f6' // default blue
+    let textColor = '#ffffff' // white text for bars
     if (element.state === 'comparing') {
       color = '#fbbf24' // yellow
+      textColor = '#1e293b' // dark text for yellow (better contrast)
     } else if (element.state === 'swapping') {
       color = '#ef4444' // red
     } else if (element.state === 'sorted') {
@@ -49,16 +51,21 @@ export function drawArray(
     ctx.lineWidth = 1
     ctx.strokeRect(x + 2, y, barWidth - 4, barHeight)
 
-    // Draw value
+    // Draw value on top of bar
     ctx.fillStyle = '#1e293b'
-    ctx.font = '12px sans-serif'
+    ctx.font = 'bold 12px sans-serif'
     ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(
-      element.value.toString(),
-      x + barWidth / 2,
-      y - 10
-    )
+    ctx.textBaseline = 'bottom'
+    ctx.fillText(element.value.toString(), x + barWidth / 2, y - 5)
+
+    // Draw value inside bar (if bar is tall enough)
+    if (barHeight > 30) {
+      ctx.fillStyle = textColor
+      ctx.font = 'bold 14px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(element.value.toString(), x + barWidth / 2, y + barHeight / 2)
+    }
   })
 
   ctx.restore()

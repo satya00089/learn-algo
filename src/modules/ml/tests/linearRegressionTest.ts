@@ -46,16 +46,16 @@ const interceptGrad = calculateInterceptGradient(testPoints, initialParams)
 console.log(`Initial params: slope=${initialParams.slope}, intercept=${initialParams.intercept}`)
 console.log(`Slope gradient: ${slopeGrad.toFixed(4)}`)
 console.log(`Intercept gradient: ${interceptGrad.toFixed(4)}`)
-console.log(
-  `(Negative gradients mean we should increase slope/intercept to reduce cost)\n`
-)
+console.log(`(Negative gradients mean we should increase slope/intercept to reduce cost)\n`)
 
 // Test 4: One gradient descent step
 console.log('Test 4: One gradient descent step')
 const learningRate = 0.01
 const afterOneStep = gradientDescentStep(testPoints, initialParams, learningRate)
 console.log(`Learning rate: ${learningRate}`)
-console.log(`After one step: slope=${afterOneStep.slope.toFixed(4)}, intercept=${afterOneStep.intercept.toFixed(4)}`)
+console.log(
+  `After one step: slope=${afterOneStep.slope.toFixed(4)}, intercept=${afterOneStep.intercept.toFixed(4)}`
+)
 console.log(`Cost after one step: ${calculateCost(testPoints, afterOneStep).toFixed(4)}\n`)
 
 // Test 5: Multiple steps

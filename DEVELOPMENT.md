@@ -34,6 +34,7 @@ export function bubbleSort(arr: number[]) {
 ```
 
 **Rules:**
+
 - ✅ Accept input → Return output
 - ✅ No side effects
 - ✅ No UI imports
@@ -84,6 +85,7 @@ export class AlgorithmEngine implements DebuggableAlgorithm<State> {
 ```
 
 **Rules:**
+
 - ✅ Implements DebuggableAlgorithm interface
 - ✅ step() performs exactly one iteration
 - ✅ Maintains complete internal state
@@ -102,15 +104,15 @@ export function drawArray(
   config: VisualizerConfig
 ): void {
   ctx.save()
-  
+
   elements.forEach((el, index) => {
     const x = calculateX(index, config)
     const y = calculateY(el.value, config)
-    
+
     ctx.fillStyle = getColor(el.state)
     ctx.fillRect(x, y, width, height)
   })
-  
+
   ctx.restore()
 }
 
@@ -118,15 +120,16 @@ export function drawArray(
 export function drawArray(ctx, elements) {
   // Sorting in visualizer? NO!
   elements.sort()
-  
+
   // Modifying state? NO!
   elements[0].state = 'sorted'
-  
+
   // Draw...
 }
 ```
 
 **Rules:**
+
 - ✅ Receives state as input only
 - ✅ Never mutates state
 - ✅ No algorithm logic
@@ -147,7 +150,7 @@ export function AlgorithmPlayground() {
   // Canvas setup
   const draw = useCallback((ctx: CanvasRenderingContext2D) => {
     if (!engineState) return
-    
+
     // Call visualizer functions
     drawElements(ctx, engineState.elements, visualConfig)
     drawLegend(ctx, legendConfig)
@@ -180,6 +183,7 @@ export function AlgorithmPlayground() {
 ```
 
 **Rules:**
+
 - ✅ Uses core canvas system
 - ✅ Uses core controls
 - ✅ Manages engine lifecycle
@@ -214,7 +218,7 @@ export function partition(
       ;[array[i], array[j]] = [array[j], array[i]]
     }
   }
-  
+
   ;[array[i + 1], array[high]] = [array[high], array[i + 1]]
   return { array, pivotIndex: i + 1 }
 }
@@ -241,16 +245,26 @@ export interface QuickSortState {
 
 export class QuickSortEngine implements DebuggableAlgorithm<QuickSortState> {
   private state: QuickSortState
-  
+
   constructor(array: number[]) {
     this.state = this.initializeState(array)
   }
 
-  init(): void { /* ... */ }
-  step(): void { /* ... */ }
-  run(): void { /* ... */ }
-  reset(): void { /* ... */ }
-  getState(): QuickSortState { /* ... */ }
+  init(): void {
+    /* ... */
+  }
+  step(): void {
+    /* ... */
+  }
+  run(): void {
+    /* ... */
+  }
+  reset(): void {
+    /* ... */
+  }
+  getState(): QuickSortState {
+    /* ... */
+  }
 }
 ```
 
@@ -333,13 +347,13 @@ import { Button, Slider, Toggle, ControlGroup } from '@/core/controls'
     max={100}
     onChange={setSpeed}
   />
-  
+
   <Toggle
     label="Show Labels"
     checked={showLabels}
     onChange={setShowLabels}
   />
-  
+
   <Button onClick={handleReset}>Reset</Button>
 </ControlGroup>
 ```
@@ -375,11 +389,11 @@ import { BubbleSortEngine } from './BubbleSortEngine'
 describe('BubbleSortEngine', () => {
   it('steps through algorithm correctly', () => {
     const engine = new BubbleSortEngine([3, 1, 2])
-    
+
     engine.step()
     const state1 = engine.getState()
     expect(state1.comparisons).toBe(1)
-    
+
     engine.run()
     const finalState = engine.getState()
     expect(finalState.isSorted).toBe(true)
@@ -449,6 +463,7 @@ export function sort(arr: number[]): number[] {
 ## 🤔 Questions?
 
 Refer to:
+
 1. `COPILOT_INSTRUCTIONS.md` for architecture rules
 2. `src/modules/ml/` for complete Linear Regression example
 3. Existing implementations for patterns

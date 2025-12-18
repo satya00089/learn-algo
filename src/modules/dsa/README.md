@@ -5,11 +5,13 @@ This module contains interactive visualizations and step-by-step implementations
 ## Categories
 
 ### Sorting Algorithms
+
 - **Bubble Sort**: Watch elements bubble to their correct positions
 - **Quick Sort**: Visualize partitioning and recursion
 - **Merge Sort**: See the divide and conquer strategy
 
 ### Data Structures
+
 - **Binary Search Tree**: Interactive tree operations
 - **Hash Table**: Collision resolution visualization
 - **Graphs**: BFS, DFS, and pathfinding algorithms
@@ -17,6 +19,7 @@ This module contains interactive visualizations and step-by-step implementations
 ## Architecture
 
 Each algorithm follows strict separation of concerns:
+
 - `algorithms/` - Pure logic functions
 - `engines/` - Step-based debuggable implementations
 - `visualizers/` - Canvas rendering

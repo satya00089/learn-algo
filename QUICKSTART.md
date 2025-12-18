@@ -11,6 +11,7 @@ npm install
 ```
 
 This will install:
+
 - Next.js 14
 - React 18
 - TypeScript
@@ -69,7 +70,7 @@ src/
 │   ├── page.tsx                  # Home page
 │   ├── ml/                       # ML module routes
 │   │   ├── page.tsx             # ML algorithms list
-│   │   └── linear-regression/   
+│   │   └── linear-regression/
 │   │       └── page.tsx         # Linear regression page
 │   ├── dsa/                      # DSA module routes
 │   └── ai/                       # AI module routes
@@ -133,12 +134,14 @@ npm run type-check   # TypeScript type checking
 ## 🎯 What's Working Now
 
 ✅ **Core Systems**
+
 - Canvas engine with hooks
 - Reusable UI controls (Button, Slider, Toggle, ControlGroup)
 - Module structure (DSA, ML, AI)
 - Routing with Next.js App Router
 
 ✅ **Linear Regression** (Complete Example)
+
 - Pure algorithm functions (gradient descent, cost calculation)
 - Step-based engine with full state management
 - Canvas visualizer (points, line, error lines, axes)
@@ -146,6 +149,7 @@ npm run type-check   # TypeScript type checking
 - Real-time state display
 
 ✅ **Infrastructure**
+
 - TypeScript strict mode
 - Tailwind CSS styling
 - ESLint & Prettier configuration
@@ -154,29 +158,35 @@ npm run type-check   # TypeScript type checking
 ## 🔜 Coming Soon
 
 The foundation is ready for:
+
 - More ML algorithms (Logistic Regression, K-Means, Neural Networks)
 - DSA visualizations (Bubble Sort engine is ready!)
-- AI algorithms (A*, Minimax, Genetic Algorithms)
+- AI algorithms (A\*, Minimax, Genetic Algorithms)
 
 ## 🏗️ Architecture Highlights
 
 ### 1. Separation of Concerns
+
 Every algorithm follows the same pattern:
+
 - **Algorithm** (pure functions) → **Engine** (stepable) → **Visualizer** (canvas) → **Playground** (orchestrate)
 
 ### 2. Debuggable by Design
+
 All engines implement:
+
 ```typescript
 interface DebuggableAlgorithm<TState> {
   init(): void
-  step(): void    // Execute ONE step
-  run(): void     // Run to completion
+  step(): void // Execute ONE step
+  run(): void // Run to completion
   reset(): void
   getState(): TState
 }
 ```
 
 ### 3. Reusable Core
+
 - Canvas system works for ANY visualization
 - Controls work for ANY algorithm
 - No duplication, consistent UX
@@ -199,6 +209,7 @@ interface DebuggableAlgorithm<TState> {
 ## 🐛 Troubleshooting
 
 ### Port Already in Use
+
 ```bash
 # Kill process on port 3000
 npx kill-port 3000
@@ -206,6 +217,7 @@ npm run dev
 ```
 
 ### Module Not Found
+
 ```bash
 # Reinstall dependencies
 rm -rf node_modules package-lock.json
@@ -213,6 +225,7 @@ npm install
 ```
 
 ### Type Errors
+
 ```bash
 # Run type check
 npm run type-check

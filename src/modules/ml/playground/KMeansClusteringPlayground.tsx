@@ -1,0 +1,543 @@
+'use client'
+
+import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  FaPlay,
+  FaPause,
+  FaStepForward,
+  FaFastForward,
+  FaRedo,
+  FaRandom,
+} from 'react-icons/fa'
+import { VscDebugAltSmall } from 'react-icons/vsc'
+import { Canvas, useCanvas } from '@/core/canvas'
+import { ControlGroup } from '@/core/controls'
+import { ThemeToggle } from '@/core/theme'
+import { KMeansClusteringEngine } from '../engines/KMeansClusteringEngine'
+import { useKMeansPlayground } from '../hooks/useKMeansPlayground'
+import type { DataPoint } from '../types'
+
+export function KMeansClusteringPlayground() {
+  const router = useRouter()
+  const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } =
+    useKMeansPlayground()
+
+  const engineRef = useRef<KMeansClusteringEngine | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<
+    KMeansClusteringEngine['getState']
+  > | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const playIntervalRef = useRef<NodeJS.Timeout>()
+
+  // Data management
+  const [points, setPoints] = useState<DataPoint[]>([])
+  const [k, setK] = useState(3)
+  const [maxIterations, setMaxIterations] = useState(50)
+
+  // Canvas configuration
+  const canvasConfig = useMemo(
+    () => ({
+      width: 1200,
+      height: 550,
+      padding: { top: 40, right: 40, bottom: 40, left: 40 },
+    }),
+    []
+  )
+
+  const xMin = -12
+  const xMax = 12
+  const yMin = -12
+  const yMax = 12
+
+  // Cluster colors
+  const clusterColors = [
+    '#3b82f6', // blue
+    '#ef4444', // red
+    '#10b981', // green
+    '#f59e0b', // amber
+    '#8b5cf6', // purple
+    '#ec4899', // pink
+    '#14b8a6', // teal
+    '#f97316', // orange
+  ]
+
+  // Generate sample data
+  const generateData = useCallback((type: 'blobs' | 'circles' | 'grid') => {
+    const newPoints: DataPoint[] = []
+    
+    if (type === 'blobs') {
+      // Generate gaussian blobs
+      const centers = [
+        { x: -5, y: -5 },
+        { x: 5, y: 5 },
+        { x: -5, y: 5 },
+        { x: 5, y: -5 },
+      ]
+      centers.forEach(center => {
+        for (let i = 0; i < 30; i++) {
+          newPoints.push({
+            x: center.x + (Math.random() - 0.5) * 4,
+            y: center.y + (Math.random() - 0.5) * 4,
+          })
+        }
+      })
+    } else if (type === 'circles') {
+      // Concentric circles
+      for (let i = 0; i < 50; i++) {
+        const r = 3
+        const theta = (i / 50) * Math.PI * 2
+        newPoints.push({
+          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.5,
+          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.5,
+        })
+      }
+      for (let i = 0; i < 50; i++) {
+        const r = 7
+        const theta = (i / 50) * Math.PI * 2
+        newPoints.push({
+          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.5,
+          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.5,
+        })
+      }
+    } else {
+      // Grid pattern
+      for (let i = -8; i <= 8; i += 4) {
+        for (let j = -8; j <= 8; j += 4) {
+          for (let k = 0; k < 10; k++) {
+            newPoints.push({
+              x: i + (Math.random() - 0.5) * 2,
+              y: j + (Math.random() - 0.5) * 2,
+            })
+          }
+        }
+      }
+    }
+    
+    setPoints(newPoints)
+  }, [])
+
+  // Initialize with sample data
+  useEffect(() => {
+    generateData('blobs')
+  }, [generateData])
+
+  // Initialize engine when config changes
+  useEffect(() => {
+    if (points.length > 0) {
+      engineRef.current = new KMeansClusteringEngine({
+        points,
+        k,
+        maxIterations,
+      })
+      setEngineState(engineRef.current.getState())
+    }
+  }, [points, k, maxIterations])
+
+  // Transform coordinates
+  const toCanvasCoords = useCallback(
+    (x: number, y: number) => {
+      const { width, height, padding } = canvasConfig
+      const canvasX =
+        padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
+      const canvasY =
+        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+      return { canvasX, canvasY }
+    },
+    [canvasConfig]
+  )
+
+  // Draw function
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      const { width, height } = canvasConfig
+      ctx.clearRect(0, 0, width, height)
+
+      // Draw axes
+      ctx.strokeStyle = '#94a3b8'
+      ctx.lineWidth = 1
+      const origin = toCanvasCoords(0, 0)
+      ctx.beginPath()
+      ctx.moveTo(toCanvasCoords(xMin, 0).canvasX, origin.canvasY)
+      ctx.lineTo(toCanvasCoords(xMax, 0).canvasX, origin.canvasY)
+      ctx.moveTo(origin.canvasX, toCanvasCoords(0, yMin).canvasY)
+      ctx.lineTo(origin.canvasX, toCanvasCoords(0, yMax).canvasY)
+      ctx.stroke()
+
+      if (!engineState) return
+
+      // Draw assignment lines (during assign phase)
+      if (engineState.phase === 'assign' && engineState.currentPointIndex > 0) {
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)'
+        ctx.lineWidth = 1
+        engineState.points.slice(0, engineState.currentPointIndex).forEach(point => {
+          if (point.clusterId >= 0) {
+            const centroid = engineState.centroids[point.clusterId]
+            const p1 = toCanvasCoords(point.x, point.y)
+            const p2 = toCanvasCoords(centroid.x, centroid.y)
+            ctx.beginPath()
+            ctx.moveTo(p1.canvasX, p1.canvasY)
+            ctx.lineTo(p2.canvasX, p2.canvasY)
+            ctx.stroke()
+          }
+        })
+      }
+
+      // Draw data points
+      engineState.points.forEach((point, idx) => {
+        const { canvasX, canvasY } = toCanvasCoords(point.x, point.y)
+        const isBeingAssigned = engineState.phase === 'assign' && idx === engineState.currentPointIndex - 1
+        
+        if (point.clusterId >= 0) {
+          ctx.fillStyle = clusterColors[point.clusterId % clusterColors.length]
+        } else {
+          ctx.fillStyle = '#94a3b8'
+        }
+        
+        ctx.beginPath()
+        ctx.arc(canvasX, canvasY, isBeingAssigned ? 8 : 5, 0, Math.PI * 2)
+        ctx.fill()
+        
+        if (isBeingAssigned) {
+          ctx.strokeStyle = '#fbbf24'
+          ctx.lineWidth = 3
+          ctx.stroke()
+        }
+      })
+
+      // Draw centroids
+      engineState.centroids.forEach((centroid, idx) => {
+        const { canvasX, canvasY } = toCanvasCoords(centroid.x, centroid.y)
+        const color = clusterColors[idx % clusterColors.length]
+        
+        // Draw outer glow
+        ctx.fillStyle = color + '40' // Add alpha for glow
+        ctx.beginPath()
+        ctx.arc(canvasX, canvasY, 14, 0, Math.PI * 2)
+        ctx.fill()
+        
+        // Draw cross/star shape for centroid
+        ctx.strokeStyle = color
+        ctx.lineWidth = 3
+        ctx.beginPath()
+        ctx.moveTo(canvasX - 8, canvasY)
+        ctx.lineTo(canvasX + 8, canvasY)
+        ctx.moveTo(canvasX, canvasY - 8)
+        ctx.lineTo(canvasX, canvasY + 8)
+        ctx.stroke()
+        
+        // Draw cluster number
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 10px monospace'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(String(idx + 1), canvasX, canvasY)
+      })
+    },
+    [canvasConfig, engineState, toCanvasCoords, clusterColors, xMin, xMax, yMin, yMax]
+  )
+
+  // Use canvas hook
+  const { canvasRef, redraw } = useCanvas({ config: canvasConfig, draw })
+
+  // Trigger redraw when state changes
+  useEffect(() => {
+    redraw()
+  }, [engineState, redraw])
+
+  // Playback controls
+  const handleStep = () => {
+    if (engineRef.current) {
+      engineRef.current.step()
+      setEngineState(engineRef.current.getState())
+    }
+  }
+
+  const handleRun = () => {
+    if (engineRef.current) {
+      engineRef.current.run()
+      setEngineState(engineRef.current.getState())
+    }
+  }
+
+  const handleReset = () => {
+    if (engineRef.current) {
+      engineRef.current.reset()
+      setEngineState(engineRef.current.getState())
+    }
+    setIsPlaying(false)
+    if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+  }
+
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      setIsPlaying(false)
+      if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+    } else {
+      if (!engineRef.current || engineState?.isConverged) return
+      setIsPlaying(true)
+      playIntervalRef.current = setInterval(() => {
+        if (engineRef.current) {
+          const state = engineRef.current.getState()
+          if (state.isConverged || state.phase === 'complete') {
+            setIsPlaying(false)
+            if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+          } else {
+            engineRef.current.step()
+            setEngineState(engineRef.current.getState())
+          }
+        }
+      }, animationSpeed)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+    }
+  }, [])
+
+  return (
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="h-full flex flex-col">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/ml')}
+              className="px-3 py-1.5 flex items-center gap-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+            >
+              <span>←</span> Back to ML
+            </button>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">K-Means Clustering</h1>
+          </div>
+          <ThemeToggle />
+        </div>
+
+        <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
+          Unsupervised learning: group similar data points into clusters
+        </p>
+
+        <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
+          <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0">
+            {/* Playback Controls */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex gap-1">
+                  <button
+                    onClick={handlePlayPause}
+                    disabled={engineState?.isConverged || engineState?.phase === 'complete'}
+                    className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
+                  </button>
+                  <button
+                    onClick={handleStep}
+                    disabled={isPlaying || engineState?.isConverged || engineState?.phase === 'complete'}
+                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <FaStepForward size={12} />
+                  </button>
+                  <button
+                    onClick={handleRun}
+                    disabled={isPlaying || engineState?.isConverged || engineState?.phase === 'complete'}
+                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <FaFastForward size={12} />
+                  </button>
+                  <button
+                    onClick={handleReset}
+                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                  >
+                    <FaRedo size={12} />
+                  </button>
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">Speed:</span>
+                  <input
+                    type="number"
+                    value={animationSpeed}
+                    min={100}
+                    max={2000}
+                    step={100}
+                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 600)}
+                    className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+
+                <button
+                  onClick={() => setIsDebugMode(!isDebugMode)}
+                  className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
+                    isDebugMode
+                      ? 'bg-indigo-600 border-indigo-600 text-white'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  <VscDebugAltSmall size={16} />
+                </button>
+
+                {engineState && (
+                  <div className="ml-auto flex items-center gap-4 text-xs">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Iteration: <span className="font-bold text-gray-900 dark:text-white">{engineState.iteration}</span>
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Phase: <span className="font-bold text-blue-600 dark:text-blue-400 capitalize">{engineState.phase}</span>
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Inertia: <span className="font-bold text-green-600 dark:text-green-400">{engineState.inertia.toFixed(2)}</span>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Canvas Visualization */}
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 overflow-auto">
+              <Canvas canvasRef={canvasRef} config={canvasConfig} />
+            </div>
+          </div>
+
+          {/* Right Side: Controls */}
+          <div className="space-y-3 overflow-y-auto min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
+            {/* Data Generation */}
+            <ControlGroup title="Data Generation">
+              <div className="space-y-2">
+                <button
+                  onClick={() => generateData('blobs')}
+                  disabled={isPlaying}
+                  className="w-full px-2 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
+                >
+                  <FaRandom size={12} /> Gaussian Blobs
+                </button>
+                <button
+                  onClick={() => generateData('circles')}
+                  disabled={isPlaying}
+                  className="w-full px-2 py-2 text-xs bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
+                >
+                  <FaRandom size={12} /> Concentric Circles
+                </button>
+                <button
+                  onClick={() => generateData('grid')}
+                  disabled={isPlaying}
+                  className="w-full px-2 py-2 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
+                >
+                  <FaRandom size={12} /> Grid Pattern
+                </button>
+              </div>
+            </ControlGroup>
+
+            {/* Hyperparameters */}
+            <ControlGroup title="Algorithm Parameters">
+              <div className="space-y-2 text-xs">
+                <div>
+                  <label className="text-gray-600 dark:text-gray-400">Number of Clusters (k): {k}</label>
+                  <input
+                    type="range"
+                    value={k}
+                    min={2}
+                    max={8}
+                    step={1}
+                    onChange={(e) => setK(Number.parseInt(e.target.value))}
+                    disabled={isPlaying}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-gray-600 dark:text-gray-400">Max Iterations: {maxIterations}</label>
+                  <input
+                    type="range"
+                    value={maxIterations}
+                    min={10}
+                    max={100}
+                    step={10}
+                    onChange={(e) => setMaxIterations(Number.parseInt(e.target.value))}
+                    disabled={isPlaying}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </ControlGroup>
+
+            {/* Cluster Info */}
+            {engineState && (
+              <ControlGroup title="Cluster Sizes">
+                <div className="space-y-1 text-xs">
+                  {engineState.centroids.map((_centroid, idx) => {
+                    const count = engineState.points.filter(p => p.clusterId === idx).length
+                    return (
+                      <div key={idx} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: clusterColors[idx % clusterColors.length] }}
+                          ></div>
+                          <span className="text-gray-600 dark:text-gray-400">Cluster {idx + 1}:</span>
+                        </div>
+                        <span className="font-mono font-semibold">{count} points</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </ControlGroup>
+            )}
+
+            {/* Debug History */}
+            {isDebugMode && engineState && engineState.history.length > 0 && (
+              <ControlGroup title="Iteration History">
+                <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
+                  {engineState.history.slice().reverse().map((step, idx) => (
+                    <div
+                      key={step.iteration}
+                      className={`p-1.5 rounded ${
+                        idx === 0
+                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                          : 'bg-gray-50 dark:bg-gray-900/50'
+                      }`}
+                    >
+                      <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
+                      {step.phase} | Inertia: {step.inertia.toFixed(2)}
+                    </div>
+                  ))}
+                </div>
+              </ControlGroup>
+            )}
+
+            {/* Legend */}
+            <ControlGroup title="Legend">
+              <div className="space-y-1 text-[10px]">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16">
+                    <line x1="2" y1="8" x2="14" y2="8" stroke="#94a3b8" strokeWidth="2" />
+                    <line x1="8" y1="2" x2="8" y2="14" stroke="#94a3b8" strokeWidth="2" />
+                  </svg>
+                  <span>Centroid (Cluster Center)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                  <span>Unassigned Point</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full border-2 border-yellow-500"></div>
+                  <span>Currently Assigning</span>
+                </div>
+              </div>
+            </ControlGroup>
+
+            {/* About */}
+            <ControlGroup title="About K-Means">
+              <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
+                <p><strong>Type:</strong> Unsupervised Learning</p>
+                <p><strong>Goal:</strong> Minimize within-cluster variance</p>
+                <p><strong>Init:</strong> K-Means++ for better results</p>
+                <p><strong>Complexity:</strong> O(n × k × i) where i = iterations</p>
+              </div>
+            </ControlGroup>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

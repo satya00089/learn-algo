@@ -48,8 +48,8 @@ export default function AIPage() {
             Artificial Intelligence
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl">
-            Explore AI algorithms through interactive demos. Understand search strategies,
-            game theory, and optimization techniques that power intelligent systems.
+            Explore AI algorithms through interactive demos. Understand search strategies, game
+            theory, and optimization techniques that power intelligent systems.
           </p>
         </div>
 
@@ -62,16 +62,12 @@ export default function AIPage() {
             >
               <div
                 className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 h-full transition-all duration-300 ${
-                  algo.comingSoon
-                    ? 'opacity-60'
-                    : 'hover:shadow-2xl hover:-translate-y-2'
+                  algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
                 }`}
               >
                 <div className="text-5xl mb-4">{algo.icon}</div>
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                    {algo.title}
-                  </h2>
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{algo.title}</h2>
                   {algo.comingSoon && (
                     <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
                       Soon

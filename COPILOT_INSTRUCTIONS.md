@@ -6,9 +6,9 @@
 
 Build **learn-algo.dev**, an interactive learning platform for:
 
-* **DSA (Data Structures & Algorithms)**
-* **ML (Machine Learning)**
-* **AI**
+- **DSA (Data Structures & Algorithms)**
+- **ML (Machine Learning)**
+- **AI**
 
 Users must learn algorithms by **playing, stepping, debugging, and visualizing**, not by reading static content.
 
@@ -31,23 +31,23 @@ Users must learn algorithms by **playing, stepping, debugging, and visualizing**
 
 ### Frontend
 
-* **Next.js (App Router)**
-* **TypeScript (strict mode ON)**
-* **Tailwind CSS**
-* **shadcn/ui** (layout & controls only)
-* **Framer Motion** (animations)
+- **Next.js (App Router)**
+- **TypeScript (strict mode ON)**
+- **Tailwind CSS**
+- **shadcn/ui** (layout & controls only)
+- **Framer Motion** (animations)
 
 ### Visualization
 
-* **HTML Canvas** → primary playground rendering
-* **D3.js / Visx** → trees, graphs, structured visuals
-* **SVG** → simple/static diagrams
+- **HTML Canvas** → primary playground rendering
+- **D3.js / Visx** → trees, graphs, structured visuals
+- **SVG** → simple/static diagrams
 
 ### State Management
 
-* **Zustand**
-* ❌ No Redux
-* ❌ No prop drilling
+- **Zustand**
+- ❌ No Redux
+- ❌ No prop drilling
 
 ---
 
@@ -55,27 +55,25 @@ Users must learn algorithms by **playing, stepping, debugging, and visualizing**
 
 ### ✅ DEFAULT (REQUIRED)
 
-* All algorithms **must run in-browser**
-* Implemented in **TypeScript**
-* Designed for:
-
-  * real-time updates
-  * step-by-step execution
-  * user debugging
+- All algorithms **must run in-browser**
+- Implemented in **TypeScript**
+- Designed for:
+  - real-time updates
+  - step-by-step execution
+  - user debugging
 
 ### ⚠️ OPTIONAL (ADVANCED ONLY)
 
-* **FastAPI** may be used ONLY for:
-
-  * large datasets
-  * benchmarking against sklearn
-  * non-debug “compare mode”
+- **FastAPI** may be used ONLY for:
+  - large datasets
+  - benchmarking against sklearn
+  - non-debug “compare mode”
 
 ❌ FastAPI must **never** be used for:
 
-* debug mode
-* step execution
-* core learning playgrounds
+- debug mode
+- step execution
+- core learning playgrounds
 
 ---
 
@@ -116,17 +114,17 @@ module-name/
 
 ### Algorithms MUST:
 
-* Be **pure**
-* Contain **no UI imports**
-* Contain **no Canvas / DOM access**
-* Be **fully testable**
-* Accept input → return output
+- Be **pure**
+- Contain **no UI imports**
+- Contain **no Canvas / DOM access**
+- Be **fully testable**
+- Accept input → return output
 
 ### ❌ Forbidden
 
-* React hooks in algorithm files
-* Side effects
-* Hidden state
+- React hooks in algorithm files
+- Side effects
+- Hidden state
 
 ---
 
@@ -148,19 +146,17 @@ interface DebuggableAlgorithm<TState> {
 
 ### Purpose
 
-* Enable user debugging
-* Enable pause / resume
-* Enable visual stepping
-* Enable internal state inspection
+- Enable user debugging
+- Enable pause / resume
+- Enable visual stepping
+- Enable internal state inspection
 
 ---
 
 ## 9. Example: Linear Regression Engine
 
 ```ts
-class LinearRegressionEngine
-  implements DebuggableAlgorithm<LinearRegressionState> {
-
+class LinearRegressionEngine implements DebuggableAlgorithm<LinearRegressionState> {
   init() {}
   step() {}
   run() {}
@@ -171,9 +167,9 @@ class LinearRegressionEngine
 
 The UI must be able to:
 
-* Call `step()` manually
-* Animate after each step
-* Display intermediate values
+- Call `step()` manually
+- Animate after each step
+- Display intermediate values
 
 ---
 
@@ -181,10 +177,10 @@ The UI must be able to:
 
 Visualization layers MUST:
 
-* Receive **algorithm output only**
-* Never mutate algorithm state
-* Never contain business logic
-* Only draw based on provided state
+- Receive **algorithm output only**
+- Never mutate algorithm state
+- Never contain business logic
+- Only draw based on provided state
 
 ### Example
 
@@ -239,10 +235,10 @@ Every playground must expose:
 
 ### Debug Mode Enables:
 
-* Step-by-step execution
-* Highlight active computations
-* Inspect intermediate values
-* Visualize internal changes
+- Step-by-step execution
+- Highlight active computations
+- Inspect intermediate values
+- Visualize internal changes
 
 ---
 
@@ -262,21 +258,21 @@ No algorithm-specific UI logic inside these components.
 
 ## 15. Performance Rules
 
-* Use `requestAnimationFrame` for canvas redraw
-* Debounce heavy computations
-* Use **Web Workers** for O(n²)+ algorithms
-* Avoid unnecessary React re-renders
+- Use `requestAnimationFrame` for canvas redraw
+- Debounce heavy computations
+- Use **Web Workers** for O(n²)+ algorithms
+- Avoid unnecessary React re-renders
 
 ---
 
 ## 16. Code Quality Standards
 
-* TypeScript strict mode
-* ESLint + Prettier
-* Descriptive function names
-* No magic numbers
-* Inline comments explaining *why*, not *what*
-* Each algorithm has a README explanation
+- TypeScript strict mode
+- ESLint + Prettier
+- Descriptive function names
+- No magic numbers
+- Inline comments explaining _why_, not _what_
+- Each algorithm has a README explanation
 
 ---
 
@@ -292,14 +288,13 @@ No algorithm-specific UI logic inside these components.
 
 ## 18. Long-Term (DO NOT IMPLEMENT YET)
 
-* URL-based playground sharing
-* Community experiments
-* WASM numerical kernels
-* Saved learning paths
+- URL-based playground sharing
+- Community experiments
+- WASM numerical kernels
+- Saved learning paths
 
 ---
 
 ## 19. Final Guiding Rule
 
 > **If Copilot generates code that mixes algorithm logic, UI, and visualization — it is wrong and must be refactored.**
-

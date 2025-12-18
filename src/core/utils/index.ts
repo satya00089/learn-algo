@@ -78,7 +78,7 @@ export function throttle<T extends (...args: any[]) => any>(
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean
-  
+
   return function executedFunction(...args: Parameters<T>) {
     if (!inThrottle) {
       func(...args)
@@ -116,9 +116,9 @@ export function normalize(values: number[]): number[] {
   const min = Math.min(...values)
   const max = Math.max(...values)
   const range = max - min
-  
+
   if (range === 0) return values.map(() => 0)
-  
+
   return values.map((v) => (v - min) / range)
 }
 
