@@ -1,3 +1,8 @@
 export { BubbleSortPlayground } from './BubbleSortPlayground'
 export { QuickSortPlayground } from './QuickSortPlayground'
 export { BinarySearchTreePlayground } from './BinarySearchTreePlayground'
+export { MergeSortPlayground } from './MergeSortPlayground'
+export { InsertionSortPlayground } from './InsertionSortPlayground'
+export { SelectionSortPlayground } from './SelectionSortPlayground'
+export { HeapSortPlayground } from './HeapSortPlayground'
+export { ArrayOperationsPlayground } from './ArrayOperationsPlayground'

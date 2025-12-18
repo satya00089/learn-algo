@@ -11,6 +11,34 @@ export default function DSAPage() {
       href: '/dsa/bubble-sort',
       icon: '🫧',
       difficulty: 'Beginner',
+      complexity: 'O(n²)',
+      comingSoon: false,
+    },
+    {
+      title: 'Insertion Sort',
+      description: 'Build sorted array by inserting elements one by one',
+      href: '/dsa/insertion-sort',
+      icon: '📥',
+      difficulty: 'Beginner',
+      complexity: 'O(n²)',
+      comingSoon: false,
+    },
+    {
+      title: 'Selection Sort',
+      description: 'Repeatedly select minimum and place at beginning',
+      href: '/dsa/selection-sort',
+      icon: '🎯',
+      difficulty: 'Beginner',
+      complexity: 'O(n²)',
+      comingSoon: false,
+    },
+    {
+      title: 'Merge Sort',
+      description: 'Divide and conquer with guaranteed O(n log n)',
+      href: '/dsa/merge-sort',
+      icon: '🔀',
+      difficulty: 'Intermediate',
+      complexity: 'O(n log n)',
       comingSoon: false,
     },
     {
@@ -19,6 +47,16 @@ export default function DSAPage() {
       href: '/dsa/quick-sort',
       icon: '⚡',
       difficulty: 'Intermediate',
+      complexity: 'O(n log n)',
+      comingSoon: false,
+    },
+    {
+      title: 'Heap Sort',
+      description: 'Sort using binary heap data structure',
+      href: '/dsa/heap-sort',
+      icon: '🗻',
+      difficulty: 'Advanced',
+      complexity: 'O(n log n)',
       comingSoon: false,
     },
     {
@@ -27,6 +65,16 @@ export default function DSAPage() {
       href: '/dsa/binary-search-tree',
       icon: '🌳',
       difficulty: 'Intermediate',
+      complexity: 'O(log n)',
+      comingSoon: false,
+    },
+    {
+      title: 'Array Operations',
+      description: 'Explore append, insert, delete, search, and update',
+      href: '/dsa/array-operations',
+      icon: '📊',
+      difficulty: 'Beginner',
+      complexity: 'O(1) - O(n)',
       comingSoon: false,
     },
   ]
@@ -81,9 +129,14 @@ export default function DSAPage() {
                   </div>
                   <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">{algo.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {algo.difficulty}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {algo.difficulty}
+                      </span>
+                      <span className="text-xs font-mono text-purple-600 dark:text-purple-400">
+                        {algo.complexity}
+                      </span>
+                    </div>
                     {!algo.comingSoon && (
                       <span className="text-purple-600 dark:text-purple-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
                         Try it →

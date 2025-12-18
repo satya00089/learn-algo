@@ -484,10 +484,10 @@ export function QuickSortPlayground() {
                   {engineState.history.length > 0 && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
                       <div className="font-semibold text-blue-700 dark:text-blue-300 mb-1">
-                        Action History (Last 5):
+                        Action History:
                       </div>
                       <div className="space-y-1 max-h-32 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                        {engineState.history.slice(-5).reverse().map((step, idx) => (
+                        {engineState.history.slice().reverse().map((step, idx) => (
                           <div
                             key={step.iteration}
                             className={`text-[10px] p-1.5 rounded ${

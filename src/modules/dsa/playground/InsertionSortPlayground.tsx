@@ -9,39 +9,34 @@ import {
   FaFastForward,
   FaRedo,
   FaRandom,
-  FaSearch,
-  FaPlus,
-  FaTrash,
 } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
-import { BinarySearchTreeEngine } from '../engines/BinarySearchTreeEngine'
-import { useBinarySearchTreePlayground } from '../hooks/useBinarySearchTreePlayground'
-import { drawTree } from '../visualizers/treeVisualizer'
+import { InsertionSortEngine } from '../engines/InsertionSortEngine'
+import { useInsertionSortPlayground } from '../hooks/useInsertionSortPlayground'
+import { drawArray } from '../visualizers/sortingVisualizer'
 
 /**
- * Binary Search Tree Playground
- * Orchestrates engine, visualization, and controls
- * Follows strict separation of concerns
+ * Insertion Sort Playground
+ * Visualizes building sorted array one element at a time
  */
-export function BinarySearchTreePlayground() {
+export function InsertionSortPlayground() {
   const router = useRouter()
   const {
+    arraySize,
+    setArraySize,
     animationSpeed,
     setAnimationSpeed,
     isDebugMode,
     setIsDebugMode,
-    inputValue,
-    setInputValue,
-    generateRandomValue,
-    generateRandomTree,
-  } = useBinarySearchTreePlayground()
+    generateRandomArray,
+  } = useInsertionSortPlayground()
 
-  const engineRef = useRef<BinarySearchTreeEngine | null>(null)
+  const engineRef = useRef<InsertionSortEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<
-    BinarySearchTreeEngine['getState']
+    InsertionSortEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
@@ -56,26 +51,28 @@ export function BinarySearchTreePlayground() {
     []
   )
 
-  // Initialize engine
+  // Initialize engine with random array
   useEffect(() => {
-    engineRef.current = new BinarySearchTreeEngine()
+    const initialArray = generateRandomArray(arraySize)
+    engineRef.current = new InsertionSortEngine(initialArray)
     setEngineState(engineRef.current.getState())
-  }, [])
+  }, [arraySize, generateRandomArray])
 
   // Draw function for canvas
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      const { width, height } = canvasConfig
+      const { width, height, padding } = canvasConfig
 
       // Clear canvas
       ctx.clearRect(0, 0, width, height)
 
       if (!engineState) return
 
-      // Draw tree
-      drawTree(ctx, engineState.root, {
+      // Draw array bars
+      drawArray(ctx, engineState.array, {
         canvasWidth: width,
         canvasHeight: height,
+        padding: padding.left,
       })
     },
     [engineState, canvasConfig]
@@ -129,7 +126,7 @@ export function BinarySearchTreePlayground() {
       if (!engineRef.current) return
 
       const currentState = engineRef.current.getState()
-      if (currentState.stepPhase === 'complete' || !currentState.currentOperation) {
+      if (currentState.isSorted) {
         return
       }
 
@@ -137,7 +134,7 @@ export function BinarySearchTreePlayground() {
       playIntervalRef.current = setInterval(() => {
         if (engineRef.current) {
           const state = engineRef.current.getState()
-          if (state.stepPhase === 'complete' || !state.currentOperation) {
+          if (state.isSorted) {
             setIsPlaying(false)
             if (playIntervalRef.current) {
               clearInterval(playIntervalRef.current)
@@ -161,51 +158,10 @@ export function BinarySearchTreePlayground() {
     }
   }, [])
 
-  const handleInsert = () => {
-    const value = Number.parseInt(inputValue)
-    if (Number.isNaN(value)) return
-
+  const handleGenerateNewArray = () => {
+    const newArray = generateRandomArray(arraySize)
     if (engineRef.current) {
-      engineRef.current.startInsert(value)
-      setEngineState(engineRef.current.getState())
-    }
-    setInputValue('')
-  }
-
-  const handleSearch = () => {
-    const value = Number.parseInt(inputValue)
-    if (Number.isNaN(value)) return
-
-    if (engineRef.current) {
-      engineRef.current.startSearch(value)
-      setEngineState(engineRef.current.getState())
-    }
-    setInputValue('')
-  }
-
-  const handleRandomInsert = () => {
-    const value = generateRandomValue()
-    if (engineRef.current) {
-      engineRef.current.startInsert(value)
-      setEngineState(engineRef.current.getState())
-    }
-  }
-
-  const handleGenerateTree = () => {
-    const values = generateRandomTree()
-    if (engineRef.current) {
-      engineRef.current.clear()
-      values.forEach((value) => {
-        engineRef.current!.startInsert(value)
-        engineRef.current!.run()
-      })
-      setEngineState(engineRef.current.getState())
-    }
-  }
-
-  const handleClear = () => {
-    if (engineRef.current) {
-      engineRef.current.clear()
+      engineRef.current.updateArray(newArray)
       setEngineState(engineRef.current.getState())
     }
     setIsPlaying(false)
@@ -256,21 +212,19 @@ export function BinarySearchTreePlayground() {
     if (!engineState) return ''
     switch (engineState.stepPhase) {
       case 'selecting':
-        return '🎯 Selecting starting node'
+        return '🔑 Selecting key element to insert'
       case 'comparing':
-        return '🔍 Comparing values'
-      case 'navigating':
-        return '➡️ Navigating tree'
+        return '🔍 Comparing with sorted elements'
+      case 'shifting':
+        return '➡️ Shifting elements to make space'
       case 'inserting':
-        return '➕ Inserting node'
+        return '📍 Inserting key at correct position'
       case 'complete':
-        return '✅ Operation complete'
+        return '✅ Sort complete'
       default:
         return ''
     }
   }
-
-  const canOperate = engineState?.stepPhase === 'complete' || !engineState?.currentOperation
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -284,15 +238,13 @@ export function BinarySearchTreePlayground() {
             >
               <span>←</span> Back to DSA
             </button>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Binary Search Tree
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Insertion Sort</h1>
           </div>
           <ThemeToggle />
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Interactive tree operations: insert nodes, search for values, and visualize tree traversal
+          Build the sorted array one element at a time by inserting each element into its correct position
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -301,47 +253,12 @@ export function BinarySearchTreePlayground() {
             {/* Controls Above Canvas */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
-                {/* Input and Operation Buttons */}
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="number"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') handleInsert()
-                    }}
-                    placeholder="Value"
-                    disabled={!canOperate}
-                    className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-                  />
-                  <Tooltip text="Insert Value">
-                    <button
-                      onClick={handleInsert}
-                      disabled={!canOperate || !inputValue}
-                      className="w-8 h-8 flex items-center justify-center rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <FaPlus size={12} />
-                    </button>
-                  </Tooltip>
-                  <Tooltip text="Search Value">
-                    <button
-                      onClick={handleSearch}
-                      disabled={!canOperate || !inputValue}
-                      className="w-8 h-8 flex items-center justify-center rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <FaSearch size={12} />
-                    </button>
-                  </Tooltip>
-                </div>
-
-                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-
                 {/* Execution Buttons */}
                 <div className="flex gap-1">
                   <Tooltip text={isPlaying ? 'Pause' : 'Play'}>
                     <button
                       onClick={handlePlayPause}
-                      disabled={canOperate}
+                      disabled={engineState?.isSorted}
                       className="w-8 h-8 flex items-center justify-center rounded bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
@@ -350,7 +267,7 @@ export function BinarySearchTreePlayground() {
                   <Tooltip text="Step Forward">
                     <button
                       onClick={handleStep}
-                      disabled={isPlaying || canOperate}
+                      disabled={isPlaying || engineState?.isSorted}
                       className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <FaStepForward size={12} />
@@ -359,13 +276,13 @@ export function BinarySearchTreePlayground() {
                   <Tooltip text="Run to Completion">
                     <button
                       onClick={handleRun}
-                      disabled={isPlaying || canOperate}
+                      disabled={isPlaying || engineState?.isSorted}
                       className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <FaFastForward size={12} />
                     </button>
                   </Tooltip>
-                  <Tooltip text="Reset Operation">
+                  <Tooltip text="Reset">
                     <button
                       onClick={handleReset}
                       className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
@@ -377,7 +294,23 @@ export function BinarySearchTreePlayground() {
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
-                {/* Animation Speed */}
+                {/* Array Size Slider */}
+                <div className="flex items-center gap-1.5">
+                  <Tooltip text="Array Size">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Size:</span>
+                  </Tooltip>
+                  <input
+                    type="number"
+                    value={arraySize}
+                    min={5}
+                    max={30}
+                    step={1}
+                    onChange={(e) => setArraySize(Number.parseInt(e.target.value) || 5)}
+                    className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                {/* Animation Speed Slider */}
                 <div className="flex items-center gap-1.5">
                   <Tooltip text="Animation Speed (ms)">
                     <span className="text-xs text-gray-600 dark:text-gray-400">Speed:</span>
@@ -411,35 +344,14 @@ export function BinarySearchTreePlayground() {
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
-                {/* Tree Operations */}
-                <Tooltip text="Random Insert">
+                {/* Generate New Array Button */}
+                <Tooltip text="Generate New Array">
                   <button
-                    onClick={handleRandomInsert}
-                    disabled={!canOperate}
-                    className="px-3 h-8 flex items-center gap-1.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs transition-colors disabled:opacity-50"
+                    onClick={handleGenerateNewArray}
+                    className="px-3 h-8 flex items-center gap-1.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs transition-colors"
                   >
                     <FaRandom size={12} />
-                    Random
-                  </button>
-                </Tooltip>
-
-                <Tooltip text="Generate Tree">
-                  <button
-                    onClick={handleGenerateTree}
-                    disabled={!canOperate}
-                    className="px-3 h-8 flex items-center gap-1.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs transition-colors disabled:opacity-50"
-                  >
-                    Generate
-                  </button>
-                </Tooltip>
-
-                <Tooltip text="Clear Tree">
-                  <button
-                    onClick={handleClear}
-                    className="px-3 h-8 flex items-center gap-1.5 rounded border border-red-300 dark:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-700 dark:text-red-300 text-xs transition-colors"
-                  >
-                    <FaTrash size={12} />
-                    Clear
+                    New Array
                   </button>
                 </Tooltip>
               </div>
@@ -450,24 +362,24 @@ export function BinarySearchTreePlayground() {
               <div className="flex-1 flex items-center justify-center min-h-0">
                 <Canvas canvasRef={canvasRef} config={canvasConfig} className="w-full h-full" />
               </div>
-
+              
               {/* Color Legend */}
               <div className="flex items-center justify-center gap-6 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-blue-500 border border-gray-300 dark:border-gray-600"></div>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">Default</span>
+                  <div className="w-4 h-4 rounded bg-blue-500 border border-gray-300 dark:border-gray-600"></div>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">Unsorted</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-yellow-400 border border-gray-300 dark:border-gray-600"></div>
+                  <div className="w-4 h-4 rounded bg-yellow-400 border border-gray-300 dark:border-gray-600"></div>
                   <span className="text-xs text-gray-600 dark:text-gray-300">Comparing</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-green-500 border border-gray-300 dark:border-gray-600"></div>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">Found/Inserted</span>
+                  <div className="w-4 h-4 rounded bg-red-500 border border-gray-300 dark:border-gray-600"></div>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">Shifting</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-red-500 border border-gray-300 dark:border-gray-600"></div>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">Not Found</span>
+                  <div className="w-4 h-4 rounded bg-green-500 border border-gray-300 dark:border-gray-600"></div>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">Sorted</span>
                 </div>
               </div>
             </div>
@@ -479,50 +391,42 @@ export function BinarySearchTreePlayground() {
             {engineState && (
               <ControlGroup title="Current State">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-                  <span className="text-gray-600 dark:text-gray-400">Nodes:</span>
-                  <span className="font-semibold text-right">{engineState.nodes.length}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Position:</span>
+                  <span className="font-semibold text-right">{engineState.currentIndex}</span>
 
                   <span className="text-gray-600 dark:text-gray-400">Comparisons:</span>
                   <span className="font-semibold text-right">{engineState.comparisons}</span>
 
-                  <span className="text-gray-600 dark:text-gray-400">Insertions:</span>
-                  <span className="font-semibold text-right">{engineState.insertions}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Shifts:</span>
+                  <span className="font-semibold text-right">{engineState.shifts}</span>
 
-                  <span className="text-gray-600 dark:text-gray-400">Operation:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Status:</span>
                   <span className="font-semibold text-right">
-                    {engineState.currentOperation
-                      ? engineState.currentOperation.charAt(0).toUpperCase() +
-                        engineState.currentOperation.slice(1)
-                      : 'None'}
+                    {engineState.isSorted ? '✓ Sorted' : '⟳ Sorting'}
                   </span>
                 </div>
               </ControlGroup>
             )}
 
             {/* Algorithm Info */}
-            <ControlGroup title="About BST">
+            <ControlGroup title="About Insertion Sort">
               <div className="space-y-2 text-xs text-gray-600 dark:text-gray-300">
                 <p>
                   <strong className="text-gray-800 dark:text-white">Time Complexity:</strong>
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Best: O(log n) - balanced tree</li>
-                  <li>Average: O(log n)</li>
-                  <li>Worst: O(n) - skewed tree</li>
+                  <li>Best: O(n) - already sorted</li>
+                  <li>Average: O(n²)</li>
+                  <li>Worst: O(n²) - reverse sorted</li>
                 </ul>
 
                 <p className="mt-2">
-                  <strong className="text-gray-800 dark:text-white">Space Complexity:</strong> O(n)
+                  <strong className="text-gray-800 dark:text-white">Space Complexity:</strong> O(1)
                 </p>
 
                 <p className="mt-2">
-                  <strong className="text-gray-800 dark:text-white">Properties:</strong>
+                  <strong className="text-gray-800 dark:text-white">Stable:</strong> Yes
                 </p>
-                <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Left subtree {'<'} node value</li>
-                  <li>Right subtree {'>'} node value</li>
-                  <li>No duplicate values</li>
-                </ul>
               </div>
             </ControlGroup>
 
@@ -531,7 +435,7 @@ export function BinarySearchTreePlayground() {
               <ControlGroup title="Debug Details">
                 <div className="space-y-2 text-xs">
                   {/* Current Phase */}
-                  {engineState.currentOperation && (
+                  {!engineState.isSorted && (
                     <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
                       <div className="font-semibold text-green-700 dark:text-green-300 mb-1">
                         Current Phase:
@@ -539,11 +443,9 @@ export function BinarySearchTreePlayground() {
                       <div className="text-green-900 dark:text-green-100 text-[10px] font-semibold">
                         {getPhaseDescription()}
                       </div>
-                      {engineState.targetValue !== null && (
+                      {engineState.keyValue !== null && (
                         <div className="text-green-700 dark:text-green-300 text-[10px] mt-1">
-                          Target: {engineState.targetValue}
-                          {engineState.path.length > 0 &&
-                            ` | Path: ${engineState.path.join(' → ')}`}
+                          Key: {engineState.keyValue} | Insert at: {engineState.insertIndex + 1}
                         </div>
                       )}
                     </div>
@@ -551,26 +453,24 @@ export function BinarySearchTreePlayground() {
 
                   <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded">
                     <div className="font-semibold text-purple-700 dark:text-purple-300 mb-1">
-                      BST Properties:
+                      Algorithm Steps:
                     </div>
                     <ol className="list-decimal list-inside space-y-1 text-gray-700 dark:text-gray-300 text-[10px]">
-                      <li>Left child {'<'} parent</li>
-                      <li>Right child {'>'} parent</li>
-                      <li>Recursive structure</li>
-                      <li>In-order gives sorted list</li>
+                      <li>Pick next element (key)</li>
+                      <li>Compare with sorted elements</li>
+                      <li>Shift larger elements right</li>
+                      <li>Insert key at correct position</li>
                     </ol>
                   </div>
 
-                  {engineState.nodes.length > 0 && (
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-2 rounded">
-                      <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                        In-Order Traversal:
-                      </div>
-                      <div className="font-mono text-[10px] text-gray-600 dark:text-gray-400 break-words">
-                        {engineRef.current?.getInOrderTraversal().join(' → ')}
-                      </div>
+                  <div className="bg-gray-50 dark:bg-gray-900/50 p-2 rounded">
+                    <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      Current Array:
                     </div>
-                  )}
+                    <div className="font-mono text-[10px] text-gray-600 dark:text-gray-400 break-words">
+                      [{engineState.array.map((el) => el.value).join(', ')}]
+                    </div>
+                  </div>
 
                   {engineState.history.length > 0 && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
@@ -604,16 +504,14 @@ export function BinarySearchTreePlayground() {
             <ControlGroup title="How It Works">
               <div className="space-y-2 text-xs text-gray-600 dark:text-gray-300">
                 <p>
-                  A Binary Search Tree maintains a sorted structure where each node&apos;s left child is
-                  smaller and right child is larger than the parent.
+                  Insertion Sort builds the final sorted array one item at a time. It picks the next element and inserts it into the correct position within the already sorted portion.
                 </p>
                 <p>
-                  This property enables efficient searching, insertion, and deletion operations with
-                  O(log n) average time complexity.
+                  Like sorting playing cards in your hand, you pick up one card at a time and place it in the right spot among the cards you&apos;re already holding.
                 </p>
                 <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
                   <p className="text-yellow-800 dark:text-yellow-200 font-semibold text-[10px]">
-                    💡 Tip: Try inserting sorted values to see how the tree becomes unbalanced!
+                    💡 Tip: Very efficient for small arrays or nearly sorted data!
                   </p>
                 </div>
               </div>

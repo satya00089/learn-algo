@@ -1,3 +1,8 @@
 export { useBubbleSortPlayground } from './useBubbleSortPlayground'
 export { useQuickSortPlayground } from './useQuickSortPlayground'
 export { useBinarySearchTreePlayground } from './useBinarySearchTreePlayground'
+export { useMergeSortPlayground } from './useMergeSortPlayground'
+export { useInsertionSortPlayground } from './useInsertionSortPlayground'
+export { useSelectionSortPlayground } from './useSelectionSortPlayground'
+export { useHeapSortPlayground } from './useHeapSortPlayground'
+export { useArrayOperationsPlayground } from './useArrayOperationsPlayground'
