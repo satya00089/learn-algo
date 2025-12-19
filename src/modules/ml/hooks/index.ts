@@ -1,3 +1,5 @@
 export { useLinearRegressionPlayground } from './useLinearRegressionPlayground'
 export { useLogisticRegressionPlayground } from './useLogisticRegressionPlayground'
 export { useKMeansPlayground } from './useKMeansPlayground'
+export { useGradientDescentPlayground } from './useGradientDescentPlayground'
+export { usePolynomialRegressionPlayground } from './usePolynomialRegressionPlayground'

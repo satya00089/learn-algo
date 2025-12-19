@@ -2,16 +2,9 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-  FaRandom,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { Canvas, useCanvas } from '@/core/canvas'
+import { useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { KMeansClusteringEngine } from '../engines/KMeansClusteringEngine'
@@ -20,8 +13,7 @@ import type { DataPoint } from '../types'
 
 export function KMeansClusteringPlayground() {
   const router = useRouter()
-  const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } =
-    useKMeansPlayground()
+  const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } = useKMeansPlayground()
 
   const engineRef = useRef<KMeansClusteringEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<
@@ -34,8 +26,10 @@ export function KMeansClusteringPlayground() {
   const [points, setPoints] = useState<DataPoint[]>([])
   const [k, setK] = useState(3)
   const [maxIterations, setMaxIterations] = useState(50)
+  const [isPickingCentroids, setIsPickingCentroids] = useState(false)
+  const [pickedCentroids, setPickedCentroids] = useState<DataPoint[]>([])
 
-  // Canvas configuration
+  // Canvas configuration - rectangular canvas
   const canvasConfig = useMemo(
     () => ({
       width: 1200,
@@ -45,8 +39,12 @@ export function KMeansClusteringPlayground() {
     []
   )
 
-  const xMin = -12
-  const xMax = 12
+  // Data bounds - adjusted for canvas aspect ratio to ensure visual distances match Euclidean distances
+  // Canvas drawable area: 1120 x 470 (after padding)
+  // Aspect ratio: 1120/470 ≈ 2.38
+  // To maintain square visual appearance: if y range is 24, x range should be 24 * 2.38 ≈ 57
+  const xMin = -28.5
+  const xMax = 28.5
   const yMin = -12
   const yMax = 12
 
@@ -63,59 +61,71 @@ export function KMeansClusteringPlayground() {
   ]
 
   // Generate sample data
-  const generateData = useCallback((type: 'blobs' | 'circles' | 'grid') => {
+  const generateData = useCallback((type: 'blobs' | 'circles' | 'grid' | 'uniform') => {
     const newPoints: DataPoint[] = []
-    
+
     if (type === 'blobs') {
-      // Generate gaussian blobs
+      // Generate gaussian blobs - increased density and spread across wider canvas
       const centers = [
+        { x: -15, y: -5 },
+        { x: -15, y: 5 },
         { x: -5, y: -5 },
-        { x: 5, y: 5 },
         { x: -5, y: 5 },
         { x: 5, y: -5 },
+        { x: 5, y: 5 },
+        { x: 15, y: -5 },
+        { x: 15, y: 5 },
       ]
-      centers.forEach(center => {
-        for (let i = 0; i < 30; i++) {
+      centers.forEach((center) => {
+        for (let i = 0; i < 50; i++) {
           newPoints.push({
-            x: center.x + (Math.random() - 0.5) * 4,
-            y: center.y + (Math.random() - 0.5) * 4,
+            x: center.x + (Math.random() - 0.5) * 6,
+            y: center.y + (Math.random() - 0.5) * 6,
           })
         }
       })
     } else if (type === 'circles') {
-      // Concentric circles
-      for (let i = 0; i < 50; i++) {
-        const r = 3
-        const theta = (i / 50) * Math.PI * 2
+      // Concentric circles - more points and better spread
+      for (let i = 0; i < 80; i++) {
+        const r = 4
+        const theta = (i / 80) * Math.PI * 2
         newPoints.push({
-          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.5,
-          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.5,
+          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
+          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
         })
       }
-      for (let i = 0; i < 50; i++) {
-        const r = 7
-        const theta = (i / 50) * Math.PI * 2
+      for (let i = 0; i < 100; i++) {
+        const r = 8
+        const theta = (i / 100) * Math.PI * 2
         newPoints.push({
-          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.5,
-          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.5,
+          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
+          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
+        })
+      }
+    } else if (type === 'uniform') {
+      // Uniform random distribution across the entire canvas
+      for (let i = 0; i < 500; i++) {
+        newPoints.push({
+          x: xMin + Math.random() * (xMax - xMin),
+          y: yMin + Math.random() * (yMax - yMin),
         })
       }
     } else {
-      // Grid pattern
-      for (let i = -8; i <= 8; i += 4) {
-        for (let j = -8; j <= 8; j += 4) {
-          for (let k = 0; k < 10; k++) {
+      // Grid pattern - more points across wider canvas
+      for (let i = -24; i <= 24; i += 6) {
+        for (let j = -9; j <= 9; j += 6) {
+          for (let k = 0; k < 15; k++) {
             newPoints.push({
-              x: i + (Math.random() - 0.5) * 2,
-              y: j + (Math.random() - 0.5) * 2,
+              x: i + (Math.random() - 0.5) * 4,
+              y: j + (Math.random() - 0.5) * 4,
             })
           }
         }
       }
     }
-    
+
     setPoints(newPoints)
-  }, [])
+  }, [xMin, xMax, yMin, yMax])
 
   // Initialize with sample data
   useEffect(() => {
@@ -124,15 +134,20 @@ export function KMeansClusteringPlayground() {
 
   // Initialize engine when config changes
   useEffect(() => {
-    if (points.length > 0) {
+    if (points.length > 0 && !isPickingCentroids) {
+      const initialCentroids = pickedCentroids.length > 0
+        ? pickedCentroids.map((p, idx) => ({ ...p, clusterId: idx }))
+        : undefined
+      
       engineRef.current = new KMeansClusteringEngine({
         points,
         k,
         maxIterations,
+        initialCentroids,
       })
       setEngineState(engineRef.current.getState())
     }
-  }, [points, k, maxIterations])
+  }, [points, k, maxIterations, pickedCentroids, isPickingCentroids])
 
   // Transform coordinates
   const toCanvasCoords = useCallback(
@@ -141,10 +156,43 @@ export function KMeansClusteringPlayground() {
       const canvasX =
         padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
       const canvasY =
-        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+        height -
+        padding.bottom -
+        ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
       return { canvasX, canvasY }
     },
-    [canvasConfig]
+    [canvasConfig, xMin, xMax, yMin, yMax]
+  )
+
+  // Transform canvas coordinates to data coordinates
+  const toDataCoords = useCallback(
+    (canvasX: number, canvasY: number) => {
+      const { width, height, padding } = canvasConfig
+      const x =
+        xMin + ((canvasX - padding.left) / (width - padding.left - padding.right)) * (xMax - xMin)
+      const y =
+        yMax - ((canvasY - padding.top) / (height - padding.top - padding.bottom)) * (yMax - yMin)
+      return { x, y }
+    },
+    [canvasConfig, xMin, xMax, yMin, yMax]
+  )
+
+  // Handle canvas click for centroid picking
+  const handleCanvasClick = useCallback(
+    (event: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!isPickingCentroids) return
+
+      const canvas = event.currentTarget
+      const rect = canvas.getBoundingClientRect()
+      const scaleX = canvas.width / rect.width
+      const scaleY = canvas.height / rect.height
+      const canvasX = (event.clientX - rect.left) * scaleX
+      const canvasY = (event.clientY - rect.top) * scaleY
+
+      const { x, y } = toDataCoords(canvasX, canvasY)
+      setPickedCentroids([...pickedCentroids, { x, y }])
+    },
+    [isPickingCentroids, pickedCentroids, toDataCoords]
   )
 
   // Draw function
@@ -164,13 +212,56 @@ export function KMeansClusteringPlayground() {
       ctx.lineTo(origin.canvasX, toCanvasCoords(0, yMax).canvasY)
       ctx.stroke()
 
+      // When in picking mode, draw raw data points
+      if (isPickingCentroids) {
+        // Draw data points from raw points state
+        points.forEach((point) => {
+          const { canvasX, canvasY } = toCanvasCoords(point.x, point.y)
+          ctx.fillStyle = '#94a3b8'
+          ctx.beginPath()
+          ctx.arc(canvasX, canvasY, 5, 0, Math.PI * 2)
+          ctx.fill()
+        })
+
+        // Draw picked centroids
+        pickedCentroids.forEach((centroid, idx) => {
+          const { canvasX, canvasY } = toCanvasCoords(centroid.x, centroid.y)
+          const color = clusterColors[idx % clusterColors.length]
+          
+          // Draw outer glow
+          ctx.fillStyle = color + '40'
+          ctx.beginPath()
+          ctx.arc(canvasX, canvasY, 14, 0, Math.PI * 2)
+          ctx.fill()
+          
+          // Draw cross
+          ctx.strokeStyle = color
+          ctx.lineWidth = 3
+          ctx.beginPath()
+          ctx.moveTo(canvasX - 8, canvasY)
+          ctx.lineTo(canvasX + 8, canvasY)
+          ctx.moveTo(canvasX, canvasY - 8)
+          ctx.lineTo(canvasX, canvasY + 8)
+          ctx.stroke()
+          
+          // Draw number
+          ctx.fillStyle = '#ffffff'
+          ctx.font = 'bold 10px monospace'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(String(idx + 1), canvasX, canvasY)
+        })
+        
+        return // Don't draw engine state when picking
+      }
+
       if (!engineState) return
 
       // Draw assignment lines (during assign phase)
       if (engineState.phase === 'assign' && engineState.currentPointIndex > 0) {
         ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)'
         ctx.lineWidth = 1
-        engineState.points.slice(0, engineState.currentPointIndex).forEach(point => {
+        engineState.points.slice(0, engineState.currentPointIndex).forEach((point) => {
           if (point.clusterId >= 0) {
             const centroid = engineState.centroids[point.clusterId]
             const p1 = toCanvasCoords(point.x, point.y)
@@ -186,18 +277,19 @@ export function KMeansClusteringPlayground() {
       // Draw data points
       engineState.points.forEach((point, idx) => {
         const { canvasX, canvasY } = toCanvasCoords(point.x, point.y)
-        const isBeingAssigned = engineState.phase === 'assign' && idx === engineState.currentPointIndex - 1
-        
+        const isBeingAssigned =
+          engineState.phase === 'assign' && idx === engineState.currentPointIndex - 1
+
         if (point.clusterId >= 0) {
           ctx.fillStyle = clusterColors[point.clusterId % clusterColors.length]
         } else {
           ctx.fillStyle = '#94a3b8'
         }
-        
+
         ctx.beginPath()
         ctx.arc(canvasX, canvasY, isBeingAssigned ? 8 : 5, 0, Math.PI * 2)
         ctx.fill()
-        
+
         if (isBeingAssigned) {
           ctx.strokeStyle = '#fbbf24'
           ctx.lineWidth = 3
@@ -209,13 +301,13 @@ export function KMeansClusteringPlayground() {
       engineState.centroids.forEach((centroid, idx) => {
         const { canvasX, canvasY } = toCanvasCoords(centroid.x, centroid.y)
         const color = clusterColors[idx % clusterColors.length]
-        
+
         // Draw outer glow
         ctx.fillStyle = color + '40' // Add alpha for glow
         ctx.beginPath()
         ctx.arc(canvasX, canvasY, 14, 0, Math.PI * 2)
         ctx.fill()
-        
+
         // Draw cross/star shape for centroid
         ctx.strokeStyle = color
         ctx.lineWidth = 3
@@ -225,7 +317,7 @@ export function KMeansClusteringPlayground() {
         ctx.moveTo(canvasX, canvasY - 8)
         ctx.lineTo(canvasX, canvasY + 8)
         ctx.stroke()
-        
+
         // Draw cluster number
         ctx.fillStyle = '#ffffff'
         ctx.font = 'bold 10px monospace'
@@ -234,7 +326,7 @@ export function KMeansClusteringPlayground() {
         ctx.fillText(String(idx + 1), canvasX, canvasY)
       })
     },
-    [canvasConfig, engineState, toCanvasCoords, clusterColors, xMin, xMax, yMin, yMax]
+    [canvasConfig, engineState, toCanvasCoords, clusterColors, xMin, xMax, yMin, yMax, isPickingCentroids, pickedCentroids, points]
   )
 
   // Use canvas hook
@@ -243,7 +335,7 @@ export function KMeansClusteringPlayground() {
   // Trigger redraw when state changes
   useEffect(() => {
     redraw()
-  }, [engineState, redraw])
+  }, [engineState, redraw, pickedCentroids, isPickingCentroids])
 
   // Playback controls
   const handleStep = () => {
@@ -267,6 +359,26 @@ export function KMeansClusteringPlayground() {
     }
     setIsPlaying(false)
     if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+  }
+
+  const handleStartPickingCentroids = () => {
+    setIsPickingCentroids(true)
+    setPickedCentroids([])
+    // Clear the engine state to remove existing centroids from view
+    setEngineState(null)
+  }
+
+  const handleCancelPickingCentroids = () => {
+    if (pickedCentroids.length > 0) {
+      // Update k to match the number of picked centroids
+      setK(pickedCentroids.length)
+      setIsPickingCentroids(false)
+      // Engine will reinitialize via useEffect with picked centroids
+    } else {
+      // If no centroids placed, just cancel
+      setIsPickingCentroids(false)
+      setPickedCentroids([])
+    }
   }
 
   const handlePlayPause = () => {
@@ -332,14 +444,18 @@ export function KMeansClusteringPlayground() {
                   </button>
                   <button
                     onClick={handleStep}
-                    disabled={isPlaying || engineState?.isConverged || engineState?.phase === 'complete'}
+                    disabled={
+                      isPlaying || engineState?.isConverged || engineState?.phase === 'complete'
+                    }
                     className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <FaStepForward size={12} />
                   </button>
                   <button
                     onClick={handleRun}
-                    disabled={isPlaying || engineState?.isConverged || engineState?.phase === 'complete'}
+                    disabled={
+                      isPlaying || engineState?.isConverged || engineState?.phase === 'complete'
+                    }
                     className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <FaFastForward size={12} />
@@ -381,13 +497,22 @@ export function KMeansClusteringPlayground() {
                 {engineState && (
                   <div className="ml-auto flex items-center gap-4 text-xs">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Iteration: <span className="font-bold text-gray-900 dark:text-white">{engineState.iteration}</span>
+                      Iteration:{' '}
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {engineState.iteration}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Phase: <span className="font-bold text-blue-600 dark:text-blue-400 capitalize">{engineState.phase}</span>
+                      Phase:{' '}
+                      <span className="font-bold text-blue-600 dark:text-blue-400 capitalize">
+                        {engineState.phase}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Inertia: <span className="font-bold text-green-600 dark:text-green-400">{engineState.inertia.toFixed(2)}</span>
+                      Inertia:{' '}
+                      <span className="font-bold text-green-600 dark:text-green-400">
+                        {engineState.inertia.toFixed(2)}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -395,8 +520,25 @@ export function KMeansClusteringPlayground() {
             </div>
 
             {/* Canvas Visualization */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 overflow-auto">
-              <Canvas canvasRef={canvasRef} config={canvasConfig} />
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 overflow-hidden flex items-center justify-center relative">
+              <canvas
+                ref={canvasRef}
+                width={canvasConfig.width}
+                height={canvasConfig.height}
+                onClick={handleCanvasClick}
+                className={`border border-gray-300 rounded-lg ${isPickingCentroids ? 'cursor-crosshair' : ''}`}
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                }}
+              />
+              {isPickingCentroids && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
+                  {pickedCentroids.length === 0 
+                    ? 'Click to place centroids'
+                    : `${pickedCentroids.length} centroid${pickedCentroids.length > 1 ? 's' : ''} placed`}
+                </div>
+              )}
             </div>
           </div>
 
@@ -407,21 +549,28 @@ export function KMeansClusteringPlayground() {
               <div className="space-y-2">
                 <button
                   onClick={() => generateData('blobs')}
-                  disabled={isPlaying}
+                  disabled={isPlaying || isPickingCentroids}
                   className="w-full px-2 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
                   <FaRandom size={12} /> Gaussian Blobs
                 </button>
                 <button
                   onClick={() => generateData('circles')}
-                  disabled={isPlaying}
+                  disabled={isPlaying || isPickingCentroids}
                   className="w-full px-2 py-2 text-xs bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
                   <FaRandom size={12} /> Concentric Circles
                 </button>
                 <button
+                  onClick={() => generateData('uniform')}
+                  disabled={isPlaying || isPickingCentroids}
+                  className="w-full px-2 py-2 text-xs bg-amber-600 hover:bg-amber-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
+                >
+                  <FaRandom size={12} /> Uniform Random
+                </button>
+                <button
                   onClick={() => generateData('grid')}
-                  disabled={isPlaying}
+                  disabled={isPlaying || isPickingCentroids}
                   className="w-full px-2 py-2 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
                   <FaRandom size={12} /> Grid Pattern
@@ -429,24 +578,68 @@ export function KMeansClusteringPlayground() {
               </div>
             </ControlGroup>
 
+            {/* Initial Centroid Selection */}
+            <ControlGroup title="Initial Centroids">
+              {!isPickingCentroids ? (
+                <div className="space-y-2">
+                  <button
+                    onClick={handleStartPickingCentroids}
+                    disabled={isPlaying || points.length === 0}
+                    className="w-full px-2 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded disabled:opacity-50 font-semibold"
+                  >
+                    Pick Centroids Manually
+                  </button>
+                  <p className="text-[10px] text-gray-600 dark:text-gray-400">
+                    {pickedCentroids.length === k 
+                      ? '✓ Using manually picked centroids'
+                      : 'Using K-Means++ initialization'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    Click on canvas to place centroids
+                    <br />
+                    <span className="text-[10px]">
+                      Placed: {pickedCentroids.length} centroid{pickedCentroids.length !== 1 ? 's' : ''}
+                      {pickedCentroids.length > 0 && ` (k will be set to ${pickedCentroids.length})`}
+                    </span>
+                  </p>
+                  <button
+                    onClick={handleCancelPickingCentroids}
+                    className="w-full px-2 py-2 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded font-semibold"
+                  >
+                    Done
+                  </button>
+                </div>
+              )}
+            </ControlGroup>
+
             {/* Hyperparameters */}
             <ControlGroup title="Algorithm Parameters">
               <div className="space-y-2 text-xs">
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Number of Clusters (k): {k}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Number of Clusters (k): {k}
+                  </label>
                   <input
                     type="range"
                     value={k}
                     min={2}
                     max={8}
                     step={1}
-                    onChange={(e) => setK(Number.parseInt(e.target.value))}
-                    disabled={isPlaying}
+                    onChange={(e) => {
+                      setK(Number.parseInt(e.target.value))
+                      setPickedCentroids([]) // Reset picked centroids when k changes
+                    }}
+                    disabled={isPlaying || isPickingCentroids}
                     className="w-full"
                   />
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Max Iterations: {maxIterations}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Max Iterations: {maxIterations}
+                  </label>
                   <input
                     type="range"
                     value={maxIterations}
@@ -454,7 +647,7 @@ export function KMeansClusteringPlayground() {
                     max={100}
                     step={10}
                     onChange={(e) => setMaxIterations(Number.parseInt(e.target.value))}
-                    disabled={isPlaying}
+                    disabled={isPlaying || isPickingCentroids}
                     className="w-full"
                   />
                 </div>
@@ -466,15 +659,17 @@ export function KMeansClusteringPlayground() {
               <ControlGroup title="Cluster Sizes">
                 <div className="space-y-1 text-xs">
                   {engineState.centroids.map((_centroid, idx) => {
-                    const count = engineState.points.filter(p => p.clusterId === idx).length
+                    const count = engineState.points.filter((p) => p.clusterId === idx).length
                     return (
                       <div key={idx} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
+                          <div
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: clusterColors[idx % clusterColors.length] }}
                           ></div>
-                          <span className="text-gray-600 dark:text-gray-400">Cluster {idx + 1}:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Cluster {idx + 1}:
+                          </span>
                         </div>
                         <span className="font-mono font-semibold">{count} points</span>
                       </div>
@@ -488,19 +683,22 @@ export function KMeansClusteringPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Iteration History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
-                      {step.phase} | Inertia: {step.inertia.toFixed(2)}
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
+                        {step.phase} | Inertia: {step.inertia.toFixed(2)}
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}
@@ -529,10 +727,18 @@ export function KMeansClusteringPlayground() {
             {/* About */}
             <ControlGroup title="About K-Means">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Type:</strong> Unsupervised Learning</p>
-                <p><strong>Goal:</strong> Minimize within-cluster variance</p>
-                <p><strong>Init:</strong> K-Means++ for better results</p>
-                <p><strong>Complexity:</strong> O(n × k × i) where i = iterations</p>
+                <p>
+                  <strong>Type:</strong> Unsupervised Learning
+                </p>
+                <p>
+                  <strong>Goal:</strong> Minimize within-cluster variance
+                </p>
+                <p>
+                  <strong>Init:</strong> K-Means++ for better results
+                </p>
+                <p>
+                  <strong>Complexity:</strong> O(n × k × i) where i = iterations
+                </p>
               </div>
             </ControlGroup>
           </div>

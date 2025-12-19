@@ -1,24 +1,62 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 
 export default function DSAPage() {
   const algorithms = [
     {
+      title: 'String Operations',
+      description: 'Reverse, palindrome, anagram, substring search',
+      href: '/dsa/strings',
+      icon: '/icons/dsa/string.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      difficulty: 'Beginner',
+      complexity: 'O(n)',
+      comingSoon: false,
+    },
+    {
       title: 'Array Operations',
       description: 'Explore append, insert, delete, search, and update',
       href: '/dsa/array-operations',
-      icon: '📊',
+      icon: '/icons/dsa/array.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Beginner',
       complexity: 'O(1) - O(n)',
       comingSoon: false,
     },
     {
+      title: 'Bit Manipulation',
+      description: 'Bitwise operations: AND, OR, XOR, shifts, and bit tricks',
+      href: '/dsa/bit-manipulation',
+      icon: '/icons/dsa/bit.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      difficulty: 'Intermediate',
+      complexity: 'O(1)',
+      comingSoon: false,
+    },
+    {
+      title: 'Recursion',
+      description: 'Factorial, Fibonacci, Tower of Hanoi visualized',
+      href: '/dsa/recursion',
+      icon: '/icons/dsa/recursion.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      difficulty: 'Intermediate',
+      complexity: 'O(2^n)',
+      comingSoon: true,
+    },
+    {
       title: 'Stack (LIFO)',
       description: 'Last In First Out - push, pop, and peek operations',
       href: '/dsa/stack',
-      icon: '📚',
+      icon: '/icons/dsa/layers.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Beginner',
       complexity: 'O(1)',
       comingSoon: false,
@@ -27,7 +65,9 @@ export default function DSAPage() {
       title: 'Queue (FIFO)',
       description: 'First In First Out - enqueue, dequeue, and peek operations',
       href: '/dsa/queue',
-      icon: '🎟️',
+      icon: '/icons/dsa/queue.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Beginner',
       complexity: 'O(1)',
       comingSoon: false,
@@ -36,7 +76,9 @@ export default function DSAPage() {
       title: 'Bubble Sort',
       description: 'Watch elements bubble to their correct positions',
       href: '/dsa/bubble-sort',
-      icon: '🫧',
+      icon: '/icons/dsa/sort.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -45,7 +87,9 @@ export default function DSAPage() {
       title: 'Insertion Sort',
       description: 'Build sorted array by inserting elements one by one',
       href: '/dsa/insertion-sort',
-      icon: '📥',
+      icon: '/icons/dsa/sort.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -54,7 +98,9 @@ export default function DSAPage() {
       title: 'Selection Sort',
       description: 'Repeatedly select minimum and place at beginning',
       href: '/dsa/selection-sort',
-      icon: '🎯',
+      icon: '/icons/dsa/sort.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -63,7 +109,9 @@ export default function DSAPage() {
       title: 'Merge Sort',
       description: 'Divide and conquer with guaranteed O(n log n)',
       href: '/dsa/merge-sort',
-      icon: '🔀',
+      icon: '/icons/dsa/sort.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Intermediate',
       complexity: 'O(n log n)',
       comingSoon: false,
@@ -72,7 +120,9 @@ export default function DSAPage() {
       title: 'Quick Sort',
       description: 'Visualize partitioning and recursion',
       href: '/dsa/quick-sort',
-      icon: '⚡',
+      icon: '/icons/dsa/sort.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Intermediate',
       complexity: 'O(n log n)',
       comingSoon: false,
@@ -81,7 +131,9 @@ export default function DSAPage() {
       title: 'Heap Sort',
       description: 'Sort using binary heap data structure',
       href: '/dsa/heap-sort',
-      icon: '🗻',
+      icon: '/icons/dsa/sort.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Advanced',
       complexity: 'O(n log n)',
       comingSoon: false,
@@ -90,36 +142,11 @@ export default function DSAPage() {
       title: 'Binary Search Tree',
       description: 'Interactive tree operations and traversals',
       href: '/dsa/binary-search-tree',
-      icon: '🌳',
+      icon: '/icons/dsa/decision-tree.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
       difficulty: 'Intermediate',
       complexity: 'O(log n)',
-      comingSoon: false,
-    },
-    {
-      title: 'Bit Manipulation',
-      description: 'Bitwise operations: AND, OR, XOR, shifts, and bit tricks',
-      href: '/dsa/bit-manipulation',
-      icon: '💾',
-      difficulty: 'Intermediate',
-      complexity: 'O(1)',
-      comingSoon: false,
-    },
-    {
-      title: 'String Operations',
-      description: 'Reverse, palindrome, anagram, substring search',
-      href: '/dsa/strings',
-      icon: '📝',
-      difficulty: 'Beginner',
-      complexity: 'O(n)',
-      comingSoon: false,
-    },
-    {
-      title: 'Recursion',
-      description: 'Factorial, Fibonacci, Tower of Hanoi visualized',
-      href: '/dsa/recursion',
-      icon: '🔄',
-      difficulty: 'Intermediate',
-      complexity: 'O(2^n)',
       comingSoon: false,
     },
   ]
@@ -159,7 +186,19 @@ export default function DSAPage() {
                     algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
-                  <div className="text-4xl mb-3">{algo.icon}</div>
+                  <div className="mb-3">
+                    {algo.iconType === 'image' ? (
+                      <Image
+                        src={algo.icon}
+                        alt={algo.title}
+                        width={64}
+                        height={64}
+                        className={`object-contain ${algo.darkFilter}`}
+                      />
+                    ) : (
+                      <div className="text-4xl">{algo.icon}</div>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between mb-2">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">
                       {algo.title}

@@ -1,22 +1,65 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
+import { TbMountain } from 'react-icons/tb'
+import { MdOutlineRadar } from 'react-icons/md'
 
 export default function MLPage() {
   const algorithms = [
     {
+      title: 'Gradient Descent',
+      description: 'Interactive optimization visualization on mathematical functions',
+      href: '/ml/gradient-descent',
+      icon: TbMountain,
+      iconType: 'react-icon' as const,
+      color: 'text-purple-600 dark:text-purple-400',
+      darkFilter: '',
+      difficulty: 'Beginner',
+      comingSoon: false,
+    },
+    {
       title: 'Linear Regression',
       description: 'Gradient descent optimization for fitting a line to data points',
       href: '/ml/linear-regression',
-      icon: '📈',
+      icon: '/icons/ml/linear-regression.png',
+      iconType: 'image' as const,
+      color: 'text-blue-600 dark:text-blue-400',
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]',
       difficulty: 'Beginner',
+      comingSoon: false,
+    },
+    {
+      title: 'Polynomial Regression',
+      description: 'Curve fitting with gradient descent training',
+      href: '/ml/polynomial-regression',
+      icon: '/icons/ml/polynomial-regression.png',
+      iconType: 'image' as const,
+      color: 'text-green-600 dark:text-green-400',
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]',
+      difficulty: 'Intermediate',
+      comingSoon: false,
     },
     {
       title: 'Logistic Regression',
       description: 'Binary classification with sigmoid activation',
       href: '/ml/logistic-regression',
-      icon: '📊',
+      icon: '/icons/ml/logistic-regression.png',
+      iconType: 'image' as const,
+      color: 'text-orange-600 dark:text-orange-400',
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(251,146,60,0.8)]',
+      difficulty: 'Beginner',
+      comingSoon: false,
+    },
+    {
+      title: 'K-Nearest Neighbors',
+      description: 'Instance-based classification using distance metrics',
+      href: '/ml/knn',
+      icon: MdOutlineRadar,
+      iconType: 'react-icon' as const,
+      color: 'text-pink-600 dark:text-pink-400',
+      darkFilter: '',
       difficulty: 'Beginner',
       comingSoon: false,
     },
@@ -24,7 +67,10 @@ export default function MLPage() {
       title: 'K-Means Clustering',
       description: 'Unsupervised learning for grouping similar data',
       href: '/ml/k-means',
-      icon: '🎯',
+      icon: '/icons/ml/cluster.png',
+      iconType: 'image' as const,
+      color: 'text-indigo-600 dark:text-indigo-400',
+      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]',
       difficulty: 'Intermediate',
       comingSoon: false,
     },
@@ -65,7 +111,21 @@ export default function MLPage() {
                     algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
-                  <div className="text-4xl mb-3">{algo.icon}</div>
+                  <div className="mb-3">
+                    {algo.iconType === 'image' ? (
+                      <Image
+                        src={algo.icon}
+                        alt={algo.title}
+                        width={64}
+                        height={64}
+                        className={`object-contain ${algo.darkFilter}`}
+                      />
+                    ) : (
+                      <div className={`text-6xl ${algo.color}`}>
+                        {typeof algo.icon === 'function' && <algo.icon />}
+                      </div>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between mb-2">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">
                       {algo.title}
