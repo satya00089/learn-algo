@@ -6,11 +6,28 @@ import { ThemeToggle } from '@/core/theme'
 export default function MLPage() {
   const algorithms = [
     {
+      title: 'Gradient Descent',
+      description: 'Interactive optimization visualization on mathematical functions',
+      href: '/ml/gradient-descent',
+      icon: '⚡',
+      difficulty: 'Beginner',
+      comingSoon: false,
+    },
+    {
       title: 'Linear Regression',
       description: 'Gradient descent optimization for fitting a line to data points',
       href: '/ml/linear-regression',
       icon: '📈',
       difficulty: 'Beginner',
+      comingSoon: false,
+    },
+    {
+      title: 'Polynomial Regression',
+      description: 'Curve fitting with gradient descent training',
+      href: '/ml/polynomial-regression',
+      icon: '📐',
+      difficulty: 'Intermediate',
+      comingSoon: false,
     },
     {
       title: 'Logistic Regression',
@@ -21,10 +38,18 @@ export default function MLPage() {
       comingSoon: false,
     },
     {
+      title: 'K-Nearest Neighbors',
+      description: 'Instance-based classification using distance metrics',
+      href: '/ml/knn',
+      icon: '🎯',
+      difficulty: 'Beginner',
+      comingSoon: false,
+    },
+    {
       title: 'K-Means Clustering',
       description: 'Unsupervised learning for grouping similar data',
       href: '/ml/k-means',
-      icon: '🎯',
+      icon: '🔮',
       difficulty: 'Intermediate',
       comingSoon: false,
     },
