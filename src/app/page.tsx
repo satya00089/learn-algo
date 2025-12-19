@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 
 export default function Home() {
@@ -53,8 +54,14 @@ export default function Home() {
               <Link href="/dsa" className="group">
                 <div className="relative bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-600 dark:to-pink-700 rounded-2xl p-1 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-rotate-1">
                   <div className="bg-white dark:bg-gray-800 rounded-xl p-6 h-full">
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
-                      🧩
+                    <div className="mb-3 group-hover:scale-110 transition-transform flex items-center justify-center">
+                      <Image
+                        src="/icons/dsa/dsa.png"
+                        alt="DSA"
+                        width={64}
+                        height={64}
+                        className="object-contain dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"
+                      />
                     </div>
                     <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">DSA</h2>
                     <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
@@ -79,8 +86,14 @@ export default function Home() {
                     <div className="absolute -top-3 -right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                       LIVE NOW
                     </div>
-                    <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
-                      📈
+                    <div className="mb-3 group-hover:scale-110 transition-transform flex items-center justify-center">
+                      <Image
+                        src="/icons/ml/ml.png"
+                        alt="Machine Learning"
+                        width={64}
+                        height={64}
+                        className="object-contain dark:invert dark:drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"
+                      />
                     </div>
                     <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
                       Machine Learning
