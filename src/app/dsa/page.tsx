@@ -12,7 +12,7 @@ export default function DSAPage() {
       href: '/dsa/strings',
       icon: '/icons/dsa/string.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(n)',
       comingSoon: false,
@@ -23,7 +23,7 @@ export default function DSAPage() {
       href: '/dsa/array-operations',
       icon: '/icons/dsa/array.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(1) - O(n)',
       comingSoon: false,
@@ -34,7 +34,7 @@ export default function DSAPage() {
       href: '/dsa/bit-manipulation',
       icon: '/icons/dsa/bit.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       complexity: 'O(1)',
       comingSoon: false,
@@ -45,7 +45,7 @@ export default function DSAPage() {
       href: '/dsa/recursion',
       icon: '/icons/dsa/recursion.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       complexity: 'O(2^n)',
       comingSoon: true,
@@ -56,7 +56,7 @@ export default function DSAPage() {
       href: '/dsa/stack',
       icon: '/icons/dsa/layers.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(1)',
       comingSoon: false,
@@ -67,7 +67,8 @@ export default function DSAPage() {
       href: '/dsa/queue',
       icon: '/icons/dsa/queue.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      className: 'object-cover h-16 w-20',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(1)',
       comingSoon: false,
@@ -78,7 +79,7 @@ export default function DSAPage() {
       href: '/dsa/bubble-sort',
       icon: '/icons/dsa/sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -89,7 +90,7 @@ export default function DSAPage() {
       href: '/dsa/insertion-sort',
       icon: '/icons/dsa/sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -100,7 +101,7 @@ export default function DSAPage() {
       href: '/dsa/selection-sort',
       icon: '/icons/dsa/sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -111,7 +112,7 @@ export default function DSAPage() {
       href: '/dsa/merge-sort',
       icon: '/icons/dsa/sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       complexity: 'O(n log n)',
       comingSoon: false,
@@ -122,7 +123,7 @@ export default function DSAPage() {
       href: '/dsa/quick-sort',
       icon: '/icons/dsa/sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       complexity: 'O(n log n)',
       comingSoon: false,
@@ -133,7 +134,7 @@ export default function DSAPage() {
       href: '/dsa/heap-sort',
       icon: '/icons/dsa/sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Advanced',
       complexity: 'O(n log n)',
       comingSoon: false,
@@ -144,7 +145,7 @@ export default function DSAPage() {
       href: '/dsa/binary-search-tree',
       icon: '/icons/dsa/decision-tree.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       complexity: 'O(log n)',
       comingSoon: false,
@@ -152,7 +153,7 @@ export default function DSAPage() {
   ]
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         <div className="mb-3">
           <div className="flex items-center justify-between mb-3">
@@ -183,7 +184,7 @@ export default function DSAPage() {
               >
                 <div
                   className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
-                    algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
+                    algo.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
                   <div className="mb-3">
@@ -191,9 +192,9 @@ export default function DSAPage() {
                       <Image
                         src={algo.icon}
                         alt={algo.title}
-                        width={64}
+                        width={88}
                         height={64}
-                        className={`object-contain ${algo.darkFilter}`}
+                        className={`object-contain ${algo.className} ${algo.darkFilter}`}
                       />
                     ) : (
                       <div className="text-4xl">{algo.icon}</div>

@@ -473,7 +473,7 @@ export function KMeansClusteringPlayground() {
   }, [])
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
@@ -538,10 +538,10 @@ export function KMeansClusteringPlayground() {
                   <input
                     type="number"
                     value={animationSpeed}
-                    min={100}
+                    min={10}
                     max={2000}
-                    step={100}
-                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 600)}
+                    step={50}
+                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 50)}
                     className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                 </div>

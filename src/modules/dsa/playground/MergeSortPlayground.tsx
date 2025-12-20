@@ -220,7 +220,7 @@ export function MergeSortPlayground() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         {/* Header with Back Button and Theme Toggle */}
         <div className="flex items-center justify-between mb-3">
