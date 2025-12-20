@@ -21,7 +21,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">LA</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">learn-algo</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">Learn Algo</span>
           </div>
           <ThemeToggle />
         </header>
@@ -280,7 +280,15 @@ export default function Home() {
               <Link href="/ai" className="group">
                 <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-700">
                   <div className="p-8">
-                    <div className="text-5xl mb-6">🤖</div>
+                    <div className="mb-6">
+                      <Image
+                        src="/icons/ai/ai.png"
+                        alt="Artificial Intelligence"
+                        width={64}
+                        height={56}
+                        className="object-contain dark:invert dark:drop-shadow-[0_0_8px_rgba(156,163,175,0.8)]"
+                      />
+                    </div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                       Artificial Intelligence
                     </h3>
