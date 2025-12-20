@@ -3,8 +3,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
-import { TbMountain } from 'react-icons/tb'
-import { MdOutlineRadar } from 'react-icons/md'
 
 export default function MLPage() {
   const algorithms = [
@@ -12,10 +10,10 @@ export default function MLPage() {
       title: 'Gradient Descent',
       description: 'Interactive optimization visualization on mathematical functions',
       href: '/ml/gradient-descent',
-      icon: TbMountain,
-      iconType: 'react-icon' as const,
+      icon: '/icons/ml/gradient-descent.png',
+      iconType: 'image' as const,
       color: 'text-purple-600 dark:text-purple-400',
-      darkFilter: '',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
     },
@@ -26,7 +24,7 @@ export default function MLPage() {
       icon: '/icons/ml/linear-regression.png',
       iconType: 'image' as const,
       color: 'text-blue-600 dark:text-blue-400',
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
     },
@@ -37,7 +35,7 @@ export default function MLPage() {
       icon: '/icons/ml/polynomial-regression.png',
       iconType: 'image' as const,
       color: 'text-green-600 dark:text-green-400',
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: false,
     },
@@ -48,7 +46,7 @@ export default function MLPage() {
       icon: '/icons/ml/logistic-regression.png',
       iconType: 'image' as const,
       color: 'text-orange-600 dark:text-orange-400',
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(251,146,60,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
     },
@@ -56,10 +54,10 @@ export default function MLPage() {
       title: 'K-Nearest Neighbors',
       description: 'Instance-based classification using distance metrics',
       href: '/ml/knn',
-      icon: MdOutlineRadar,
-      iconType: 'react-icon' as const,
+      icon: '/icons/ml/knn.png',
+      iconType: 'image' as const,
       color: 'text-pink-600 dark:text-pink-400',
-      darkFilter: '',
+      darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
     },
@@ -70,14 +68,14 @@ export default function MLPage() {
       icon: '/icons/ml/cluster.png',
       iconType: 'image' as const,
       color: 'text-indigo-600 dark:text-indigo-400',
-      darkFilter: 'dark:invert dark:drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]',
+      darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: false,
     },
   ]
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         <div className="mb-3">
           <div className="flex items-center justify-between mb-3">
@@ -108,7 +106,7 @@ export default function MLPage() {
               >
                 <div
                   className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
-                    algo.comingSoon ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-2'
+                    algo.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
                   <div className="mb-3">
@@ -116,14 +114,12 @@ export default function MLPage() {
                       <Image
                         src={algo.icon}
                         alt={algo.title}
-                        width={64}
+                        width={88}
                         height={64}
                         className={`object-contain ${algo.darkFilter}`}
                       />
                     ) : (
-                      <div className={`text-6xl ${algo.color}`}>
-                        {typeof algo.icon === 'function' && <algo.icon />}
-                      </div>
+                      <div className="text-4xl">{algo.icon}</div>
                     )}
                   </div>
                   <div className="flex items-center justify-between mb-2">

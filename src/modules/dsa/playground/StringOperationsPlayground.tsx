@@ -163,7 +163,7 @@ export function StringOperationsPlayground() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">

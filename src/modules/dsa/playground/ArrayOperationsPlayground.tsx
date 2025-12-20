@@ -189,7 +189,7 @@ export function ArrayOperationsPlayground() {
   // Operation handlers
   const handleAppend = () => {
     const value = Number.parseInt(appendValue)
-    if (isNaN(value) || !engineRef.current) return
+    if (Number.isNaN(value) || !engineRef.current) return
 
     engineRef.current.startAppend(value)
     setEngineState(engineRef.current.getState())
@@ -199,7 +199,7 @@ export function ArrayOperationsPlayground() {
   const handleInsert = () => {
     const index = Number.parseInt(insertIndex)
     const value = Number.parseInt(insertValue)
-    if (isNaN(index) || isNaN(value) || !engineRef.current) return
+    if (Number.isNaN(index) || Number.isNaN(value) || !engineRef.current) return
 
     engineRef.current.startInsert(index, value)
     setEngineState(engineRef.current.getState())
@@ -209,7 +209,7 @@ export function ArrayOperationsPlayground() {
 
   const handleDelete = () => {
     const index = Number.parseInt(deleteIndex)
-    if (isNaN(index) || !engineRef.current) return
+    if (Number.isNaN(index) || !engineRef.current) return
 
     engineRef.current.startDelete(index)
     setEngineState(engineRef.current.getState())
@@ -219,7 +219,7 @@ export function ArrayOperationsPlayground() {
   const handleUpdate = () => {
     const index = Number.parseInt(updateIndex)
     const value = Number.parseInt(updateValue)
-    if (isNaN(index) || isNaN(value) || !engineRef.current) return
+    if (Number.isNaN(index) || Number.isNaN(value) || !engineRef.current) return
 
     engineRef.current.startUpdate(index, value)
     setEngineState(engineRef.current.getState())
@@ -229,7 +229,7 @@ export function ArrayOperationsPlayground() {
 
   const handleSearch = () => {
     const value = Number.parseInt(searchValue)
-    if (isNaN(value) || !engineRef.current) return
+    if (Number.isNaN(value) || !engineRef.current) return
 
     engineRef.current.startSearch(value)
     setEngineState(engineRef.current.getState())
@@ -238,7 +238,7 @@ export function ArrayOperationsPlayground() {
 
   const handleIndexSearch = () => {
     const index = Number.parseInt(indexSearchValue)
-    if (isNaN(index) || !engineRef.current) return
+    if (Number.isNaN(index) || !engineRef.current) return
 
     engineRef.current.startIndexSearch(index)
     setEngineState(engineRef.current.getState())
@@ -322,7 +322,7 @@ export function ArrayOperationsPlayground() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         {/* Header with Back Button and Theme Toggle */}
         <div className="flex items-center justify-between mb-3">

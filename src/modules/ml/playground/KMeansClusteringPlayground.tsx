@@ -22,9 +22,15 @@ export function KMeansClusteringPlayground() {
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
+  // Elbow method state
+  const [elbowData, setElbowData] = useState<{ k: number; inertia: number }[]>([])
+  const [isComputingElbow, setIsComputingElbow] = useState(false)
+  const [selectedElbowK, setSelectedElbowK] = useState<number | null>(null)
+  const [currentElbowK, setCurrentElbowK] = useState<number>(1)
+
   // Data management
   const [points, setPoints] = useState<DataPoint[]>([])
-  const [k, setK] = useState(3)
+  const [k, setK] = useState(1)
   const [maxIterations, setMaxIterations] = useState(50)
   const [isPickingCentroids, setIsPickingCentroids] = useState(false)
   const [pickedCentroids, setPickedCentroids] = useState<DataPoint[]>([])
@@ -49,83 +55,127 @@ export function KMeansClusteringPlayground() {
   const yMax = 12
 
   // Cluster colors
-  const clusterColors = [
-    '#3b82f6', // blue
-    '#ef4444', // red
-    '#10b981', // green
-    '#f59e0b', // amber
-    '#8b5cf6', // purple
-    '#ec4899', // pink
-    '#14b8a6', // teal
-    '#f97316', // orange
-  ]
+  const clusterColors = useMemo(
+    () => [
+      '#3b82f6', // blue
+      '#ef4444', // red
+      '#10b981', // green
+      '#f59e0b', // amber
+      '#8b5cf6', // purple
+      '#ec4899', // pink
+      '#14b8a6', // teal
+      '#f97316', // orange
+    ],
+    []
+  )
 
   // Generate sample data
-  const generateData = useCallback((type: 'blobs' | 'circles' | 'grid' | 'uniform') => {
-    const newPoints: DataPoint[] = []
+  const generateData = useCallback(
+    (type: 'blobs' | 'circles' | 'grid' | 'uniform') => {
+      const newPoints: DataPoint[] = []
 
-    if (type === 'blobs') {
-      // Generate gaussian blobs - increased density and spread across wider canvas
-      const centers = [
-        { x: -15, y: -5 },
-        { x: -15, y: 5 },
-        { x: -5, y: -5 },
-        { x: -5, y: 5 },
-        { x: 5, y: -5 },
-        { x: 5, y: 5 },
-        { x: 15, y: -5 },
-        { x: 15, y: 5 },
-      ]
-      centers.forEach((center) => {
-        for (let i = 0; i < 50; i++) {
+      if (type === 'blobs') {
+        // Generate gaussian blobs - increased density and spread across wider canvas
+        const centers = [
+          { x: -15, y: -5 },
+          { x: -15, y: 5 },
+          { x: -5, y: -5 },
+          { x: -5, y: 5 },
+          { x: 5, y: -5 },
+          { x: 5, y: 5 },
+          { x: 15, y: -5 },
+          { x: 15, y: 5 },
+        ]
+        centers.forEach((center) => {
+          for (let i = 0; i < 50; i++) {
+            newPoints.push({
+              x: center.x + (Math.random() - 0.5) * 6,
+              y: center.y + (Math.random() - 0.5) * 6,
+            })
+          }
+        })
+      } else if (type === 'circles') {
+        // Concentric circles - more points and better spread
+        for (let i = 0; i < 80; i++) {
+          const r = 4
+          const theta = (i / 80) * Math.PI * 2
           newPoints.push({
-            x: center.x + (Math.random() - 0.5) * 6,
-            y: center.y + (Math.random() - 0.5) * 6,
+            x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
+            y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
           })
         }
-      })
-    } else if (type === 'circles') {
-      // Concentric circles - more points and better spread
-      for (let i = 0; i < 80; i++) {
-        const r = 4
-        const theta = (i / 80) * Math.PI * 2
-        newPoints.push({
-          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
-          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
-        })
-      }
-      for (let i = 0; i < 100; i++) {
-        const r = 8
-        const theta = (i / 100) * Math.PI * 2
-        newPoints.push({
-          x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
-          y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
-        })
-      }
-    } else if (type === 'uniform') {
-      // Uniform random distribution across the entire canvas
-      for (let i = 0; i < 500; i++) {
-        newPoints.push({
-          x: xMin + Math.random() * (xMax - xMin),
-          y: yMin + Math.random() * (yMax - yMin),
-        })
-      }
-    } else {
-      // Grid pattern - more points across wider canvas
-      for (let i = -24; i <= 24; i += 6) {
-        for (let j = -9; j <= 9; j += 6) {
-          for (let k = 0; k < 15; k++) {
-            newPoints.push({
-              x: i + (Math.random() - 0.5) * 4,
-              y: j + (Math.random() - 0.5) * 4,
-            })
+        for (let i = 0; i < 100; i++) {
+          const r = 8
+          const theta = (i / 100) * Math.PI * 2
+          newPoints.push({
+            x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
+            y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
+          })
+        }
+      } else if (type === 'uniform') {
+        // Uniform random distribution across the entire canvas
+        for (let i = 0; i < 500; i++) {
+          newPoints.push({
+            x: xMin + Math.random() * (xMax - xMin),
+            y: yMin + Math.random() * (yMax - yMin),
+          })
+        }
+      } else {
+        // Grid pattern - more points across wider canvas
+        for (let i = -24; i <= 24; i += 6) {
+          for (let j = -9; j <= 9; j += 6) {
+            for (let k = 0; k < 15; k++) {
+              newPoints.push({
+                x: i + (Math.random() - 0.5) * 4,
+                y: j + (Math.random() - 0.5) * 4,
+              })
+            }
           }
         }
       }
+
+      setPoints(newPoints)
+      // Clear elbow data when new data is generated
+      setElbowData([])
+      setSelectedElbowK(null)
+      setCurrentElbowK(1)
+    },
+    [xMin, xMax, yMin, yMax]
+  )
+
+  // Compute Elbow Method data incrementally
+  const computeElbowMethod = useCallback(async () => {
+    if (points.length === 0) return
+
+    setIsComputingElbow(true)
+    setElbowData([]) // Clear previous data
+    setCurrentElbowK(1)
+    setSelectedElbowK(null)
+
+    // Test k from 1 to 10 incrementally
+    for (let testK = 1; testK <= 10; testK++) {
+      setCurrentElbowK(testK)
+
+      const tempEngine = new KMeansClusteringEngine({
+        points,
+        k: testK,
+        maxIterations: 50, // Use fixed iterations for consistency
+      })
+
+      // Run to completion
+      tempEngine.run()
+      const state = tempEngine.getState()
+
+      // Update the graph with the new data point
+      setElbowData((prevData) => [...prevData, { k: testK, inertia: state.inertia }])
+
+      // Small delay to show the incremental update
+      await new Promise((resolve) => setTimeout(resolve, 200))
     }
 
-    setPoints(newPoints)
-  }, [xMin, xMax, yMin, yMax])
+    setIsComputingElbow(false)
+    setCurrentElbowK(1) // Reset for next run
+  }, [points])
 
   // Initialize with sample data
   useEffect(() => {
@@ -135,10 +185,11 @@ export function KMeansClusteringPlayground() {
   // Initialize engine when config changes
   useEffect(() => {
     if (points.length > 0 && !isPickingCentroids) {
-      const initialCentroids = pickedCentroids.length > 0
-        ? pickedCentroids.map((p, idx) => ({ ...p, clusterId: idx }))
-        : undefined
-      
+      const initialCentroids =
+        pickedCentroids.length > 0
+          ? pickedCentroids.map((p, idx) => ({ ...p, clusterId: idx }))
+          : undefined
+
       engineRef.current = new KMeansClusteringEngine({
         points,
         k,
@@ -227,13 +278,13 @@ export function KMeansClusteringPlayground() {
         pickedCentroids.forEach((centroid, idx) => {
           const { canvasX, canvasY } = toCanvasCoords(centroid.x, centroid.y)
           const color = clusterColors[idx % clusterColors.length]
-          
+
           // Draw outer glow
           ctx.fillStyle = color + '40'
           ctx.beginPath()
           ctx.arc(canvasX, canvasY, 14, 0, Math.PI * 2)
           ctx.fill()
-          
+
           // Draw cross
           ctx.strokeStyle = color
           ctx.lineWidth = 3
@@ -243,7 +294,7 @@ export function KMeansClusteringPlayground() {
           ctx.moveTo(canvasX, canvasY - 8)
           ctx.lineTo(canvasX, canvasY + 8)
           ctx.stroke()
-          
+
           // Draw number
           ctx.fillStyle = '#ffffff'
           ctx.font = 'bold 10px monospace'
@@ -251,7 +302,7 @@ export function KMeansClusteringPlayground() {
           ctx.textBaseline = 'middle'
           ctx.fillText(String(idx + 1), canvasX, canvasY)
         })
-        
+
         return // Don't draw engine state when picking
       }
 
@@ -326,7 +377,19 @@ export function KMeansClusteringPlayground() {
         ctx.fillText(String(idx + 1), canvasX, canvasY)
       })
     },
-    [canvasConfig, engineState, toCanvasCoords, clusterColors, xMin, xMax, yMin, yMax, isPickingCentroids, pickedCentroids, points]
+    [
+      canvasConfig,
+      engineState,
+      toCanvasCoords,
+      clusterColors,
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+      isPickingCentroids,
+      pickedCentroids,
+      points,
+    ]
   )
 
   // Use canvas hook
@@ -410,7 +473,7 @@ export function KMeansClusteringPlayground() {
   }, [])
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
@@ -475,10 +538,10 @@ export function KMeansClusteringPlayground() {
                   <input
                     type="number"
                     value={animationSpeed}
-                    min={100}
+                    min={10}
                     max={2000}
-                    step={100}
-                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 600)}
+                    step={50}
+                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 50)}
                     className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                 </div>
@@ -534,7 +597,7 @@ export function KMeansClusteringPlayground() {
               />
               {isPickingCentroids && (
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
-                  {pickedCentroids.length === 0 
+                  {pickedCentroids.length === 0
                     ? 'Click to place centroids'
                     : `${pickedCentroids.length} centroid${pickedCentroids.length > 1 ? 's' : ''} placed`}
                 </div>
@@ -590,7 +653,7 @@ export function KMeansClusteringPlayground() {
                     Pick Centroids Manually
                   </button>
                   <p className="text-[10px] text-gray-600 dark:text-gray-400">
-                    {pickedCentroids.length === k 
+                    {pickedCentroids.length === k
                       ? '✓ Using manually picked centroids'
                       : 'Using K-Means++ initialization'}
                   </p>
@@ -601,8 +664,10 @@ export function KMeansClusteringPlayground() {
                     Click on canvas to place centroids
                     <br />
                     <span className="text-[10px]">
-                      Placed: {pickedCentroids.length} centroid{pickedCentroids.length !== 1 ? 's' : ''}
-                      {pickedCentroids.length > 0 && ` (k will be set to ${pickedCentroids.length})`}
+                      Placed: {pickedCentroids.length} centroid
+                      {pickedCentroids.length !== 1 ? 's' : ''}
+                      {pickedCentroids.length > 0 &&
+                        ` (k will be set to ${pickedCentroids.length})`}
                     </span>
                   </p>
                   <button
@@ -615,6 +680,175 @@ export function KMeansClusteringPlayground() {
               )}
             </ControlGroup>
 
+            {/* Elbow Method */}
+            <ControlGroup title="Elbow Method">
+              <div className="space-y-2">
+                {/* Elbow Method Plot */}
+                {elbowData.length > 0 && (
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+                    <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-3">
+                      Elbow Method: Inertia vs Number of Clusters
+                      {isComputingElbow && (
+                        <span className="text-xs text-orange-600 dark:text-orange-400 ml-2">
+                          (Computing k={currentElbowK}...)
+                        </span>
+                      )}
+                    </h3>
+                    <div className="relative h-48 bg-gray-50 dark:bg-gray-900 rounded border">
+                      <svg
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 400 180"
+                        className="overflow-visible"
+                      >
+                        {/* Grid lines */}
+                        <defs>
+                          <pattern id="grid" width="40" height="36" patternUnits="userSpaceOnUse">
+                            <path
+                              d="M 40 0 L 0 0 0 36"
+                              fill="none"
+                              stroke="#e5e7eb"
+                              strokeWidth="0.5"
+                              opacity="0.3"
+                            />
+                          </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+
+                        {/* Axes */}
+                        <line x1="30" y1="150" x2="370" y2="150" stroke="#6b7280" strokeWidth="1" />
+                        <line x1="30" y1="20" x2="30" y2="150" stroke="#6b7280" strokeWidth="1" />
+
+                        {/* Axis labels */}
+                        <text
+                          x="200"
+                          y="190"
+                          textAnchor="middle"
+                          className="text-xs fill-gray-600 dark:fill-gray-400"
+                        >
+                          Number of Clusters (k)
+                        </text>
+                        <text
+                          x="15"
+                          y="90"
+                          textAnchor="middle"
+                          className="text-xs fill-gray-600 dark:fill-gray-400"
+                          transform="rotate(-90 15 90)"
+                        >
+                          Inertia
+                        </text>
+
+                        {/* Data points and line */}
+                        {(() => {
+                          const maxInertia = Math.max(...elbowData.map((d) => d.inertia))
+                          const minInertia = Math.min(...elbowData.map((d) => d.inertia))
+                          const inertiaRange = maxInertia - minInertia || 1
+
+                          return (
+                            <>
+                              {/* Line connecting points */}
+                              <polyline
+                                points={elbowData
+                                  .map((point, index) => {
+                                    const x = 30 + index * 34 // 34px spacing for k=1 to 10
+                                    const y =
+                                      150 - ((point.inertia - minInertia) / inertiaRange) * 120
+                                    return `${x},${y}`
+                                  })
+                                  .join(' ')}
+                                fill="none"
+                                stroke="#f97316"
+                                strokeWidth="2"
+                              />
+
+                              {/* Data points */}
+                              {elbowData.map((point, index) => {
+                                const x = 30 + index * 34
+                                const y = 150 - ((point.inertia - minInertia) / inertiaRange) * 120
+                                const isSelected = selectedElbowK === point.k
+
+                                return (
+                                  <circle
+                                    key={point.k}
+                                    cx={x}
+                                    cy={y}
+                                    r={isSelected ? '6' : '4'}
+                                    fill={isSelected ? '#f97316' : '#ffffff'}
+                                    stroke="#f97316"
+                                    strokeWidth="2"
+                                    className="cursor-pointer hover:stroke-orange-400"
+                                    onClick={() => {
+                                      setK(point.k)
+                                      setSelectedElbowK(point.k)
+                                    }}
+                                  />
+                                )
+                              })}
+
+                              {/* X-axis tick marks and labels */}
+                              {elbowData.map((point, index) => {
+                                const x = 30 + index * 34
+                                return (
+                                  <g key={`tick-${point.k}`}>
+                                    <line
+                                      x1={x}
+                                      y1="150"
+                                      x2={x}
+                                      y2="155"
+                                      stroke="#6b7280"
+                                      strokeWidth="1"
+                                    />
+                                    <text
+                                      x={x}
+                                      y="170"
+                                      textAnchor="middle"
+                                      className="text-xs fill-gray-600 dark:fill-gray-400"
+                                    >
+                                      {point.k}
+                                    </text>
+                                  </g>
+                                )
+                              })}
+                            </>
+                          )
+                        })()}
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                      Click on a point to set k. Optimal k is typically at the &quot;elbow&quot;
+                      where inertia decreases more slowly.
+                    </p>
+                  </div>
+                )}
+                <button
+                  onClick={computeElbowMethod}
+                  disabled={
+                    isPlaying || isPickingCentroids || points.length === 0 || isComputingElbow
+                  }
+                  className="w-full px-2 py-2 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
+                >
+                  {isComputingElbow ? (
+                    <>
+                      <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                      Computing k={currentElbowK}...
+                    </>
+                  ) : (
+                    <>
+                      <FaPlay size={12} /> Compute Elbow Method
+                    </>
+                  )}
+                </button>
+                {isComputingElbow && (
+                  <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                    Testing k values from 1 to 10...
+                  </div>
+                )}
+                <p className="text-[10px] text-gray-600 dark:text-gray-400">
+                  Find optimal k by looking for the &quot;elbow&quot; in the inertia curve
+                </p>
+              </div>
+            </ControlGroup>
+
             {/* Hyperparameters */}
             <ControlGroup title="Algorithm Parameters">
               <div className="space-y-2 text-xs">
@@ -625,7 +859,7 @@ export function KMeansClusteringPlayground() {
                   <input
                     type="range"
                     value={k}
-                    min={2}
+                    min={1}
                     max={8}
                     step={1}
                     onChange={(e) => {

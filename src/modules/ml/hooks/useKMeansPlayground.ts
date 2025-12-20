@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 export function useKMeansPlayground() {
-  const [animationSpeed, setAnimationSpeed] = useState(600)
+  const [animationSpeed, setAnimationSpeed] = useState(50)
   const [isDebugMode, setIsDebugMode] = useState(false)
 
   return {
