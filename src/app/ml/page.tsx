@@ -18,6 +18,30 @@ export default function MLPage() {
       comingSoon: false,
     },
     {
+      title: 'MinMax Scaler',
+      description: 'Scale features to a fixed range for preprocessing',
+      href: '/ml/minmax-scaler',
+      icon: '/icons/ml/minmax.png',
+      iconType: 'image' as const,
+      color: 'text-cyan-600 dark:text-cyan-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Beginner',
+      comingSoon: false,
+      width: 128,
+    },
+    {
+      title: 'Standard Scaler',
+      description: 'Standardize features by removing mean and scaling to unit variance',
+      href: '/ml/standard-scaler',
+      icon: '/icons/ml/standard.png',
+      iconType: 'image' as const,
+      color: 'text-violet-600 dark:text-violet-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Beginner',
+      comingSoon: false,
+      width: 178,
+    },
+    {
       title: 'Linear Regression',
       description: 'Gradient descent optimization for fitting a line to data points',
       href: '/ml/linear-regression',
@@ -114,7 +138,7 @@ export default function MLPage() {
                       <Image
                         src={algo.icon}
                         alt={algo.title}
-                        width={88}
+                        width={algo.width || 88}
                         height={64}
                         className={`object-contain ${algo.darkFilter}`}
                       />

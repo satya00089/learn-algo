@@ -3,3 +3,5 @@ export { useLogisticRegressionPlayground } from './useLogisticRegressionPlaygrou
 export { useKMeansPlayground } from './useKMeansPlayground'
 export { useGradientDescentPlayground } from './useGradientDescentPlayground'
 export { usePolynomialRegressionPlayground } from './usePolynomialRegressionPlayground'
+export { useMinMaxScalerPlayground } from './useMinMaxScalerPlayground'
+export { useStandardScalerPlayground } from './useStandardScalerPlayground'
