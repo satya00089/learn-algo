@@ -1,22 +1,25 @@
-# learn-algo.dev
+# Learn-Algo
 
-An interactive learning platform for Data Structures & Algorithms, Machine Learning, and AI.
+An interactive web platform for learning Data Structures & Algorithms, Machine Learning, and AI through hands-on visualizations and playgrounds. Built with React, TypeScript, and modern web technologies. Perfect for students and developers to explore algorithms visually and intuitively. 🚀
 
-> **If an algorithm cannot be understood through interaction alone, the implementation is incorrect.**
+## Features
 
-## 🎯 Vision
+- 📊 **Interactive DSA Playgrounds**: Visualize sorting algorithms, trees, graphs, and more
+- 🤖 **ML Visualizations**: Explore regression, clustering, gradient descent, and optimization
+- 🎯 **AI Algorithms**: Interactive pathfinding, game theory, and evolutionary algorithms
+- 🌙 **Dark Mode Support**: Seamless experience in light and dark themes
+- 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
+- ⚡ **Real-time Feedback**: See algorithms in action with step-by-step visualizations
 
-learn-algo.dev is built on the principle that algorithms should be learned through **playing, stepping, debugging, and visualizing** — not by reading static content.
+## Tech Stack
 
-## ✨ Features
+- **Frontend**: React 18, TypeScript, Next.js
+- **Styling**: Tailwind CSS
+- **Charts/Visualization**: Custom Canvas implementations
+- **State Management**: React Hooks
+- **Build Tool**: Next.js with TypeScript
 
-- **Interactive Playgrounds**: Run algorithms step-by-step or in full
-- **Debug Mode**: Pause, step through, and inspect internal state
-- **Visual Feedback**: Real-time canvas-based visualizations
-- **Type-Safe**: Built with TypeScript in strict mode
-- **Modular Architecture**: Clean separation of concerns
-
-## 🚀 Quick Start
+## Getting Started
 
 ### Prerequisites
 
@@ -25,15 +28,23 @@ learn-algo.dev is built on the principle that algorithms should be learned throu
 
 ### Installation
 
+1. Clone the repository:
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Open http://localhost:3000
+git clone https://github.com/yourusername/learn-algo.git
+cd learn-algo
 ```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Run the development server:
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Build for Production
 
@@ -42,144 +53,69 @@ npm run build
 npm start
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── page.tsx           # Home page
-│   ├── ml/                # Machine Learning routes
-│   ├── dsa/               # DSA routes
-│   └── ai/                # AI routes
-├── core/                  # Shared core systems
-│   ├── canvas/            # Reusable canvas engine
-│   └── controls/          # Reusable UI controls
-└── modules/               # Feature modules
-    ├── ml/                # Machine Learning
-    │   ├── algorithms/    # Pure algorithm logic
-    │   ├── engines/       # Step-based engines
-    │   ├── visualizers/   # Canvas rendering
-    │   ├── playground/    # Orchestration
-    │   ├── hooks/         # React hooks
-    │   └── types/         # TypeScript types
-    ├── dsa/               # Data Structures & Algorithms
-    └── ai/                # Artificial Intelligence
+learn-algo/
+├── src/
+│   ├── app/                 # Next.js app router pages
+│   │   ├── dsa/            # DSA playground pages
+│   │   ├── ml/             # ML playground pages
+│   │   └── ai/             # AI playground pages
+│   ├── modules/
+│   │   ├── dsa/            # DSA algorithms and engines
+│   │   ├── ml/             # ML algorithms and engines
+│   │   └── ai/             # AI algorithms and engines
+│   └── components/         # Shared UI components
+├── public/                 # Static assets and icons
+└── README.md
 ```
 
-## 🏗️ Architecture Principles
-
-### 1. Strict Separation of Concerns
-
-- **Algorithms**: Pure functions, no UI, no side effects
-- **Engines**: Step-based execution, implements DebuggableAlgorithm
-- **Visualizers**: Only draw based on provided state
-- **Playgrounds**: Orchestrate engine + visualizer + controls
-
-### 2. DebuggableAlgorithm Interface
-
-Every learning algorithm implements:
-
-```typescript
-interface DebuggableAlgorithm<TState> {
-  init(): void
-  step(): void
-  run(): void
-  reset(): void
-  getState(): TState
-}
-```
-
-### 3. Frontend-First
-
-- All algorithms run in-browser by default
-- Implemented in TypeScript
-- Real-time updates with step-by-step execution
-
-## 🎨 Tech Stack
-
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS
-- **State**: Zustand
-- **Visualization**: HTML Canvas, D3.js, SVG
-- **Animation**: Framer Motion
-
-## 📚 Available Algorithms
-
-### Machine Learning
-
-- ✅ **Linear Regression**: Gradient descent visualization
-- 🔜 Logistic Regression
-- 🔜 K-Means Clustering
-- 🔜 Neural Networks
+## Available Playgrounds
 
 ### Data Structures & Algorithms
+- Array Operations
+- Sorting Algorithms (Bubble, Selection, Insertion, Merge, Quick, Heap)
+- Binary Search Trees
+- Stack & Queue
+- String Operations
+- Bit Manipulation
+- Recursion
 
-- 🔜 Bubble Sort
-- 🔜 Quick Sort
-- 🔜 Binary Search Tree
-- 🔜 Graph Algorithms
+### Machine Learning
+- Gradient Descent
+- Linear Regression
+- Polynomial Regression
+- Logistic Regression
+- K-Nearest Neighbors
+- K-Means Clustering
 
 ### Artificial Intelligence
+- A* Pathfinding (Coming Soon)
+- Minimax Algorithm (Coming Soon)
+- Genetic Algorithms (Coming Soon)
 
-- 🔜 A\* Pathfinding
-- 🔜 Minimax Algorithm
-- 🔜 Genetic Algorithms
+## Contributing
 
-## 🎮 How to Use
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. **Choose a Module**: Select DSA, ML, or AI from the home page
-2. **Pick an Algorithm**: Browse available algorithms
-3. **Interact**: Use controls to play, pause, step, or reset
-4. **Debug**: Enable debug mode to inspect internal state
-5. **Learn**: Understand by seeing, not just reading
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 🛠️ Development
+## License
 
-### Code Quality
+This project is licensed under the MIT License - see the [`LICENSE`](LICENSE ) file for details.
 
-```bash
-# Type checking
-npm run type-check
+## Acknowledgments
 
-# Linting
-npm run lint
-```
-
-### Adding New Algorithms
-
-1. Create pure algorithm functions in `algorithms/`
-2. Build step-based engine in `engines/`
-3. Create visualizer in `visualizers/`
-4. Build playground component in `playground/`
-5. Add route in `app/`
-
-See `COPILOT_INSTRUCTIONS.md` for detailed guidelines.
-
-## 📖 Documentation
-
-- [Copilot Instructions](COPILOT_INSTRUCTIONS.md) - Detailed architecture guidelines
-- [Linear Regression Example](src/modules/ml/README.md) - Complete implementation guide
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow the architecture principles outlined in `COPILOT_INSTRUCTIONS.md`.
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details
-
-## 🌟 Philosophy
-
-> **"If Copilot generates code that mixes algorithm logic, UI, and visualization — it is wrong and must be refactored."**
-
-This project prioritizes:
-
-- Clean architecture
-- Teachable code
-- Interactive learning
-- Visual understanding
+- Built with ❤️ for the algorithm learning community
+- Inspired by the need for interactive algorithm education
 
 ---
 
-**Built with ❤️ for learners who prefer playing over reading**
+**Happy Learning!** 🎓
+
+Explore algorithms one visualization at a time. If you find this project helpful, please give it a ⭐!
