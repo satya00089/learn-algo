@@ -37,7 +37,7 @@ export class KNNEngine {
       return {
         predictedLabel: -1,
         neighbors: [],
-        distances: []
+        distances: [],
       }
     }
 
@@ -45,7 +45,7 @@ export class KNNEngine {
     const distances: KNNNeighbor[] = this.config.points.map((point, index) => ({
       point,
       distance: this.euclideanDistance(testPoint, point),
-      index
+      index,
     }))
 
     // Sort by distance (ascending)
@@ -57,7 +57,7 @@ export class KNNEngine {
 
     // Count votes for each class
     const votes = new Map<number, number>()
-    neighbors.forEach(neighbor => {
+    neighbors.forEach((neighbor) => {
       const label = neighbor.point.label
       votes.set(label, (votes.get(label) || 0) + 1)
     })
@@ -75,7 +75,7 @@ export class KNNEngine {
     return {
       predictedLabel,
       neighbors,
-      distances: neighbors.map(n => n.distance)
+      distances: neighbors.map((n) => n.distance),
     }
   }
 
@@ -100,8 +100,8 @@ export class KNNEngine {
     const points: { point: Point2D; label: number }[] = []
 
     // Find bounds
-    const xValues = this.config.points.map(p => p.x)
-    const yValues = this.config.points.map(p => p.y)
+    const xValues = this.config.points.map((p) => p.x)
+    const yValues = this.config.points.map((p) => p.y)
     const xMin = Math.min(...xValues) - 1
     const xMax = Math.max(...xValues) + 1
     const yMin = Math.min(...yValues) - 1
@@ -116,7 +116,7 @@ export class KNNEngine {
         const result = this.classify({ x, y })
         points.push({
           point: { x, y },
-          label: result.predictedLabel
+          label: result.predictedLabel,
         })
       }
     }

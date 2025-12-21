@@ -29,7 +29,7 @@ function calculateMean(values: number[]): number {
  * Calculate standard deviation of an array
  */
 function calculateStd(values: number[], mean: number): number {
-  const squaredDiffs = values.map(val => Math.pow(val - mean, 2))
+  const squaredDiffs = values.map((val) => Math.pow(val - mean, 2))
   const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length
   return Math.sqrt(variance)
 }
@@ -51,8 +51,8 @@ export function standardScale(data: DataPoint[]): StandardScalerResult {
   }
 
   // Extract feature values
-  const xValues = data.map(p => p.x)
-  const yValues = data.map(p => p.y)
+  const xValues = data.map((p) => p.x)
+  const yValues = data.map((p) => p.y)
 
   // Calculate mean and standard deviation for each feature
   const xMean = calculateMean(xValues)
@@ -61,7 +61,7 @@ export function standardScale(data: DataPoint[]): StandardScalerResult {
   const yStd = calculateStd(yValues, yMean)
 
   // Scale the data
-  const scaledData: DataPoint[] = data.map(point => {
+  const scaledData: DataPoint[] = data.map((point) => {
     const scaledX = xStd === 0 ? 0 : (point.x - xMean) / xStd
     const scaledY = yStd === 0 ? 0 : (point.y - yMean) / yStd
 
@@ -88,7 +88,7 @@ export function inverseStandardScale(
   yMean: number,
   yStd: number
 ): DataPoint[] {
-  return scaledData.map(point => {
+  return scaledData.map((point) => {
     const originalX = point.x * xStd + xMean
     const originalY = point.y * yStd + yMean
 

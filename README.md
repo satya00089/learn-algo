@@ -29,17 +29,20 @@ An interactive web platform for learning Data Structures & Algorithms, Machine L
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/learn-algo.git
 cd learn-algo
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -74,6 +77,7 @@ learn-algo/
 ## Available Playgrounds
 
 ### Data Structures & Algorithms
+
 - Array Operations
 - Sorting Algorithms (Bubble, Selection, Insertion, Merge, Quick, Heap)
 - Binary Search Trees
@@ -83,6 +87,7 @@ learn-algo/
 - Recursion
 
 ### Machine Learning
+
 - Gradient Descent
 - Linear Regression
 - Polynomial Regression
@@ -91,7 +96,8 @@ learn-algo/
 - K-Means Clustering
 
 ### Artificial Intelligence
-- A* Pathfinding (Coming Soon)
+
+- A\* Pathfinding (Coming Soon)
 - Minimax Algorithm (Coming Soon)
 - Genetic Algorithms (Coming Soon)
 
@@ -107,7 +113,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [`LICENSE`](LICENSE ) file for details.
+This project is licensed under the MIT License - see the [`LICENSE`](LICENSE) file for details.
 
 ## Acknowledgments
 

@@ -2,13 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
@@ -21,7 +15,9 @@ export function BitManipulationPlayground() {
     useBitManipulationPlayground()
 
   const engineRef = useRef<BitManipulationEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<BitManipulationEngine['getState']> | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<
+    BitManipulationEngine['getState']
+  > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -260,17 +256,29 @@ export function BitManipulationPlayground() {
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 overflow-auto">
               {engineState && engineState.operation ? (
                 <div className="max-w-xl mx-auto">
-                  {renderBinary(engineState.num1Binary, `Number 1: ${engineState.num1}`, engineState.currentBitIndex)}
-                  {engineState.num2 > 0 && engineState.operation !== 'NOT' && (
-                    renderBinary(engineState.num2Binary, `Number 2: ${engineState.num2}`, engineState.currentBitIndex)
+                  {renderBinary(
+                    engineState.num1Binary,
+                    `Number 1: ${engineState.num1}`,
+                    engineState.currentBitIndex
                   )}
+                  {engineState.num2 > 0 &&
+                    engineState.operation !== 'NOT' &&
+                    renderBinary(
+                      engineState.num2Binary,
+                      `Number 2: ${engineState.num2}`,
+                      engineState.currentBitIndex
+                    )}
                   {engineState.operation && (
                     <div className="text-center text-2xl font-bold text-gray-700 dark:text-gray-300 my-4">
                       {engineState.operation}
                     </div>
                   )}
-                  {renderBinary(engineState.resultBinary, `Result: ${engineState.result}`, engineState.currentBitIndex)}
-                  
+                  {renderBinary(
+                    engineState.resultBinary,
+                    `Result: ${engineState.result}`,
+                    engineState.currentBitIndex
+                  )}
+
                   <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <div className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
                       {engineState.message}
@@ -284,9 +292,7 @@ export function BitManipulationPlayground() {
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center">
                     <div className="text-6xl mb-4">💾</div>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Select an operation to begin
-                    </p>
+                    <p className="text-gray-500 dark:text-gray-400">Select an operation to begin</p>
                   </div>
                 </div>
               )}
@@ -299,7 +305,9 @@ export function BitManipulationPlayground() {
             <ControlGroup title="Input Values">
               <div className="space-y-2">
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">Number 1 (0-255)</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    Number 1 (0-255)
+                  </label>
                   <input
                     type="number"
                     value={num1Input}
@@ -310,7 +318,9 @@ export function BitManipulationPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">Number 2 / Shift Amount</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    Number 2 / Shift Amount
+                  </label>
                   <input
                     type="number"
                     value={num2Input}
@@ -321,7 +331,9 @@ export function BitManipulationPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">Bit Position (0-7)</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    Bit Position (0-7)
+                  </label>
                   <input
                     type="number"
                     value={bitPosInput}
@@ -446,18 +458,22 @@ export function BitManipulationPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Debug History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span> {step.description}
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
+                        {step.description}
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}

@@ -12,12 +12,7 @@ export type StringOperation =
   | 'CHAR_FREQUENCY'
   | 'REMOVE_DUPLICATES'
 
-export type StringPhase =
-  | 'idle'
-  | 'processing'
-  | 'comparing'
-  | 'result'
-  | 'complete'
+export type StringPhase = 'idle' | 'processing' | 'comparing' | 'result' | 'complete'
 
 export interface StringChar {
   char: string

@@ -53,7 +53,7 @@ export function KNNPlayground() {
         { x: 0, y: 3, label: 2 },
       ]
 
-      centers.forEach(center => {
+      centers.forEach((center) => {
         for (let i = 0; i < 15; i++) {
           const angle = (Math.PI * 2 * i) / 15
           const radius = Math.random() * 1.5
@@ -71,7 +71,7 @@ export function KNNPlayground() {
         { x: 1, y: 0, label: 1 },
       ]
 
-      centers.forEach(center => {
+      centers.forEach((center) => {
         for (let i = 0; i < 25; i++) {
           points.push({
             x: center.x + (Math.random() - 0.5) * 3,
@@ -136,48 +136,53 @@ export function KNNPlayground() {
   )
 
   // Handle canvas click for test point
-  const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (currentPoints.length === 0) return
+  const handleCanvasClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (currentPoints.length === 0) return
 
-    // Find the canvas element within the clicked div
-    const div = event.currentTarget
-    const canvas = div.querySelector('canvas')
-    if (!canvas) return
+      // Find the canvas element within the clicked div
+      const div = event.currentTarget
+      const canvas = div.querySelector('canvas')
+      if (!canvas) return
 
-    const rect = canvas.getBoundingClientRect()
-    
-    // Get click position relative to the actual canvas element
-    const clickX = event.clientX - rect.left
-    const clickY = event.clientY - rect.top
+      const rect = canvas.getBoundingClientRect()
 
-    // Scale from displayed canvas size to actual canvas size
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    const canvasX = clickX * scaleX
-    const canvasY = clickY * scaleY
+      // Get click position relative to the actual canvas element
+      const clickX = event.clientX - rect.left
+      const clickY = event.clientY - rect.top
 
-    // Calculate bounds from current points (same as toCanvasCoords)
-    const xValues = currentPoints.map(p => p.x)
-    const yValues = currentPoints.map(p => p.y)
-    const xMin = Math.min(...xValues) - 1
-    const xMax = Math.max(...xValues) + 1
-    const yMin = Math.min(...yValues) - 1
-    const yMax = Math.max(...yValues) + 1
+      // Scale from displayed canvas size to actual canvas size
+      const scaleX = canvas.width / rect.width
+      const scaleY = canvas.height / rect.height
+      const canvasX = clickX * scaleX
+      const canvasY = clickY * scaleY
 
-    // Convert canvas coordinates back to data coordinates
-    const { width, height, padding } = canvasConfig
-    const dataX = xMin + ((canvasX - padding.left) / (width - padding.left - padding.right)) * (xMax - xMin)
-    const dataY = yMax - ((canvasY - padding.top) / (height - padding.top - padding.bottom)) * (yMax - yMin)
+      // Calculate bounds from current points (same as toCanvasCoords)
+      const xValues = currentPoints.map((p) => p.x)
+      const yValues = currentPoints.map((p) => p.y)
+      const xMin = Math.min(...xValues) - 1
+      const xMax = Math.max(...xValues) + 1
+      const yMin = Math.min(...yValues) - 1
+      const yMax = Math.max(...yValues) + 1
 
-    const newTestPoint = { x: dataX, y: dataY }
-    setTestPoint(newTestPoint)
+      // Convert canvas coordinates back to data coordinates
+      const { width, height, padding } = canvasConfig
+      const dataX =
+        xMin + ((canvasX - padding.left) / (width - padding.left - padding.right)) * (xMax - xMin)
+      const dataY =
+        yMax - ((canvasY - padding.top) / (height - padding.top - padding.bottom)) * (yMax - yMin)
 
-    // Classify the point
-    if (engineRef.current) {
-      const result = engineRef.current.classify(newTestPoint)
-      setClassificationResult(result)
-    }
-  }, [currentPoints, canvasConfig, setTestPoint])
+      const newTestPoint = { x: dataX, y: dataY }
+      setTestPoint(newTestPoint)
+
+      // Classify the point
+      if (engineRef.current) {
+        const result = engineRef.current.classify(newTestPoint)
+        setClassificationResult(result)
+      }
+    },
+    [currentPoints, canvasConfig, setTestPoint]
+  )
 
   // Transform coordinates
   const toCanvasCoords = useCallback(
@@ -185,8 +190,8 @@ export function KNNPlayground() {
       const { width, height, padding } = canvasConfig
 
       // Calculate bounds from current points
-      const xValues = currentPoints.map(p => p.x)
-      const yValues = currentPoints.map(p => p.y)
+      const xValues = currentPoints.map((p) => p.x)
+      const yValues = currentPoints.map((p) => p.y)
       const xMin = Math.min(...xValues) - 1
       const xMax = Math.max(...xValues) + 1
       const yMin = Math.min(...yValues) - 1
@@ -195,7 +200,9 @@ export function KNNPlayground() {
       const canvasX =
         padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
       const canvasY =
-        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+        height -
+        padding.bottom -
+        ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
       return { canvasX, canvasY }
     },
     [canvasConfig, currentPoints]
@@ -210,8 +217,8 @@ export function KNNPlayground() {
       if (currentPoints.length === 0) return
 
       // Calculate bounds
-      const xValues = currentPoints.map(p => p.x)
-      const yValues = currentPoints.map(p => p.y)
+      const xValues = currentPoints.map((p) => p.x)
+      const yValues = currentPoints.map((p) => p.y)
       const xMin = Math.min(...xValues) - 1
       const xMax = Math.max(...xValues) + 1
       const yMin = Math.min(...yValues) - 1
@@ -266,7 +273,8 @@ export function KNNPlayground() {
         ctx.fill()
 
         // Draw predicted class indicator
-        const predictedColor = CLASS_COLORS[classificationResult.predictedLabel % CLASS_COLORS.length]
+        const predictedColor =
+          CLASS_COLORS[classificationResult.predictedLabel % CLASS_COLORS.length]
         ctx.strokeStyle = predictedColor
         ctx.lineWidth = 3
         ctx.beginPath()
@@ -274,20 +282,29 @@ export function KNNPlayground() {
         ctx.stroke()
 
         // Draw lines to k nearest neighbors
-        classificationResult.neighbors.forEach((neighbor: { point: KNNDataPoint; distance: number }) => {
-          const neighborCoords = toCanvasCoords(neighbor.point.x, neighbor.point.y)
-          ctx.strokeStyle = '#666666'
-          ctx.lineWidth = 2
-          ctx.setLineDash([5, 5])
-          ctx.beginPath()
-          ctx.moveTo(canvasX, canvasY)
-          ctx.lineTo(neighborCoords.canvasX, neighborCoords.canvasY)
-          ctx.stroke()
-          ctx.setLineDash([])
-        })
+        classificationResult.neighbors.forEach(
+          (neighbor: { point: KNNDataPoint; distance: number }) => {
+            const neighborCoords = toCanvasCoords(neighbor.point.x, neighbor.point.y)
+            ctx.strokeStyle = '#666666'
+            ctx.lineWidth = 2
+            ctx.setLineDash([5, 5])
+            ctx.beginPath()
+            ctx.moveTo(canvasX, canvasY)
+            ctx.lineTo(neighborCoords.canvasX, neighborCoords.canvasY)
+            ctx.stroke()
+            ctx.setLineDash([])
+          }
+        )
       }
     },
-    [currentPoints, testPoint, classificationResult, showDecisionBoundary, canvasConfig, toCanvasCoords]
+    [
+      currentPoints,
+      testPoint,
+      classificationResult,
+      showDecisionBoundary,
+      canvasConfig,
+      toCanvasCoords,
+    ]
   )
 
   const { canvasRef, redraw } = useCanvas({ config: canvasConfig, draw })
@@ -308,7 +325,9 @@ export function KNNPlayground() {
             >
               <span>←</span> Back to ML
             </button>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">K-Nearest Neighbors</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              K-Nearest Neighbors
+            </h1>
           </div>
           <ThemeToggle />
         </div>
@@ -359,13 +378,19 @@ export function KNNPlayground() {
                 {classificationResult && testPoint && (
                   <div className="ml-auto flex items-center gap-4 text-xs">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Predicted: <span className="font-bold text-purple-600 dark:text-purple-400">{classificationResult.predictedLabel}</span>
+                      Predicted:{' '}
+                      <span className="font-bold text-purple-600 dark:text-purple-400">
+                        {classificationResult.predictedLabel}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
                       K: <span className="font-bold text-gray-900 dark:text-white">{k}</span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Dataset: <span className="font-bold text-gray-900 dark:text-white">{currentPoints.length} points</span>
+                      Dataset:{' '}
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {currentPoints.length} points
+                      </span>
                     </span>
                   </div>
                 )}
@@ -391,7 +416,7 @@ export function KNNPlayground() {
               {/* Legend */}
               <div className="absolute top-4 right-4 bg-white dark:bg-gray-700 p-3 rounded shadow-lg">
                 <div className="text-xs font-semibold mb-2">Classes:</div>
-                {Array.from(new Set(currentPoints.map(p => p.label))).map(label => (
+                {Array.from(new Set(currentPoints.map((p) => p.label))).map((label) => (
                   <div key={label} className="flex items-center gap-2 text-xs mb-1">
                     <div
                       className="w-3 h-3 rounded-full"
@@ -413,17 +438,21 @@ export function KNNPlayground() {
                       <span className="font-medium">Predicted:</span>{' '}
                       <span
                         className="font-bold"
-                        style={{ color: CLASS_COLORS[classificationResult.predictedLabel % CLASS_COLORS.length] }}
+                        style={{
+                          color:
+                            CLASS_COLORS[classificationResult.predictedLabel % CLASS_COLORS.length],
+                        }}
                       >
                         {classificationResult.predictedLabel}
                       </span>
                     </div>
                     <div>
-                      <span className="font-medium">Neighbors:</span> {classificationResult.neighbors.length}
+                      <span className="font-medium">Neighbors:</span>{' '}
+                      {classificationResult.neighbors.length}
                     </div>
                     <div className="col-span-2">
-                      <span className="font-medium">Test Point:</span>{' '}
-                      ({testPoint.x.toFixed(2)}, {testPoint.y.toFixed(2)})
+                      <span className="font-medium">Test Point:</span> ({testPoint.x.toFixed(2)},{' '}
+                      {testPoint.y.toFixed(2)})
                     </div>
                   </div>
                 </div>
@@ -438,7 +467,11 @@ export function KNNPlayground() {
               <div className="space-y-1.5">
                 {[
                   { value: 'blobs', label: 'Well-Separated Blobs', desc: '3 distinct clusters' },
-                  { value: 'overlapping', label: 'Overlapping Clusters', desc: 'Harder classification' },
+                  {
+                    value: 'overlapping',
+                    label: 'Overlapping Clusters',
+                    desc: 'Harder classification',
+                  },
                   { value: 'linear', label: 'Linear Boundary', desc: 'Linearly separable' },
                   { value: 'complex', label: 'Non-Linear Boundary', desc: 'Circular boundary' },
                 ].map((dataset) => (
@@ -462,7 +495,9 @@ export function KNNPlayground() {
             <ControlGroup title="Algorithm Parameters">
               <div className="space-y-4">
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400 text-sm font-medium">K Value: {k}</label>
+                  <label className="text-gray-600 dark:text-gray-400 text-sm font-medium">
+                    K Value: {k}
+                  </label>
                   <input
                     type="range"
                     value={k}
@@ -490,8 +525,8 @@ export function KNNPlayground() {
             <ControlGroup title="How KNN Works">
               <div className="text-xs text-gray-600 dark:text-gray-400 space-y-3">
                 <p>
-                  <strong>K-Nearest Neighbors</strong> classifies a test point by finding the K closest
-                  training points and using majority vote.
+                  <strong>K-Nearest Neighbors</strong> classifies a test point by finding the K
+                  closest training points and using majority vote.
                 </p>
                 <p>
                   <strong>Distance Metric:</strong> Euclidean distance between points in 2D space.

@@ -69,8 +69,8 @@ export class MinMaxScalerEngine {
 
     if (this.state.currentStep === 1) {
       // Find min/max values
-      const xValues = this.data.map(p => p.x)
-      const yValues = this.data.map(p => p.y)
+      const xValues = this.data.map((p) => p.x)
+      const yValues = this.data.map((p) => p.y)
 
       this.state.xMin = Math.min(...xValues)
       this.state.xMax = Math.max(...xValues)
@@ -79,11 +79,13 @@ export class MinMaxScalerEngine {
       this.state.phase = 'scaling'
     } else if (this.state.currentStep === 2) {
       // Scale X values
-      this.state.scaledData = this.data.map(point => {
-        const scaledX = this.state.xMin === this.state.xMax
-          ? this.featureRange[0] + (this.featureRange[1] - this.featureRange[0]) / 2
-          : this.featureRange[0] + (this.featureRange[1] - this.featureRange[0]) *
-            (point.x - this.state.xMin) / (this.state.xMax - this.state.xMin)
+      this.state.scaledData = this.data.map((point) => {
+        const scaledX =
+          this.state.xMin === this.state.xMax
+            ? this.featureRange[0] + (this.featureRange[1] - this.featureRange[0]) / 2
+            : this.featureRange[0] +
+              ((this.featureRange[1] - this.featureRange[0]) * (point.x - this.state.xMin)) /
+                (this.state.xMax - this.state.xMin)
 
         return { x: scaledX, y: point.y }
       })
@@ -91,10 +93,12 @@ export class MinMaxScalerEngine {
       // Scale Y values
       this.state.scaledData = this.state.scaledData.map((point, index) => {
         const originalY = this.data[index].y
-        const scaledY = this.state.yMin === this.state.yMax
-          ? this.featureRange[0] + (this.featureRange[1] - this.featureRange[0]) / 2
-          : this.featureRange[0] + (this.featureRange[1] - this.featureRange[0]) *
-            (originalY - this.state.yMin) / (this.state.yMax - this.state.yMin)
+        const scaledY =
+          this.state.yMin === this.state.yMax
+            ? this.featureRange[0] + (this.featureRange[1] - this.featureRange[0]) / 2
+            : this.featureRange[0] +
+              ((this.featureRange[1] - this.featureRange[0]) * (originalY - this.state.yMin)) /
+                (this.state.yMax - this.state.yMin)
 
         return { x: point.x, y: scaledY }
       })

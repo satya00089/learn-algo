@@ -12,12 +12,7 @@ export type RecursionOperation =
   | 'POWER'
   | 'SUM_ARRAY'
 
-export type RecursionPhase =
-  | 'idle'
-  | 'calling'
-  | 'computing'
-  | 'returning'
-  | 'complete'
+export type RecursionPhase = 'idle' | 'calling' | 'computing' | 'returning' | 'complete'
 
 export interface RecursionCall {
   depth: number

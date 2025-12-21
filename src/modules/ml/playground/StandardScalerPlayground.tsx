@@ -13,7 +13,8 @@ import type { DataPoint } from '../types'
 
 export function StandardScalerPlayground() {
   const router = useRouter()
-  const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } = useStandardScalerPlayground()
+  const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } =
+    useStandardScalerPlayground()
 
   const engineRef = useRef<StandardScalerEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<
@@ -42,60 +43,57 @@ export function StandardScalerPlayground() {
   const yMax = 15
 
   // Generate sample data
-  const generateData = useCallback(
-    (type: 'normal' | 'wide' | 'clustered' | 'outliers') => {
-      const newPoints: DataPoint[] = []
+  const generateData = useCallback((type: 'normal' | 'wide' | 'clustered' | 'outliers') => {
+    const newPoints: DataPoint[] = []
 
-      if (type === 'normal') {
-        // Normal distribution around origin
-        for (let i = 0; i < 100; i++) {
-          newPoints.push({
-            x: (Math.random() - 0.5) * 20,
-            y: (Math.random() - 0.5) * 10,
-          })
-        }
-      } else if (type === 'wide') {
-        // Wide range of values
-        for (let i = 0; i < 100; i++) {
-          newPoints.push({
-            x: (Math.random() - 0.5) * 50,
-            y: (Math.random() - 0.5) * 25,
-          })
-        }
-      } else if (type === 'clustered') {
-        // Multiple clusters with different scales
-        const clusters = [
-          { centerX: -15, centerY: -5, spread: 3 },
-          { centerX: 15, centerY: 5, spread: 2 },
-          { centerX: 0, centerY: 10, spread: 4 },
-        ]
-
-        clusters.forEach(cluster => {
-          for (let i = 0; i < 30; i++) {
-            newPoints.push({
-              x: cluster.centerX + (Math.random() - 0.5) * cluster.spread * 2,
-              y: cluster.centerY + (Math.random() - 0.5) * cluster.spread,
-            })
-          }
+    if (type === 'normal') {
+      // Normal distribution around origin
+      for (let i = 0; i < 100; i++) {
+        newPoints.push({
+          x: (Math.random() - 0.5) * 20,
+          y: (Math.random() - 0.5) * 10,
         })
-      } else {
-        // Data with outliers
-        for (let i = 0; i < 90; i++) {
+      }
+    } else if (type === 'wide') {
+      // Wide range of values
+      for (let i = 0; i < 100; i++) {
+        newPoints.push({
+          x: (Math.random() - 0.5) * 50,
+          y: (Math.random() - 0.5) * 25,
+        })
+      }
+    } else if (type === 'clustered') {
+      // Multiple clusters with different scales
+      const clusters = [
+        { centerX: -15, centerY: -5, spread: 3 },
+        { centerX: 15, centerY: 5, spread: 2 },
+        { centerX: 0, centerY: 10, spread: 4 },
+      ]
+
+      clusters.forEach((cluster) => {
+        for (let i = 0; i < 30; i++) {
           newPoints.push({
-            x: (Math.random() - 0.5) * 20,
-            y: (Math.random() - 0.5) * 10,
+            x: cluster.centerX + (Math.random() - 0.5) * cluster.spread * 2,
+            y: cluster.centerY + (Math.random() - 0.5) * cluster.spread,
           })
         }
-        // Add outliers
-        newPoints.push({ x: 25, y: 12 })
-        newPoints.push({ x: -28, y: -13 })
-        newPoints.push({ x: 26, y: -11 })
+      })
+    } else {
+      // Data with outliers
+      for (let i = 0; i < 90; i++) {
+        newPoints.push({
+          x: (Math.random() - 0.5) * 20,
+          y: (Math.random() - 0.5) * 10,
+        })
       }
+      // Add outliers
+      newPoints.push({ x: 25, y: 12 })
+      newPoints.push({ x: -28, y: -13 })
+      newPoints.push({ x: 26, y: -11 })
+    }
 
-      setPoints(newPoints)
-    },
-    []
-  )
+    setPoints(newPoints)
+  }, [])
 
   // Initialize with sample data
   useEffect(() => {
@@ -181,7 +179,7 @@ export function StandardScalerPlayground() {
         // Draw vertical lines at -1, 0, +1 standard deviations
         const stdLines = [-1, 0, 1]
 
-        stdLines.forEach(std => {
+        stdLines.forEach((std) => {
           const x = std
           const lineX = toCanvasCoords(x, 0).canvasX
 

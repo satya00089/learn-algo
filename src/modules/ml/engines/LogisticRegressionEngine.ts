@@ -114,12 +114,12 @@ export class LogisticRegressionEngine {
   private calculateZ(point: DataPoint, params: LogisticRegressionParams): number {
     const features = this.getFeatures(point)
     const { weights, bias } = params
-    
+
     let z = bias
     for (let i = 0; i < features.length; i++) {
       z += weights[i] * features[i]
     }
-    
+
     return z
   }
 
@@ -162,7 +162,7 @@ export class LogisticRegressionEngine {
     for (let i = 0; i < m; i++) {
       const y = points[i].label ?? 0
       const h = probabilities[i]
-      
+
       // Binary cross-entropy: -[y*log(h) + (1-y)*log(1-h)]
       // Add epsilon to avoid log(0)
       const epsilon = 1e-15
@@ -310,8 +310,11 @@ export class LogisticRegressionEngine {
    * For linear: returns a straight line
    * For polynomial: returns contour points where probability = 0.5
    */
-  getDecisionBoundary(xRange: [number, number], yRange: [number, number], resolution: number = 100): 
-    { points: Array<{ x: number; y: number }> } {
+  getDecisionBoundary(
+    xRange: [number, number],
+    yRange: [number, number],
+    resolution: number = 100
+  ): { points: Array<{ x: number; y: number }> } {
     const degree = this.config.polynomialDegree ?? 1
     const boundaryPoints: Array<{ x: number; y: number }> = []
 
@@ -325,7 +328,7 @@ export class LogisticRegressionEngine {
         const y1 = -(w1 * x1 + bias) / w2
         const x2 = xRange[1]
         const y2 = -(w1 * x2 + bias) / w2
-        
+
         boundaryPoints.push({ x: x1, y: y1 })
         boundaryPoints.push({ x: x2, y: y2 })
       }
@@ -351,7 +354,7 @@ export class LogisticRegressionEngine {
         for (let yi = 0; yi < resolution; yi++) {
           const x = xRange[0] + xi * xStep
           const y = yRange[0] + yi * yStep
-          
+
           const p00 = probGrid[xi][yi]
           const p10 = probGrid[xi + 1][yi]
           const p01 = probGrid[xi][yi + 1]
@@ -359,7 +362,7 @@ export class LogisticRegressionEngine {
 
           // Check if this cell contains the 0.5 contour
           const threshold = 0.5
-          const hasContour = 
+          const hasContour =
             (p00 < threshold && (p10 >= threshold || p01 >= threshold || p11 >= threshold)) ||
             (p00 >= threshold && (p10 < threshold || p01 < threshold || p11 < threshold))
 
@@ -369,12 +372,12 @@ export class LogisticRegressionEngine {
             let boundaryY = y + yStep / 2
 
             // Interpolate along edges
-            if ((p00 < threshold) !== (p10 < threshold)) {
+            if (p00 < threshold !== p10 < threshold) {
               // Boundary crosses horizontal edge
               const t = (threshold - p00) / (p10 - p00)
               boundaryX = x + t * xStep
               boundaryY = y
-            } else if ((p00 < threshold) !== (p01 < threshold)) {
+            } else if (p00 < threshold !== p01 < threshold) {
               // Boundary crosses vertical edge
               const t = (threshold - p00) / (p01 - p00)
               boundaryX = x
@@ -393,7 +396,9 @@ export class LogisticRegressionEngine {
   /**
    * Get decision boundary line for linear case (backward compatibility)
    */
-  getDecisionBoundaryLine(xRange: [number, number]): { x1: number; y1: number; x2: number; y2: number } | null {
+  getDecisionBoundaryLine(
+    xRange: [number, number]
+  ): { x1: number; y1: number; x2: number; y2: number } | null {
     const degree = this.config.polynomialDegree ?? 1
     if (degree !== 1) return null
 

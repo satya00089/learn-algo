@@ -2,14 +2,7 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-  FaRandom,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
@@ -38,7 +31,9 @@ export function PolynomialRegressionPlayground() {
   } = usePolynomialRegressionPlayground()
 
   const engineRef = useRef<PolynomialRegressionEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<PolynomialRegressionEngine['getState']> | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<
+    PolynomialRegressionEngine['getState']
+  > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -156,8 +151,8 @@ export function PolynomialRegressionPlayground() {
       const { width, height, padding } = canvasConfig
 
       // Calculate bounds from current points
-      const xValues = currentPoints.map(p => p.x)
-      const yValues = currentPoints.map(p => p.y)
+      const xValues = currentPoints.map((p) => p.x)
+      const yValues = currentPoints.map((p) => p.y)
       const xMin = Math.min(...xValues) - 1
       const xMax = Math.max(...xValues) + 1
       const yMin = Math.min(...yValues) - 2
@@ -166,7 +161,9 @@ export function PolynomialRegressionPlayground() {
       const canvasX =
         padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
       const canvasY =
-        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+        height -
+        padding.bottom -
+        ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
       return { canvasX, canvasY }
     },
     [canvasConfig, currentPoints]
@@ -181,8 +178,8 @@ export function PolynomialRegressionPlayground() {
       if (currentPoints.length === 0 || !engineState) return
 
       // Calculate bounds
-      const xValues = currentPoints.map(p => p.x)
-      const yValues = currentPoints.map(p => p.y)
+      const xValues = currentPoints.map((p) => p.x)
+      const yValues = currentPoints.map((p) => p.y)
       const xMin = Math.min(...xValues) - 1
       const xMax = Math.max(...xValues) + 1
 
@@ -327,7 +324,9 @@ export function PolynomialRegressionPlayground() {
             >
               <span>←</span> Back to ML
             </button>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Polynomial Regression</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              Polynomial Regression
+            </h1>
           </div>
           <ThemeToggle />
         </div>
@@ -412,13 +411,20 @@ export function PolynomialRegressionPlayground() {
                 {engineState && (
                   <div className="ml-auto flex items-center gap-4 text-xs">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Iteration: <span className="font-bold text-gray-900 dark:text-white">{engineState.iteration}</span>
+                      Iteration:{' '}
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {engineState.iteration}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Cost: <span className="font-bold text-red-600 dark:text-red-400">{engineState.cost.toFixed(4)}</span>
+                      Cost:{' '}
+                      <span className="font-bold text-red-600 dark:text-red-400">
+                        {engineState.cost.toFixed(4)}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Degree: <span className="font-bold text-blue-600 dark:text-blue-400">{degree}</span>
+                      Degree:{' '}
+                      <span className="font-bold text-blue-600 dark:text-blue-400">{degree}</span>
                     </span>
                   </div>
                 )}
@@ -498,7 +504,9 @@ export function PolynomialRegressionPlayground() {
             <ControlGroup title="Model Parameters">
               <div className="space-y-2 text-xs">
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Polynomial Degree: {degree}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Polynomial Degree: {degree}
+                  </label>
                   <input
                     type="range"
                     value={degree}
@@ -515,7 +523,9 @@ export function PolynomialRegressionPlayground() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Learning Rate: {learningRate}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Learning Rate: {learningRate}
+                  </label>
                   <input
                     type="range"
                     value={learningRate}
@@ -528,7 +538,9 @@ export function PolynomialRegressionPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Max Iterations: {maxIterations}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Max Iterations: {maxIterations}
+                  </label>
                   <input
                     type="range"
                     value={maxIterations}
@@ -555,9 +567,7 @@ export function PolynomialRegressionPlayground() {
 
                     return (
                       <div key={getLabel(i)} className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">
-                          {getLabel(i)}:
-                        </span>
+                        <span className="text-gray-600 dark:text-gray-400">{getLabel(i)}:</span>
                         <span className="font-mono font-semibold">{coeff.toFixed(4)}</span>
                       </div>
                     )
@@ -590,18 +600,21 @@ export function PolynomialRegressionPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Training History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-green-100 dark:[&::-webkit-scrollbar-track]:bg-green-900/30 [&::-webkit-scrollbar-thumb]:bg-green-300 dark:[&::-webkit-scrollbar-thumb]:bg-green-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-green-100 dark:bg-green-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      #{step.iteration}: Cost={step.cost.toFixed(4)}
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-green-100 dark:bg-green-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        #{step.iteration}: Cost={step.cost.toFixed(4)}
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}
@@ -609,14 +622,24 @@ export function PolynomialRegressionPlayground() {
             {/* About */}
             <ControlGroup title="About Polynomial Regression">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Model:</strong> y = a₀ + a₁x + a₂x² + ... + aₙxⁿ</p>
-                <p><strong>Cost:</strong> Mean Squared Error</p>
-                <p><strong>Optimization:</strong> Gradient Descent</p>
-                <p><strong>Degree Selection:</strong></p>
+                <p>
+                  <strong>Model:</strong> y = a₀ + a₁x + a₂x² + ... + aₙxⁿ
+                </p>
+                <p>
+                  <strong>Cost:</strong> Mean Squared Error
+                </p>
+                <p>
+                  <strong>Optimization:</strong> Gradient Descent
+                </p>
+                <p>
+                  <strong>Degree Selection:</strong>
+                </p>
                 <p className="pl-2">• Too low: Underfitting</p>
                 <p className="pl-2">• Too high: Overfitting</p>
                 <p className="pl-2">• Just right: Good fit</p>
-                <p><strong>Complexity:</strong> O(d × n × iter)</p>
+                <p>
+                  <strong>Complexity:</strong> O(d × n × iter)
+                </p>
                 <p className="text-[9px] italic">d=degree, n=points, iter=iterations</p>
               </div>
             </ControlGroup>
