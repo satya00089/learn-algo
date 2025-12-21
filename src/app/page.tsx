@@ -23,14 +23,14 @@ export default function Home() {
         <div className="relative mx-16">
           {/* Background Pattern */}
           <div
-            className="absolute inset-0 opacity-20 dark:opacity-10 pointer-events-none"
+            className="absolute inset-0 opacity-20 dark:opacity-10 pointer-events-none [--bg-pattern:theme(colors.gray.400/0.25)] dark:[--bg-pattern:theme(colors.white/0.2)]"
             style={{
               backgroundImage: `repeating-linear-gradient(
             45deg,
             transparent,
             transparent 10px,
-            rgba(156, 163, 175, 0.15) ${getRandomSize()}px,
-            rgba(156, 163, 175, 0.15) ${getRandomSize()}px
+            var(--bg-pattern) ${getRandomSize()}px,
+            var(--bg-pattern) ${getRandomSize()}px
           )`,
               backgroundSize: `${getRandomSize()}px ${getRandomSize()}px`,
             }}
