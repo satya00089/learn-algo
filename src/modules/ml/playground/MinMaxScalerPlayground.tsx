@@ -21,13 +21,13 @@ export function MinMaxScalerPlayground() {
     featureRangeMin,
     setFeatureRangeMin,
     featureRangeMax,
-    setFeatureRangeMax
+    setFeatureRangeMax,
   } = useMinMaxScalerPlayground()
 
   const engineRef = useRef<MinMaxScalerEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    MinMaxScalerEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<MinMaxScalerEngine['getState']> | null>(
+    null
+  )
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -51,60 +51,57 @@ export function MinMaxScalerPlayground() {
   const yMax = 15
 
   // Generate sample data
-  const generateData = useCallback(
-    (type: 'normal' | 'wide' | 'clustered' | 'outliers') => {
-      const newPoints: DataPoint[] = []
+  const generateData = useCallback((type: 'normal' | 'wide' | 'clustered' | 'outliers') => {
+    const newPoints: DataPoint[] = []
 
-      if (type === 'normal') {
-        // Normal distribution around origin
-        for (let i = 0; i < 100; i++) {
-          newPoints.push({
-            x: (Math.random() - 0.5) * 20,
-            y: (Math.random() - 0.5) * 10,
-          })
-        }
-      } else if (type === 'wide') {
-        // Wide range of values
-        for (let i = 0; i < 100; i++) {
-          newPoints.push({
-            x: (Math.random() - 0.5) * 50,
-            y: (Math.random() - 0.5) * 25,
-          })
-        }
-      } else if (type === 'clustered') {
-        // Multiple clusters with different scales
-        const clusters = [
-          { centerX: -15, centerY: -5, spread: 3 },
-          { centerX: 15, centerY: 5, spread: 2 },
-          { centerX: 0, centerY: 10, spread: 4 },
-        ]
-
-        clusters.forEach(cluster => {
-          for (let i = 0; i < 30; i++) {
-            newPoints.push({
-              x: cluster.centerX + (Math.random() - 0.5) * cluster.spread * 2,
-              y: cluster.centerY + (Math.random() - 0.5) * cluster.spread,
-            })
-          }
+    if (type === 'normal') {
+      // Normal distribution around origin
+      for (let i = 0; i < 100; i++) {
+        newPoints.push({
+          x: (Math.random() - 0.5) * 20,
+          y: (Math.random() - 0.5) * 10,
         })
-      } else {
-        // Data with outliers
-        for (let i = 0; i < 90; i++) {
+      }
+    } else if (type === 'wide') {
+      // Wide range of values
+      for (let i = 0; i < 100; i++) {
+        newPoints.push({
+          x: (Math.random() - 0.5) * 50,
+          y: (Math.random() - 0.5) * 25,
+        })
+      }
+    } else if (type === 'clustered') {
+      // Multiple clusters with different scales
+      const clusters = [
+        { centerX: -15, centerY: -5, spread: 3 },
+        { centerX: 15, centerY: 5, spread: 2 },
+        { centerX: 0, centerY: 10, spread: 4 },
+      ]
+
+      clusters.forEach((cluster) => {
+        for (let i = 0; i < 30; i++) {
           newPoints.push({
-            x: (Math.random() - 0.5) * 20,
-            y: (Math.random() - 0.5) * 10,
+            x: cluster.centerX + (Math.random() - 0.5) * cluster.spread * 2,
+            y: cluster.centerY + (Math.random() - 0.5) * cluster.spread,
           })
         }
-        // Add outliers
-        newPoints.push({ x: 25, y: 12 })
-        newPoints.push({ x: -28, y: -13 })
-        newPoints.push({ x: 26, y: -11 })
+      })
+    } else {
+      // Data with outliers
+      for (let i = 0; i < 90; i++) {
+        newPoints.push({
+          x: (Math.random() - 0.5) * 20,
+          y: (Math.random() - 0.5) * 10,
+        })
       }
+      // Add outliers
+      newPoints.push({ x: 25, y: 12 })
+      newPoints.push({ x: -28, y: -13 })
+      newPoints.push({ x: 26, y: -11 })
+    }
 
-      setPoints(newPoints)
-    },
-    []
-  )
+    setPoints(newPoints)
+  }, [])
 
   // Initialize with sample data
   useEffect(() => {
@@ -430,9 +427,7 @@ export function MinMaxScalerPlayground() {
             <ControlGroup title="Feature Range">
               <div className="space-y-2 text-xs">
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">
-                    Min: {featureRangeMin}
-                  </label>
+                  <label className="text-gray-600 dark:text-gray-400">Min: {featureRangeMin}</label>
                   <input
                     type="range"
                     value={featureRangeMin}
@@ -445,9 +440,7 @@ export function MinMaxScalerPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">
-                    Max: {featureRangeMax}
-                  </label>
+                  <label className="text-gray-600 dark:text-gray-400">Max: {featureRangeMax}</label>
                   <input
                     type="range"
                     value={featureRangeMax}

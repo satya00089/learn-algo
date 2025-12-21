@@ -19,13 +19,7 @@ export type BitOperation =
   | 'IS_POWER_OF_TWO'
   | 'FIND_ODD_OCCURRING'
 
-export type BitPhase =
-  | 'idle'
-  | 'displaying'
-  | 'operating'
-  | 'comparing'
-  | 'result'
-  | 'complete'
+export type BitPhase = 'idle' | 'displaying' | 'operating' | 'comparing' | 'result' | 'complete'
 
 export interface BitManipulationState {
   num1: number
@@ -327,9 +321,7 @@ export class BitManipulationEngine {
       resultArray[currentBitIndex] = resultBit.toString()
       this.state.resultBinary = resultArray.join('')
 
-      this.addHistory(
-        `Bit ${7 - currentBitIndex}: ${bit1} ${operation} ${bit2} = ${resultBit}`
-      )
+      this.addHistory(`Bit ${7 - currentBitIndex}: ${bit1} ${operation} ${bit2} = ${resultBit}`)
 
       if (currentBitIndex === 0) {
         this.state.result = Number.parseInt(this.state.resultBinary, 2)
@@ -394,7 +386,9 @@ export class BitManipulationEngine {
       this.state.resultBinary = this.toBinary(this.state.result)
       this.state.phase = 'result'
       this.state.message = `Shifted left by ${num2} positions: ${this.state.result}`
-      this.addHistory(`Result: ${num1} << ${num2} = ${this.state.result} (${this.state.resultBinary})`)
+      this.addHistory(
+        `Result: ${num1} << ${num2} = ${this.state.result} (${this.state.resultBinary})`
+      )
       return
     }
 
@@ -412,7 +406,9 @@ export class BitManipulationEngine {
       this.state.resultBinary = this.toBinary(this.state.result)
       this.state.phase = 'result'
       this.state.message = `Shifted right by ${num2} positions: ${this.state.result}`
-      this.addHistory(`Result: ${num1} >> ${num2} = ${this.state.result} (${this.state.resultBinary})`)
+      this.addHistory(
+        `Result: ${num1} >> ${num2} = ${this.state.result} (${this.state.resultBinary})`
+      )
       return
     }
 

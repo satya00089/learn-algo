@@ -7,8 +7,8 @@ import { ThemeToggle } from '@/core/theme'
 export default function Home() {
   // Function to generate random value between 16 and 36
   const getRandomSize = () => {
-    return Math.floor(Math.random() * (36 - 16 + 1)) + 16;
-  };
+    return Math.floor(Math.random() * (36 - 16 + 1)) + 16
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -26,12 +26,12 @@ export default function Home() {
             className="absolute inset-0 opacity-20 dark:opacity-10 pointer-events-none [--bg-pattern:theme(colors.gray.400/0.25)] dark:[--bg-pattern:theme(colors.white/0.2)]"
             style={{
               backgroundImage: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 10px,
-            var(--bg-pattern) ${getRandomSize()}px,
-            var(--bg-pattern) ${getRandomSize()}px
-          )`,
+                45deg,
+                transparent,
+                transparent 10px,
+                var(--bg-pattern) ${getRandomSize()}px,
+                var(--bg-pattern) ${getRandomSize()}px
+              )`,
               backgroundSize: `${getRandomSize()}px ${getRandomSize()}px`,
             }}
           />

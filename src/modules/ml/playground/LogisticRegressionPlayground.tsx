@@ -2,14 +2,7 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-  FaRandom,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
@@ -63,149 +56,152 @@ export function LogisticRegressionPlayground() {
   const yMax = 10
 
   // Generate sample data
-  const generateData = useCallback((type: 'linear' | 'clusters' | 'circle' | 'diabetes' | 'credit' | 'exam' | 'xor') => {
-    const newPoints: DataPoint[] = []
-    
-    if (type === 'linear') {
-      // Linearly separable data
-      for (let i = 0; i < 50; i++) {
-        newPoints.push({
-          x: Math.random() * 8 - 4,
-          y: Math.random() * 8 - 6,
-          label: 0,
-        })
-        newPoints.push({
-          x: Math.random() * 8 - 4,
-          y: Math.random() * 8 + 2,
-          label: 1,
-        })
-      }
-    } else if (type === 'clusters') {
-      // Two distinct clusters
-      for (let i = 0; i < 50; i++) {
-        newPoints.push({
-          x: (Math.random() - 0.5) * 4 - 4,
-          y: (Math.random() - 0.5) * 4 - 4,
-          label: 0,
-        })
-        newPoints.push({
-          x: (Math.random() - 0.5) * 4 + 4,
-          y: (Math.random() - 0.5) * 4 + 4,
-          label: 1,
-        })
-      }
-    } else if (type === 'circle') {
-      // Circular pattern (non-linear)
-      for (let i = 0; i < 100; i++) {
-        const r = Math.random() * 3
-        const theta = Math.random() * Math.PI * 2
-        const x = r * Math.cos(theta)
-        const y = r * Math.sin(theta)
-        newPoints.push({ x, y, label: r < 2 ? 0 : 1 })
-      }
-    } else if (type === 'diabetes') {
-      // Simulated: Diabetes prediction (Age vs Glucose Level)
-      // Class 0: No diabetes, Class 1: Diabetes
-      for (let i = 0; i < 60; i++) {
-        // Healthy patients: younger, lower glucose
-        const age = 20 + Math.random() * 40 // 20-60 years
-        const glucose = 70 + Math.random() * 40 + (age - 20) * 0.3 // 70-120 mg/dL
-        newPoints.push({
-          x: (age - 45) / 10, // Normalize around 0
-          y: (glucose - 100) / 20,
-          label: 0,
-        })
-        
-        // Diabetic patients: older, higher glucose
-        const age2 = 40 + Math.random() * 40 // 40-80 years
-        const glucose2 = 120 + Math.random() * 60 + (age2 - 40) * 0.5 // 120-200 mg/dL
-        newPoints.push({
-          x: (age2 - 45) / 10,
-          y: (glucose2 - 100) / 20,
-          label: 1,
-        })
-      }
-    } else if (type === 'credit') {
-      // Simulated: Credit card fraud detection (Transaction Amount vs Time of Day)
-      // Class 0: Legitimate, Class 1: Fraud
-      for (let i = 0; i < 70; i++) {
-        // Legitimate transactions: normal hours, reasonable amounts
-        const hour = 8 + Math.random() * 12 // 8am-8pm
-        const amount = 10 + Math.random() * 200 // $10-$210
-        newPoints.push({
-          x: (hour - 14) / 4,
-          y: (amount - 100) / 50,
-          label: 0,
-        })
-        
-        // Fraudulent transactions: odd hours, high amounts
-        const hour2 = Math.random() < 0.5 ? Math.random() * 6 : 20 + Math.random() * 4 // late night/early morning
-        const amount2 = 200 + Math.random() * 400 // $200-$600
-        newPoints.push({
-          x: (hour2 - 14) / 4,
-          y: (amount2 - 100) / 50,
-          label: 1,
-        })
-      }
-    } else if (type === 'exam') {
-      // Simulated: Student exam pass/fail (Study Hours vs Previous Score)
-      // Class 0: Fail, Class 1: Pass
-      for (let i = 0; i < 60; i++) {
-        // Failing students: low study hours, low previous scores
-        const studyHours = Math.random() * 3 // 0-3 hours
-        const prevScore = 30 + Math.random() * 30 + studyHours * 5 // 30-60 + study bonus
-        newPoints.push({
-          x: (studyHours - 4) / 2,
-          y: (prevScore - 60) / 20,
-          label: 0,
-        })
-        
-        // Passing students: more study hours, higher previous scores
-        const studyHours2 = 3 + Math.random() * 5 // 3-8 hours
-        const prevScore2 = 50 + Math.random() * 30 + studyHours2 * 5 // 50-90 + study bonus
-        newPoints.push({
-          x: (studyHours2 - 4) / 2,
-          y: (prevScore2 - 60) / 20,
-          label: 1,
-        })
-      }
-    } else if (type === 'xor') {
-      // XOR pattern (requires polynomial features)
-      for (let i = 0; i < 50; i++) {
-        // Quadrant 1 & 3: Class 0
-        if (Math.random() < 0.5) {
+  const generateData = useCallback(
+    (type: 'linear' | 'clusters' | 'circle' | 'diabetes' | 'credit' | 'exam' | 'xor') => {
+      const newPoints: DataPoint[] = []
+
+      if (type === 'linear') {
+        // Linearly separable data
+        for (let i = 0; i < 50; i++) {
           newPoints.push({
-            x: Math.random() * 4 + 1,
-            y: Math.random() * 4 + 1,
+            x: Math.random() * 8 - 4,
+            y: Math.random() * 8 - 6,
             label: 0,
           })
-        } else {
           newPoints.push({
-            x: Math.random() * 4 - 5,
-            y: Math.random() * 4 - 5,
-            label: 0,
-          })
-        }
-        
-        // Quadrant 2 & 4: Class 1
-        if (Math.random() < 0.5) {
-          newPoints.push({
-            x: Math.random() * 4 - 5,
-            y: Math.random() * 4 + 1,
-            label: 1,
-          })
-        } else {
-          newPoints.push({
-            x: Math.random() * 4 + 1,
-            y: Math.random() * 4 - 5,
+            x: Math.random() * 8 - 4,
+            y: Math.random() * 8 + 2,
             label: 1,
           })
         }
+      } else if (type === 'clusters') {
+        // Two distinct clusters
+        for (let i = 0; i < 50; i++) {
+          newPoints.push({
+            x: (Math.random() - 0.5) * 4 - 4,
+            y: (Math.random() - 0.5) * 4 - 4,
+            label: 0,
+          })
+          newPoints.push({
+            x: (Math.random() - 0.5) * 4 + 4,
+            y: (Math.random() - 0.5) * 4 + 4,
+            label: 1,
+          })
+        }
+      } else if (type === 'circle') {
+        // Circular pattern (non-linear)
+        for (let i = 0; i < 100; i++) {
+          const r = Math.random() * 3
+          const theta = Math.random() * Math.PI * 2
+          const x = r * Math.cos(theta)
+          const y = r * Math.sin(theta)
+          newPoints.push({ x, y, label: r < 2 ? 0 : 1 })
+        }
+      } else if (type === 'diabetes') {
+        // Simulated: Diabetes prediction (Age vs Glucose Level)
+        // Class 0: No diabetes, Class 1: Diabetes
+        for (let i = 0; i < 60; i++) {
+          // Healthy patients: younger, lower glucose
+          const age = 20 + Math.random() * 40 // 20-60 years
+          const glucose = 70 + Math.random() * 40 + (age - 20) * 0.3 // 70-120 mg/dL
+          newPoints.push({
+            x: (age - 45) / 10, // Normalize around 0
+            y: (glucose - 100) / 20,
+            label: 0,
+          })
+
+          // Diabetic patients: older, higher glucose
+          const age2 = 40 + Math.random() * 40 // 40-80 years
+          const glucose2 = 120 + Math.random() * 60 + (age2 - 40) * 0.5 // 120-200 mg/dL
+          newPoints.push({
+            x: (age2 - 45) / 10,
+            y: (glucose2 - 100) / 20,
+            label: 1,
+          })
+        }
+      } else if (type === 'credit') {
+        // Simulated: Credit card fraud detection (Transaction Amount vs Time of Day)
+        // Class 0: Legitimate, Class 1: Fraud
+        for (let i = 0; i < 70; i++) {
+          // Legitimate transactions: normal hours, reasonable amounts
+          const hour = 8 + Math.random() * 12 // 8am-8pm
+          const amount = 10 + Math.random() * 200 // $10-$210
+          newPoints.push({
+            x: (hour - 14) / 4,
+            y: (amount - 100) / 50,
+            label: 0,
+          })
+
+          // Fraudulent transactions: odd hours, high amounts
+          const hour2 = Math.random() < 0.5 ? Math.random() * 6 : 20 + Math.random() * 4 // late night/early morning
+          const amount2 = 200 + Math.random() * 400 // $200-$600
+          newPoints.push({
+            x: (hour2 - 14) / 4,
+            y: (amount2 - 100) / 50,
+            label: 1,
+          })
+        }
+      } else if (type === 'exam') {
+        // Simulated: Student exam pass/fail (Study Hours vs Previous Score)
+        // Class 0: Fail, Class 1: Pass
+        for (let i = 0; i < 60; i++) {
+          // Failing students: low study hours, low previous scores
+          const studyHours = Math.random() * 3 // 0-3 hours
+          const prevScore = 30 + Math.random() * 30 + studyHours * 5 // 30-60 + study bonus
+          newPoints.push({
+            x: (studyHours - 4) / 2,
+            y: (prevScore - 60) / 20,
+            label: 0,
+          })
+
+          // Passing students: more study hours, higher previous scores
+          const studyHours2 = 3 + Math.random() * 5 // 3-8 hours
+          const prevScore2 = 50 + Math.random() * 30 + studyHours2 * 5 // 50-90 + study bonus
+          newPoints.push({
+            x: (studyHours2 - 4) / 2,
+            y: (prevScore2 - 60) / 20,
+            label: 1,
+          })
+        }
+      } else if (type === 'xor') {
+        // XOR pattern (requires polynomial features)
+        for (let i = 0; i < 50; i++) {
+          // Quadrant 1 & 3: Class 0
+          if (Math.random() < 0.5) {
+            newPoints.push({
+              x: Math.random() * 4 + 1,
+              y: Math.random() * 4 + 1,
+              label: 0,
+            })
+          } else {
+            newPoints.push({
+              x: Math.random() * 4 - 5,
+              y: Math.random() * 4 - 5,
+              label: 0,
+            })
+          }
+
+          // Quadrant 2 & 4: Class 1
+          if (Math.random() < 0.5) {
+            newPoints.push({
+              x: Math.random() * 4 - 5,
+              y: Math.random() * 4 + 1,
+              label: 1,
+            })
+          } else {
+            newPoints.push({
+              x: Math.random() * 4 + 1,
+              y: Math.random() * 4 - 5,
+              label: 1,
+            })
+          }
+        }
       }
-    }
-    
-    setPoints(newPoints)
-  }, [])
+
+      setPoints(newPoints)
+    },
+    []
+  )
 
   // Initialize with sample data
   useEffect(() => {
@@ -233,7 +229,9 @@ export function LogisticRegressionPlayground() {
       const canvasX =
         padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
       const canvasY =
-        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+        height -
+        padding.bottom -
+        ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
       return { canvasX, canvasY }
     },
     [canvasConfig, xMin, xMax, yMin, yMax]
@@ -253,20 +251,20 @@ export function LogisticRegressionPlayground() {
         const resolution = 50
         const xStep = (xMax - xMin) / resolution
         const yStep = (yMax - yMin) / resolution
-        
+
         for (let i = 0; i < resolution; i++) {
           for (let j = 0; j < resolution; j++) {
             const x = xMin + i * xStep
             const y = yMin + j * yStep
             const prob = engineRef.current.getProbabilityAt(x, y)
-            
+
             // Color interpolation: blue (class 0) to red (class 1)
             const r = Math.floor(prob * 239 + 16) // 16 to 255
             const b = Math.floor((1 - prob) * 239 + 16) // 255 to 16
             const g = 60 // constant
-            
+
             ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.3)`
-            
+
             const p1 = toCanvasCoords(x, y)
             const p2 = toCanvasCoords(x + xStep, y + yStep)
             ctx.fillRect(p1.canvasX, p2.canvasY, p2.canvasX - p1.canvasX, p1.canvasY - p2.canvasY)
@@ -301,7 +299,7 @@ export function LogisticRegressionPlayground() {
           if (boundary) {
             const p1 = toCanvasCoords(boundary.x1, boundary.y1)
             const p2 = toCanvasCoords(boundary.x2, boundary.y2)
-            
+
             ctx.strokeStyle = '#8b5cf6'
             ctx.lineWidth = 3
             ctx.beginPath()
@@ -314,7 +312,7 @@ export function LogisticRegressionPlayground() {
           const resolution = 100
           const xStep = (xMax - xMin) / resolution
           const yStep = (yMax - yMin) / resolution
-          
+
           // Create probability heatmap
           const heatmap: number[][] = []
           for (let i = 0; i <= resolution; i++) {
@@ -326,15 +324,15 @@ export function LogisticRegressionPlayground() {
               heatmap[i][j] = prob
             }
           }
-          
+
           // Draw contour lines using marching squares algorithm
           ctx.strokeStyle = '#8b5cf6'
           ctx.lineWidth = 3
           ctx.lineCap = 'round'
           ctx.lineJoin = 'round'
-          
+
           const threshold = 0.5
-          
+
           // Marching squares: process each grid cell
           for (let i = 0; i < resolution; i++) {
             for (let j = 0; j < resolution; j++) {
@@ -346,22 +344,22 @@ export function LogisticRegressionPlayground() {
               const y0 = yMin + j * yStep
               const x1 = x0 + xStep
               const y1 = y0 + yStep
-              
-              const v00 = heatmap[i][j]       // bottom-left
-              const v10 = heatmap[i + 1][j]   // bottom-right
-              const v01 = heatmap[i][j + 1]   // top-left
+
+              const v00 = heatmap[i][j] // bottom-left
+              const v10 = heatmap[i + 1][j] // bottom-right
+              const v01 = heatmap[i][j + 1] // top-left
               const v11 = heatmap[i + 1][j + 1] // top-right
-              
+
               // Create binary code for marching squares case (0-15)
               let caseId = 0
               if (v00 >= threshold) caseId |= 1
               if (v10 >= threshold) caseId |= 2
               if (v11 >= threshold) caseId |= 4
               if (v01 >= threshold) caseId |= 8
-              
+
               // Skip if all same (no contour in this cell)
               if (caseId === 0 || caseId === 15) continue
-              
+
               // Helper function for linear interpolation
               const lerp = (val0: number, val1: number, pos0: number, pos1: number): number => {
                 const denom = val1 - val0
@@ -369,36 +367,36 @@ export function LogisticRegressionPlayground() {
                 const t = (threshold - val0) / denom
                 return pos0 + t * (pos1 - pos0)
               }
-              
+
               // Calculate edge midpoints with interpolation
               const edges: Array<{ x: number; y: number }> = []
-              
+
               // Edge 0: bottom (v00 to v10)
               if ((caseId & 1) !== (caseId & 2)) {
                 edges.push({ x: lerp(v00, v10, x0, x1), y: y0 })
               }
-              
+
               // Edge 1: right (v10 to v11)
               if ((caseId & 2) !== (caseId & 4)) {
                 edges.push({ x: x1, y: lerp(v10, v11, y0, y1) })
               }
-              
+
               // Edge 2: top (v11 to v01)
               if ((caseId & 4) !== (caseId & 8)) {
                 edges.push({ x: lerp(v11, v01, x1, x0), y: y1 })
               }
-              
+
               // Edge 3: left (v01 to v00)
               if ((caseId & 8) !== (caseId & 1)) {
                 edges.push({ x: x0, y: lerp(v01, v00, y1, y0) })
               }
-              
+
               // Draw contour line(s) based on case
               if (edges.length === 2) {
                 // Simple case: one line segment
                 const p1 = toCanvasCoords(edges[0].x, edges[0].y)
                 const p2 = toCanvasCoords(edges[1].x, edges[1].y)
-                
+
                 ctx.beginPath()
                 ctx.moveTo(p1.canvasX, p1.canvasY)
                 ctx.lineTo(p2.canvasX, p2.canvasY)
@@ -410,7 +408,7 @@ export function LogisticRegressionPlayground() {
                   x0 + xStep / 2,
                   y0 + yStep / 2
                 )
-                
+
                 if (caseId === 5) {
                   // Case 5: bottom and top edges active
                   if (centerProb >= threshold) {
@@ -461,18 +459,29 @@ export function LogisticRegressionPlayground() {
         const { canvasX, canvasY } = toCanvasCoords(point.x, point.y)
         const prediction = engineState?.predictions[idx]
         const correct = prediction === point.label
-        
+
         ctx.fillStyle = point.label === 0 ? '#3b82f6' : '#ef4444'
         ctx.strokeStyle = correct ? '#10b981' : '#f59e0b'
         ctx.lineWidth = correct ? 2 : 3
-        
+
         ctx.beginPath()
         ctx.arc(canvasX, canvasY, 6, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
       })
     },
-    [canvasConfig, points, engineState, toCanvasCoords, xMin, xMax, yMin, yMax, polynomialDegree, showHeatmap]
+    [
+      canvasConfig,
+      points,
+      engineState,
+      toCanvasCoords,
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+      polynomialDegree,
+      showHeatmap,
+    ]
   )
 
   // Sigmoid function graph drawing
@@ -490,12 +499,12 @@ export function LogisticRegressionPlayground() {
       // Draw background (full canvas - solid white to prevent transparency)
       ctx.fillStyle = '#ffffff'
       ctx.fillRect(0, 0, width, height)
-      
+
       // Draw border around entire canvas
       ctx.strokeStyle = '#e5e7eb'
       ctx.lineWidth = 1
       ctx.strokeRect(0, 0, width, height)
-      
+
       // Draw plot area background
       ctx.fillStyle = '#f9fafb'
       ctx.fillRect(padding.left, padding.top, plotWidth, plotHeight)
@@ -562,7 +571,7 @@ export function LogisticRegressionPlayground() {
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
       ctx.fillText('z', width / 2, height - padding.bottom + 5)
-      
+
       // Title
       ctx.font = 'bold 12px sans-serif'
       ctx.textAlign = 'center'
@@ -575,9 +584,9 @@ export function LogisticRegressionPlayground() {
 
   // Use canvas hooks
   const { canvasRef, redraw } = useCanvas({ config: canvasConfig, draw })
-  const { canvasRef: sigmoidCanvasRef } = useCanvas({ 
-    config: sigmoidCanvasConfig, 
-    draw: drawSigmoid 
+  const { canvasRef: sigmoidCanvasRef } = useCanvas({
+    config: sigmoidCanvasConfig,
+    draw: drawSigmoid,
   })
 
   // Trigger redraw when state changes
@@ -648,7 +657,9 @@ export function LogisticRegressionPlayground() {
             >
               <span>←</span> Back to ML
             </button>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Logistic Regression</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              Logistic Regression
+            </h1>
           </div>
           <ThemeToggle />
         </div>
@@ -733,13 +744,22 @@ export function LogisticRegressionPlayground() {
                 {engineState && (
                   <div className="ml-auto flex items-center gap-4 text-xs">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Iteration: <span className="font-bold text-gray-900 dark:text-white">{engineState.iteration}</span>
+                      Iteration:{' '}
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {engineState.iteration}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Cost: <span className="font-bold text-gray-900 dark:text-white">{engineState.cost.toFixed(4)}</span>
+                      Cost:{' '}
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {engineState.cost.toFixed(4)}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      Accuracy: <span className="font-bold text-green-600 dark:text-green-400">{(engineState.accuracy * 100).toFixed(1)}%</span>
+                      Accuracy:{' '}
+                      <span className="font-bold text-green-600 dark:text-green-400">
+                        {(engineState.accuracy * 100).toFixed(1)}%
+                      </span>
                     </span>
                   </div>
                 )}
@@ -820,7 +840,8 @@ export function LogisticRegressionPlayground() {
               <div className="space-y-2 text-xs">
                 <div>
                   <label className="text-gray-600 dark:text-gray-400">
-                    Polynomial Degree: {polynomialDegree} {polynomialDegree === 1 ? '(Linear)' : '(Curved)'}
+                    Polynomial Degree: {polynomialDegree}{' '}
+                    {polynomialDegree === 1 ? '(Linear)' : '(Curved)'}
                   </label>
                   <input
                     type="range"
@@ -839,7 +860,9 @@ export function LogisticRegressionPlayground() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Learning Rate: {learningRate}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Learning Rate: {learningRate}
+                  </label>
                   <input
                     type="range"
                     value={learningRate}
@@ -852,7 +875,9 @@ export function LogisticRegressionPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Max Iterations: {maxIterations}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Max Iterations: {maxIterations}
+                  </label>
                   <input
                     type="range"
                     value={maxIterations}
@@ -873,15 +898,21 @@ export function LogisticRegressionPlayground() {
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">w₁:</span>
-                    <span className="font-mono font-semibold">{engineState.params.weights[0].toFixed(4)}</span>
+                    <span className="font-mono font-semibold">
+                      {engineState.params.weights[0].toFixed(4)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">w₂:</span>
-                    <span className="font-mono font-semibold">{engineState.params.weights[1].toFixed(4)}</span>
+                    <span className="font-mono font-semibold">
+                      {engineState.params.weights[1].toFixed(4)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Bias:</span>
-                    <span className="font-mono font-semibold">{engineState.params.bias.toFixed(4)}</span>
+                    <span className="font-mono font-semibold">
+                      {engineState.params.bias.toFixed(4)}
+                    </span>
                   </div>
                 </div>
               </ControlGroup>
@@ -891,19 +922,22 @@ export function LogisticRegressionPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Training History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
-                      Cost: {step.cost.toFixed(4)} | Acc: {(step.accuracy * 100).toFixed(1)}%
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
+                        Cost: {step.cost.toFixed(4)} | Acc: {(step.accuracy * 100).toFixed(1)}%
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}
@@ -952,23 +986,41 @@ export function LogisticRegressionPlayground() {
             {/* Dataset Info */}
             <ControlGroup title="Dataset Info">
               <div className="text-[9px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Diabetes Risk:</strong> Age vs Glucose</p>
-                <p><strong>Fraud Detection:</strong> Time vs Amount</p>
-                <p><strong>Exam Pass/Fail:</strong> Study Hours vs Score</p>
-                <p><strong>XOR Pattern:</strong> Requires degree ≥ 2</p>
+                <p>
+                  <strong>Diabetes Risk:</strong> Age vs Glucose
+                </p>
+                <p>
+                  <strong>Fraud Detection:</strong> Time vs Amount
+                </p>
+                <p>
+                  <strong>Exam Pass/Fail:</strong> Study Hours vs Score
+                </p>
+                <p>
+                  <strong>XOR Pattern:</strong> Requires degree ≥ 2
+                </p>
               </div>
             </ControlGroup>
 
             {/* About */}
             <ControlGroup title="About">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Sigmoid:</strong> σ(z) = 1 / (1 + e^(-z))</p>
-                <p><strong>Cost:</strong> Binary Cross-Entropy</p>
-                <p><strong>Optimization:</strong> Gradient Descent</p>
-                <p><strong>Decision Boundary:</strong></p>
+                <p>
+                  <strong>Sigmoid:</strong> σ(z) = 1 / (1 + e^(-z))
+                </p>
+                <p>
+                  <strong>Cost:</strong> Binary Cross-Entropy
+                </p>
+                <p>
+                  <strong>Optimization:</strong> Gradient Descent
+                </p>
+                <p>
+                  <strong>Decision Boundary:</strong>
+                </p>
                 <p className="pl-2">• Degree 1: Straight line</p>
                 <p className="pl-2">• Degree 2+: Curved boundary</p>
-                <p><strong>Complexity:</strong> O(n × d² × iter)</p>
+                <p>
+                  <strong>Complexity:</strong> O(n × d² × iter)
+                </p>
                 <p className="text-[9px] italic">where d = polynomial degree</p>
               </div>
             </ControlGroup>

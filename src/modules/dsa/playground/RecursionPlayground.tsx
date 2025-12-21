@@ -2,13 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
@@ -21,7 +15,9 @@ export function RecursionPlayground() {
     useRecursionPlayground()
 
   const engineRef = useRef<RecursionEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<RecursionEngine['getState']> | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<RecursionEngine['getState']> | null>(
+    null
+  )
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -129,44 +125,47 @@ export function RecursionPlayground() {
         <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           Call Stack (Depth: {engineState.callStack.length})
         </div>
-        {engineState.callStack.slice().reverse().map((call, idx) => {
-          const reverseIdx = engineState.callStack.length - 1 - idx
-          let bgColor = 'bg-gray-100 dark:bg-gray-700'
-          let borderColor = 'border-gray-300 dark:border-gray-600'
+        {engineState.callStack
+          .slice()
+          .reverse()
+          .map((call, idx) => {
+            const reverseIdx = engineState.callStack.length - 1 - idx
+            let bgColor = 'bg-gray-100 dark:bg-gray-700'
+            let borderColor = 'border-gray-300 dark:border-gray-600'
 
-          if (call.state === 'active') {
-            bgColor = 'bg-blue-100 dark:bg-blue-900/30'
-            borderColor = 'border-blue-500'
-          } else if (call.state === 'waiting') {
-            bgColor = 'bg-yellow-100 dark:bg-yellow-900/30'
-            borderColor = 'border-yellow-500'
-          } else if (call.state === 'complete') {
-            bgColor = 'bg-green-100 dark:bg-green-900/30'
-            borderColor = 'border-green-500'
-          }
+            if (call.state === 'active') {
+              bgColor = 'bg-blue-100 dark:bg-blue-900/30'
+              borderColor = 'border-blue-500'
+            } else if (call.state === 'waiting') {
+              bgColor = 'bg-yellow-100 dark:bg-yellow-900/30'
+              borderColor = 'border-yellow-500'
+            } else if (call.state === 'complete') {
+              bgColor = 'bg-green-100 dark:bg-green-900/30'
+              borderColor = 'border-green-500'
+            }
 
-          return (
-            <div
-              key={reverseIdx}
-              className={`p-3 rounded border-2 ${borderColor} ${bgColor}`}
-              style={{ marginLeft: `${call.depth * 12}px` }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="font-mono text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  {engineState.operation}({call.n})
-                </div>
-                {call.result !== undefined && (
-                  <div className="text-xs font-semibold text-green-700 dark:text-green-400">
-                    → {call.result}
+            return (
+              <div
+                key={reverseIdx}
+                className={`p-3 rounded border-2 ${borderColor} ${bgColor}`}
+                style={{ marginLeft: `${call.depth * 12}px` }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="font-mono text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    {engineState.operation}({call.n})
                   </div>
-                )}
+                  {call.result !== undefined && (
+                    <div className="text-xs font-semibold text-green-700 dark:text-green-400">
+                      → {call.result}
+                    </div>
+                  )}
+                </div>
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                  Depth: {call.depth} | State: {call.state}
+                </div>
               </div>
-              <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
-                Depth: {call.depth} | State: {call.state}
-              </div>
-            </div>
-          )
-        })}
+            )
+          })}
       </div>
     )
   }
@@ -191,7 +190,7 @@ export function RecursionPlayground() {
               <div className="relative w-full h-48 flex flex-col-reverse items-center justify-start bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border-2 border-gray-300 dark:border-gray-600">
                 {/* Rod */}
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-1 h-40 bg-gray-400 dark:bg-gray-600"></div>
-                
+
                 {/* Disks */}
                 <div className="relative flex flex-col-reverse items-center gap-1 z-10">
                   {engineState.towers?.[tower].map((disk, idx) => {
@@ -311,11 +310,9 @@ export function RecursionPlayground() {
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 overflow-auto">
               {engineState && engineState.operation ? (
                 <div>
-                  {engineState.operation === 'TOWER_OF_HANOI' && engineState.towers ? (
-                    renderTowerOfHanoi()
-                  ) : (
-                    renderCallStack()
-                  )}
+                  {engineState.operation === 'TOWER_OF_HANOI' && engineState.towers
+                    ? renderTowerOfHanoi()
+                    : renderCallStack()}
 
                   {engineState.result > 0 && (
                     <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
@@ -379,7 +376,9 @@ export function RecursionPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">Base (for Power)</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    Base (for Power)
+                  </label>
                   <input
                     type="number"
                     value={baseInput}
@@ -390,7 +389,9 @@ export function RecursionPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">Exponent (for Power)</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    Exponent (for Power)
+                  </label>
                   <input
                     type="number"
                     value={expInput}
@@ -465,20 +466,27 @@ export function RecursionPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Debug History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
-                      {step.depth !== undefined && <span className="text-purple-600 dark:text-purple-400">[D{step.depth}]</span>}{' '}
-                      {step.description}
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
+                        {step.depth !== undefined && (
+                          <span className="text-purple-600 dark:text-purple-400">
+                            [D{step.depth}]
+                          </span>
+                        )}{' '}
+                        {step.description}
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}
@@ -486,10 +494,18 @@ export function RecursionPlayground() {
             {/* About */}
             <ControlGroup title="Complexity">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Factorial:</strong> O(n)</p>
-                <p><strong>Fibonacci:</strong> O(2^n) naive, O(n) optimized</p>
-                <p><strong>Tower of Hanoi:</strong> O(2^n)</p>
-                <p><strong>Power:</strong> O(log n) optimized</p>
+                <p>
+                  <strong>Factorial:</strong> O(n)
+                </p>
+                <p>
+                  <strong>Fibonacci:</strong> O(2^n) naive, O(n) optimized
+                </p>
+                <p>
+                  <strong>Tower of Hanoi:</strong> O(2^n)
+                </p>
+                <p>
+                  <strong>Power:</strong> O(log n) optimized
+                </p>
               </div>
             </ControlGroup>
           </div>

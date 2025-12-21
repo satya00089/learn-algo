@@ -19,7 +19,7 @@ export class PolynomialRegressionEngine {
    * Compute normalization statistics for feature scaling
    */
   private computeNormalizationStats(): void {
-    const xValues = this.config.points.map(p => p.x)
+    const xValues = this.config.points.map((p) => p.x)
     this.xMin = Math.min(...xValues)
     this.xMax = Math.max(...xValues)
   }
@@ -28,14 +28,15 @@ export class PolynomialRegressionEngine {
    * Normalize x value to [-1, 1] range
    */
   private normalizeX(x: number): number {
-    return (x - this.xMin) / (this.xMax - this.xMin) * 2 - 1
+    return ((x - this.xMin) / (this.xMax - this.xMin)) * 2 - 1
   }
 
   private initializeState(): PolynomialRegressionState {
     const numCoeffs = this.config.degree + 1
     // Use smaller initial coefficients for higher degrees to improve stability
     const coeffScale = Math.max(0.1, 1 / Math.sqrt(this.config.degree + 1))
-    const coefficients = this.config.initialCoefficients ??
+    const coefficients =
+      this.config.initialCoefficients ??
       new Array(numCoeffs).fill(0).map(() => (Math.random() * 2 - 1) * coeffScale)
 
     const params = { coefficients }
@@ -47,13 +48,15 @@ export class PolynomialRegressionEngine {
       cost,
       iteration: 0,
       isConverged: false,
-      history: [{
-        iteration: 0,
-        params: { coefficients: [...coefficients] },
-        cost,
-        gradients: []
-      }],
-      predictions
+      history: [
+        {
+          iteration: 0,
+          params: { coefficients: [...coefficients] },
+          cost,
+          gradients: [],
+        },
+      ],
+      predictions,
     }
   }
 
@@ -69,7 +72,7 @@ export class PolynomialRegressionEngine {
    * Calculate predictions for all points
    */
   private predict(params: { coefficients: number[] }): number[] {
-    return this.config.points.map(point => this.evaluatePolynomial(params.coefficients, point.x))
+    return this.config.points.map((point) => this.evaluatePolynomial(params.coefficients, point.x))
   }
 
   /**
@@ -104,7 +107,7 @@ export class PolynomialRegressionEngine {
     }
 
     // Average the gradients
-    return gradients.map(g => g / m)
+    return gradients.map((g) => g / m)
   }
 
   /**
@@ -138,7 +141,7 @@ export class PolynomialRegressionEngine {
       iteration: this.state.iteration,
       params: { coefficients: [...newCoefficients] },
       cost: newCost,
-      gradients: [...gradients]
+      gradients: [...gradients],
     })
 
     // Check convergence
@@ -174,7 +177,7 @@ export class PolynomialRegressionEngine {
       iteration: this.state.iteration,
       isConverged: this.state.isConverged,
       history: [...this.state.history],
-      predictions: [...this.state.predictions]
+      predictions: [...this.state.predictions],
     }
   }
 

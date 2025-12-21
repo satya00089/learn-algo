@@ -50,12 +50,12 @@ export class KMeansClusteringEngine {
 
   private initializeState(): KMeansState {
     // Initialize centroids
-    const centroids = this.config.initialCentroids 
-      ? this.config.initialCentroids 
+    const centroids = this.config.initialCentroids
+      ? this.config.initialCentroids
       : this.initializeRandomCentroids()
 
     // Initialize points with no cluster assignment
-    const points: ClusteredPoint[] = this.config.points.map(p => ({
+    const points: ClusteredPoint[] = this.config.points.map((p) => ({
       ...p,
       clusterId: -1,
       distance: 0,
@@ -172,7 +172,7 @@ export class KMeansClusteringEngine {
     let hasChanged = false
 
     for (let clusterId = 0; clusterId < k; clusterId++) {
-      const clusterPoints = this.state.points.filter(p => p.clusterId === clusterId)
+      const clusterPoints = this.state.points.filter((p) => p.clusterId === clusterId)
 
       if (clusterPoints.length === 0) {
         // Keep old centroid if no points assigned
@@ -185,7 +185,8 @@ export class KMeansClusteringEngine {
       const meanY = clusterPoints.reduce((sum, p) => sum + p.y, 0) / clusterPoints.length
 
       const oldCentroid = this.state.centroids[clusterId]
-      const moved = Math.abs(oldCentroid.x - meanX) > 0.001 || Math.abs(oldCentroid.y - meanY) > 0.001
+      const moved =
+        Math.abs(oldCentroid.x - meanX) > 0.001 || Math.abs(oldCentroid.y - meanY) > 0.001
 
       if (moved) {
         hasChanged = true
@@ -239,13 +240,13 @@ export class KMeansClusteringEngine {
       this.state.history.push({
         iteration: this.state.iteration,
         phase: 'update',
-        centroids: this.state.centroids.map(c => ({ ...c })),
+        centroids: this.state.centroids.map((c) => ({ ...c })),
         inertia: this.state.inertia,
       })
 
       // Update centroids
       const hasChanged = this.updateCentroids()
-      
+
       if (!hasChanged) {
         this.state.isConverged = true
         this.state.phase = 'complete'
@@ -284,8 +285,8 @@ export class KMeansClusteringEngine {
    */
   getState(): KMeansState {
     return {
-      centroids: this.state.centroids.map(c => ({ ...c })),
-      points: this.state.points.map(p => ({ ...p })),
+      centroids: this.state.centroids.map((c) => ({ ...c })),
+      points: this.state.points.map((p) => ({ ...p })),
       iteration: this.state.iteration,
       isConverged: this.state.isConverged,
       phase: this.state.phase,
@@ -308,7 +309,7 @@ export class KMeansClusteringEngine {
    */
   setCentroids(centroids: Centroid[]): void {
     if (centroids.length === this.config.k) {
-      this.state.centroids = centroids.map(c => ({ ...c }))
+      this.state.centroids = centroids.map((c) => ({ ...c }))
       this.reset()
     }
   }

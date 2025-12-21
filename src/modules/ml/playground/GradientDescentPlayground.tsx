@@ -2,14 +2,7 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-  FaRandom,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
@@ -36,43 +29,48 @@ export function GradientDescentPlayground() {
   } = useGradientDescentPlayground()
 
   const engineRef = useRef<GradientDescentEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<GradientDescentEngine['getState']> | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<
+    GradientDescentEngine['getState']
+  > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
   // Function definitions
-  const functions: Record<string, GradientDescentFunction> = useMemo(() => ({
-    quadratic: {
-      name: 'x²',
-      f: (x) => x * x,
-      df: (x) => 2 * x,
-      domain: [-5, 5]
-    },
-    cubic: {
-      name: 'x³ - 3x',
-      f: (x) => x * x * x - 3 * x,
-      df: (x) => 3 * x * x - 3,
-      domain: [-3, 3]
-    },
-    quartic: {
-      name: 'x⁴ - 4x² + 1',
-      f: (x) => x * x * x * x - 4 * x * x + 1,
-      df: (x) => 4 * x * x * x - 8 * x,
-      domain: [-3, 3]
-    },
-    sine: {
-      name: 'sin(x) + x/5',
-      f: (x) => Math.sin(x) + x / 5,
-      df: (x) => Math.cos(x) + 1/5,
-      domain: [-6, 6]
-    },
-    complex: {
-      name: '(x-2)² + sin(2x)',
-      f: (x) => (x - 2) * (x - 2) + Math.sin(2 * x),
-      df: (x) => 2 * (x - 2) + 2 * Math.cos(2 * x),
-      domain: [-1, 5]
-    }
-  }), [])
+  const functions: Record<string, GradientDescentFunction> = useMemo(
+    () => ({
+      quadratic: {
+        name: 'x²',
+        f: (x) => x * x,
+        df: (x) => 2 * x,
+        domain: [-5, 5],
+      },
+      cubic: {
+        name: 'x³ - 3x',
+        f: (x) => x * x * x - 3 * x,
+        df: (x) => 3 * x * x - 3,
+        domain: [-3, 3],
+      },
+      quartic: {
+        name: 'x⁴ - 4x² + 1',
+        f: (x) => x * x * x * x - 4 * x * x + 1,
+        df: (x) => 4 * x * x * x - 8 * x,
+        domain: [-3, 3],
+      },
+      sine: {
+        name: 'sin(x) + x/5',
+        f: (x) => Math.sin(x) + x / 5,
+        df: (x) => Math.cos(x) + 1 / 5,
+        domain: [-6, 6],
+      },
+      complex: {
+        name: '(x-2)² + sin(2x)',
+        f: (x) => (x - 2) * (x - 2) + Math.sin(2 * x),
+        df: (x) => 2 * (x - 2) + 2 * Math.cos(2 * x),
+        domain: [-1, 5],
+      },
+    }),
+    []
+  )
 
   // Canvas configuration
   const canvasConfig = useMemo(
@@ -112,7 +110,9 @@ export function GradientDescentPlayground() {
       const canvasX =
         padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
       const canvasY =
-        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+        height -
+        padding.bottom -
+        ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
       return { canvasX, canvasY }
     },
     [canvasConfig, selectedFunction, functions]
@@ -374,13 +374,22 @@ export function GradientDescentPlayground() {
                 {engineState && (
                   <div className="ml-auto flex items-center gap-4 text-xs">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Iteration: <span className="font-bold text-gray-900 dark:text-white">{engineState.iteration}</span>
+                      Iteration:{' '}
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {engineState.iteration}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      x: <span className="font-bold text-blue-600 dark:text-blue-400">{engineState.currentX.toFixed(3)}</span>
+                      x:{' '}
+                      <span className="font-bold text-blue-600 dark:text-blue-400">
+                        {engineState.currentX.toFixed(3)}
+                      </span>
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      f(x): <span className="font-bold text-green-600 dark:text-green-400">{functions[selectedFunction]?.f(engineState.currentX).toFixed(3)}</span>
+                      f(x):{' '}
+                      <span className="font-bold text-green-600 dark:text-green-400">
+                        {functions[selectedFunction]?.f(engineState.currentX).toFixed(3)}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -419,7 +428,9 @@ export function GradientDescentPlayground() {
             <ControlGroup title="Optimization Parameters">
               <div className="space-y-2 text-xs">
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Learning Rate: {learningRate}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Learning Rate: {learningRate}
+                  </label>
                   <input
                     type="range"
                     value={learningRate}
@@ -432,7 +443,9 @@ export function GradientDescentPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Max Iterations: {maxIterations}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Max Iterations: {maxIterations}
+                  </label>
                   <input
                     type="range"
                     value={maxIterations}
@@ -472,7 +485,10 @@ export function GradientDescentPlayground() {
                   <span>Current Position</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-0.5 bg-red-500 opacity-60" style={{borderStyle: 'dashed'}}></div>
+                  <div
+                    className="w-4 h-0.5 bg-red-500 opacity-60"
+                    style={{ borderStyle: 'dashed' }}
+                  ></div>
                   <span>Optimization Path</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -490,18 +506,22 @@ export function GradientDescentPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Optimization History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      #{step.iteration}: x={step.x.toFixed(3)}, f(x)={step.y.toFixed(3)}, ∇f={step.gradient.toFixed(3)}
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        #{step.iteration}: x={step.x.toFixed(3)}, f(x)={step.y.toFixed(3)}, ∇f=
+                        {step.gradient.toFixed(3)}
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}
@@ -509,11 +529,21 @@ export function GradientDescentPlayground() {
             {/* About */}
             <ControlGroup title="About Gradient Descent">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Algorithm:</strong> xₙ₊₁ = xₙ - α·∇f(xₙ)</p>
-                <p><strong>Goal:</strong> Find x that minimizes f(x)</p>
-                <p><strong>Learning Rate (α):</strong> Step size</p>
-                <p><strong>Convergence:</strong> When |∇f(x)| &lt; threshold</p>
-                <p><strong>Challenges:</strong></p>
+                <p>
+                  <strong>Algorithm:</strong> xₙ₊₁ = xₙ - α·∇f(xₙ)
+                </p>
+                <p>
+                  <strong>Goal:</strong> Find x that minimizes f(x)
+                </p>
+                <p>
+                  <strong>Learning Rate (α):</strong> Step size
+                </p>
+                <p>
+                  <strong>Convergence:</strong> When |∇f(x)| &lt; threshold
+                </p>
+                <p>
+                  <strong>Challenges:</strong>
+                </p>
                 <p className="pl-2">• Local minima</p>
                 <p className="pl-2">• Learning rate too large/small</p>
                 <p className="pl-2">• Saddle points</p>

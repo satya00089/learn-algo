@@ -40,8 +40,8 @@ export function minMaxScale(
   }
 
   // Find min and max values for each feature
-  const xValues = data.map(p => p.x)
-  const yValues = data.map(p => p.y)
+  const xValues = data.map((p) => p.x)
+  const yValues = data.map((p) => p.y)
 
   const xMin = Math.min(...xValues)
   const xMax = Math.max(...xValues)
@@ -49,14 +49,16 @@ export function minMaxScale(
   const yMax = Math.max(...yValues)
 
   // Scale the data
-  const scaledData: DataPoint[] = data.map(point => {
-    const scaledX = xMin === xMax
-      ? featureRange[0] + (featureRange[1] - featureRange[0]) / 2
-      : featureRange[0] + (featureRange[1] - featureRange[0]) * (point.x - xMin) / (xMax - xMin)
+  const scaledData: DataPoint[] = data.map((point) => {
+    const scaledX =
+      xMin === xMax
+        ? featureRange[0] + (featureRange[1] - featureRange[0]) / 2
+        : featureRange[0] + ((featureRange[1] - featureRange[0]) * (point.x - xMin)) / (xMax - xMin)
 
-    const scaledY = yMin === yMax
-      ? featureRange[0] + (featureRange[1] - featureRange[0]) / 2
-      : featureRange[0] + (featureRange[1] - featureRange[0]) * (point.y - yMin) / (yMax - yMin)
+    const scaledY =
+      yMin === yMax
+        ? featureRange[0] + (featureRange[1] - featureRange[0]) / 2
+        : featureRange[0] + ((featureRange[1] - featureRange[0]) * (point.y - yMin)) / (yMax - yMin)
 
     return { x: scaledX, y: scaledY }
   })
@@ -83,14 +85,16 @@ export function inverseMinMaxScale(
   yMax: number,
   featureRange: [number, number] = [0, 1]
 ): DataPoint[] {
-  return scaledData.map(point => {
-    const originalX = xMin === xMax
-      ? xMin
-      : xMin + (point.x - featureRange[0]) * (xMax - xMin) / (featureRange[1] - featureRange[0])
+  return scaledData.map((point) => {
+    const originalX =
+      xMin === xMax
+        ? xMin
+        : xMin + ((point.x - featureRange[0]) * (xMax - xMin)) / (featureRange[1] - featureRange[0])
 
-    const originalY = yMin === yMax
-      ? yMin
-      : yMin + (point.y - featureRange[0]) * (yMax - yMin) / (featureRange[1] - featureRange[0])
+    const originalY =
+      yMin === yMax
+        ? yMin
+        : yMin + ((point.y - featureRange[0]) * (yMax - yMin)) / (featureRange[1] - featureRange[0])
 
     return { x: originalX, y: originalY }
   })

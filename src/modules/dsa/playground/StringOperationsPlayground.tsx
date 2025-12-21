@@ -2,13 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  FaPlay,
-  FaPause,
-  FaStepForward,
-  FaFastForward,
-  FaRedo,
-} from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
@@ -21,7 +15,9 @@ export function StringOperationsPlayground() {
     useStringOperationsPlayground()
 
   const engineRef = useRef<StringOperationsEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<StringOperationsEngine['getState']> | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<
+    StringOperationsEngine['getState']
+  > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
@@ -126,7 +122,7 @@ export function StringOperationsPlayground() {
 
   const renderStringChars = (chars: any[], label: string) => {
     if (chars.length === 0) return null
-    
+
     return (
       <div className="mb-4">
         <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">{label}</div>
@@ -134,7 +130,7 @@ export function StringOperationsPlayground() {
           {chars.map((charObj, idx) => {
             let bgColor = 'bg-gray-200 dark:bg-gray-700'
             let textColor = 'text-gray-800 dark:text-gray-200'
-            
+
             if (charObj.state === 'comparing') {
               bgColor = 'bg-yellow-400'
               textColor = 'text-gray-900'
@@ -250,10 +246,9 @@ export function StringOperationsPlayground() {
               {engineState && engineState.operation ? (
                 <div className="max-w-4xl mx-auto">
                   {renderStringChars(engineState.str1Chars, `String 1: "${engineState.str1}"`)}
-                  
-                  {engineState.str2Chars.length > 0 && (
-                    renderStringChars(engineState.str2Chars, `String 2: "${engineState.str2}"`)
-                  )}
+
+                  {engineState.str2Chars.length > 0 &&
+                    renderStringChars(engineState.str2Chars, `String 2: "${engineState.str2}"`)}
 
                   {engineState.operation && (
                     <div className="text-center text-xl font-bold text-gray-700 dark:text-gray-300 my-4">
@@ -301,9 +296,7 @@ export function StringOperationsPlayground() {
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center">
                     <div className="text-6xl mb-4">📝</div>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Select an operation to begin
-                    </p>
+                    <p className="text-gray-500 dark:text-gray-400">Select an operation to begin</p>
                   </div>
                 </div>
               )}
@@ -347,7 +340,9 @@ export function StringOperationsPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">String 2 (for comparison)</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    String 2 (for comparison)
+                  </label>
                   <input
                     type="text"
                     value={str2Input}
@@ -356,7 +351,9 @@ export function StringOperationsPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">Pattern (for search)</label>
+                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                    Pattern (for search)
+                  </label>
                   <input
                     type="text"
                     value={patternInput}
@@ -431,18 +428,22 @@ export function StringOperationsPlayground() {
             {isDebugMode && engineState && engineState.history.length > 0 && (
               <ControlGroup title="Debug History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
-                  {engineState.history.slice().reverse().map((step, idx) => (
-                    <div
-                      key={step.iteration}
-                      className={`p-1.5 rounded ${
-                        idx === 0
-                          ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
-                          : 'bg-gray-50 dark:bg-gray-900/50'
-                      }`}
-                    >
-                      <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span> {step.description}
-                    </div>
-                  ))}
+                  {engineState.history
+                    .slice()
+                    .reverse()
+                    .map((step, idx) => (
+                      <div
+                        key={step.iteration}
+                        className={`p-1.5 rounded ${
+                          idx === 0
+                            ? 'bg-blue-100 dark:bg-blue-800/30 font-semibold'
+                            : 'bg-gray-50 dark:bg-gray-900/50'
+                        }`}
+                      >
+                        <span className="text-blue-600 dark:text-blue-400">#{step.iteration}</span>{' '}
+                        {step.description}
+                      </div>
+                    ))}
                 </div>
               </ControlGroup>
             )}
@@ -450,11 +451,21 @@ export function StringOperationsPlayground() {
             {/* About */}
             <ControlGroup title="About">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Reverse:</strong> O(n)</p>
-                <p><strong>Palindrome:</strong> O(n)</p>
-                <p><strong>Anagram:</strong> O(n log n)</p>
-                <p><strong>Search:</strong> O(n*m)</p>
-                <p><strong>Frequency:</strong> O(n)</p>
+                <p>
+                  <strong>Reverse:</strong> O(n)
+                </p>
+                <p>
+                  <strong>Palindrome:</strong> O(n)
+                </p>
+                <p>
+                  <strong>Anagram:</strong> O(n log n)
+                </p>
+                <p>
+                  <strong>Search:</strong> O(n*m)
+                </p>
+                <p>
+                  <strong>Frequency:</strong> O(n)
+                </p>
               </div>
             </ControlGroup>
           </div>

@@ -18,13 +18,15 @@ export class GradientDescentEngine {
       currentX: this.config.initialX,
       iteration: 0,
       isConverged: false,
-      history: [{
-        iteration: 0,
-        x: this.config.initialX,
-        y: this.config.function.f(this.config.initialX),
-        gradient: this.config.function.df(this.config.initialX),
-        stepSize: 0
-      }]
+      history: [
+        {
+          iteration: 0,
+          x: this.config.initialX,
+          y: this.config.function.f(this.config.initialX),
+          gradient: this.config.function.df(this.config.initialX),
+          stepSize: 0,
+        },
+      ],
     }
   }
 
@@ -56,7 +58,7 @@ export class GradientDescentEngine {
       x: clampedX,
       y: this.config.function.f(clampedX),
       gradient: this.config.function.df(clampedX),
-      stepSize: Math.abs(stepSize)
+      stepSize: Math.abs(stepSize),
     })
 
     // Check convergence
@@ -89,7 +91,7 @@ export class GradientDescentEngine {
       currentX: this.state.currentX,
       iteration: this.state.iteration,
       isConverged: this.state.isConverged,
-      history: [...this.state.history]
+      history: [...this.state.history],
     }
   }
 
