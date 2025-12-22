@@ -37,11 +37,30 @@ export default function Home() {
           />
           {/* Header */}
           <header className="relative z-10 flex justify-between items-center py-6 px-6 lg:px-8">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">LA</span>
+            <div className="flex items-center space-x-4">
+              <Image
+                src="/logo/logo.png"
+                alt="Learn Algo Logo"
+                width={64}
+                height={64}
+                className="rounded-lg dark:invert"
+              />
+              <div className="space-y-1">
+                <div className="bg-clip-text text-3xl font-black tracking-tight">
+                  LEARN ALGO
+                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-bold">
+                    DSA
+                  </span>
+                  <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold">
+                    AI
+                  </span>
+                  <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-bold">
+                    ML
+                  </span>
+                </div>
               </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">Learn Algo</span>
             </div>
             <ThemeToggle />
           </header>
@@ -125,7 +144,7 @@ export default function Home() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>15+ algorithms</span>
+                      <span>20+ algorithms</span>
                     </div>
                   </div>
                 </div>
@@ -206,7 +225,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                   <div className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">
-                    15+
+                    20+
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Algorithms</div>
                 </div>
@@ -414,17 +433,36 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-                      <span className="text-white dark:text-gray-900 font-bold text-sm">LA</span>
+                  <div className="flex justify-between items-start gap-4">
+                    <Image
+                      src="/logo/logo.png"
+                      alt="Learn Algo Logo"
+                      width={128}
+                      height={128}
+                      className="rounded-lg dark:invert"
+                    />
+                    <div className="flex-1">
+                      <div className="space-y-2">
+                        <div className="bg-clip-text text-4xl font-black tracking-tight">
+                          LEARN ALGO
+                        </div>
+                        <div className="flex items-center gap-3 text-xl font-semibold text-gray-700 dark:text-gray-300">
+                          <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-bold">
+                            DSA
+                          </span>
+                          <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-bold">
+                            AI
+                          </span>
+                          <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-bold">
+                            ML
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        Interactive algorithm visualizations for developers and learners
+                      </p>
                     </div>
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">
-                      learn-algo
-                    </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Interactive algorithm visualizations for developers and learners
-                  </p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Explore</h4>

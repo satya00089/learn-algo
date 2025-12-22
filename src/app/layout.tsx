@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.learn-algo.com'),
   title: {
-    default: 'learn-algo - Interactive Algorithm Visualizations',
-    template: '%s | learn-algo',
+    default: 'LEARN ALGO - Interactive Algorithm Visualizations',
+    template: '%s | LEARN ALGO',
   },
   description:
     'Master data structures, algorithms, and machine learning through interactive visualizations. Step-by-step exploration of sorting, searching, trees, graphs, regression, clustering, and more.',
@@ -28,26 +28,31 @@ export const metadata: Metadata = {
     'k-means clustering',
     'programming education',
   ],
-  authors: [{ name: 'learn-algo' }],
-  creator: 'learn-algo',
-  publisher: 'learn-algo',
+  authors: [{ name: 'LEARN ALGO' }],
+  creator: 'LEARN ALGO',
+  publisher: 'LEARN ALGO',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: '/logo/logo.png',
+    shortcut: '/logo/logo.png',
+    apple: '/logo/logo.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://www.learn-algo.com',
-    title: 'learn-algo - Interactive Algorithm Visualizations',
+    title: 'LEARN ALGO - Interactive Algorithm Visualizations',
     description:
       'Master algorithms through interactive visualizations. See every step, understand every concept.',
-    siteName: 'learn-algo',
+    siteName: 'LEARN ALGO',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'learn-algo - Interactive Algorithm Visualizations',
+    title: 'LEARN ALGO - Interactive Algorithm Visualizations',
     description:
       'Master algorithms through interactive visualizations. See every step, understand every concept.',
   },
