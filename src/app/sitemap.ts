@@ -3,46 +3,164 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.learn-algo.com'
 
-  // Define all your static routes
-  const routes = [
-    '',
-    '/dsa',
-    '/dsa/array-operations',
-    '/dsa/binary-search-tree',
-    '/dsa/bit-manipulation',
-    '/dsa/bubble-sort',
-    '/dsa/heap-sort',
-    '/dsa/insertion-sort',
-    '/dsa/merge-sort',
-    '/dsa/queue',
-    '/dsa/quick-sort',
-    '/dsa/recursion',
-    '/dsa/selection-sort',
-    '/dsa/stack',
-    '/dsa/strings',
-    '/ml',
-    '/ml/gradient-descent',
-    '/ml/k-means',
-    '/ml/knn',
-    '/ml/linear-regression',
-    '/ml/logistic-regression',
-    '/ml/polynomial-regression',
-    '/ai',
-  ].map((route) => {
-    let priority = 0.9
-    if (route === '') {
-      priority = 1
-    } else if (route.includes('/dsa/') || route.includes('/ml/')) {
-      priority = 0.8
-    }
-
-    return {
-      url: `${baseUrl}${route}`,
-      lastModified: new Date(),
+  // Define all your static routes with enhanced metadata
+  const routeConfig = [
+    {
+      url: '',
+      priority: 1,
+      changeFrequency: 'daily' as const,
+      description: 'Interactive algorithm visualizations for learning data structures, machine learning, and AI concepts',
+    },
+    {
+      url: '/dsa',
+      priority: 0.9,
       changeFrequency: 'weekly' as const,
-      priority,
-    }
-  })
+      description: 'Data Structures & Algorithms - Interactive visualizations of fundamental computer science concepts',
+    },
+    {
+      url: '/dsa/array-operations',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Learn array operations with step-by-step interactive visualizations and examples',
+    },
+    {
+      url: '/dsa/binary-search-tree',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Binary Search Tree operations - insertion, deletion, traversal with visual demonstrations',
+    },
+    {
+      url: '/dsa/bit-manipulation',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Bit manipulation techniques and algorithms with interactive bitwise operation visualizations',
+    },
+    {
+      url: '/dsa/bubble-sort',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Bubble Sort algorithm - step-by-step visualization of this fundamental sorting technique',
+    },
+    {
+      url: '/dsa/heap-sort',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Heap Sort algorithm - understand heap data structure and sorting with visual aids',
+    },
+    {
+      url: '/dsa/insertion-sort',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Insertion Sort algorithm - interactive visualization of comparison-based sorting',
+    },
+    {
+      url: '/dsa/merge-sort',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Merge Sort algorithm - divide and conquer sorting with step-by-step breakdown',
+    },
+    {
+      url: '/dsa/queue',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Queue data structure - FIFO operations with interactive demonstrations',
+    },
+    {
+      url: '/dsa/quick-sort',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Quick Sort algorithm - pivot-based sorting with partitioning visualizations',
+    },
+    {
+      url: '/dsa/recursion',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Recursion concepts - understand recursive functions with call stack visualizations',
+    },
+    {
+      url: '/dsa/selection-sort',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Selection Sort algorithm - minimum element selection with visual sorting steps',
+    },
+    {
+      url: '/dsa/stack',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Stack data structure - LIFO operations with interactive push/pop demonstrations',
+    },
+    {
+      url: '/dsa/strings',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'String algorithms and operations - pattern matching, manipulation with visualizations',
+    },
+    {
+      url: '/ml',
+      priority: 0.9,
+      changeFrequency: 'weekly' as const,
+      description: 'Machine Learning algorithms - interactive visualizations of ML concepts and techniques',
+    },
+    {
+      url: '/ml/gradient-descent',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Gradient Descent optimization - understand convergence and parameter updates visually',
+    },
+    {
+      url: '/ml/k-means',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'K-Means clustering algorithm - centroid-based clustering with step-by-step visualization',
+    },
+    {
+      url: '/ml/knn',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'K-Nearest Neighbors classification - distance-based learning with interactive examples',
+    },
+    {
+      url: '/ml/linear-regression',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Linear Regression - understand line fitting and prediction with visual demonstrations',
+    },
+    {
+      url: '/ml/logistic-regression',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Logistic Regression - binary classification with sigmoid function visualizations',
+    },
+    {
+      url: '/ml/minmax-scaler',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Min-Max Scaler - feature scaling technique for machine learning preprocessing',
+    },
+    {
+      url: '/ml/polynomial-regression',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Polynomial Regression - curve fitting beyond linear relationships',
+    },
+    {
+      url: '/ml/standard-scaler',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Standard Scaler - Z-score normalization for feature standardization',
+    },
+    {
+      url: '/ai',
+      priority: 0.9,
+      changeFrequency: 'weekly' as const,
+      description: 'Artificial Intelligence concepts - explore AI algorithms and intelligent systems',
+    },
+  ]
 
-  return routes
+  return routeConfig.map((route) => ({
+    url: `${baseUrl}${route.url}`,
+    lastModified: new Date(),
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
+  }))
 }
