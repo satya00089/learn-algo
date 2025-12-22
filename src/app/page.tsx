@@ -496,7 +496,7 @@ export default function Home() {
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">About</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    Free & Open Source • MIT License
+                    Free & Open Source
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Built for developers, by developers
