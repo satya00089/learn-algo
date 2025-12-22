@@ -75,7 +75,7 @@ export default function Home() {
                 <div className="lg:col-span-5 space-y-8">
                   <div className="space-y-4">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      See algorithms
+                      See algorithms{" "}
                       <span className="block mt-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         in motion
                       </span>
@@ -179,9 +179,9 @@ export default function Home() {
                         { h: 70, color: 'bg-purple-400', delay: 900 },
                         { h: 40, color: 'bg-blue-400', delay: 1000 },
                         { h: 65, color: 'bg-purple-500', delay: 1100 },
-                      ].map((bar, idx) => (
+                      ].map((bar) => (
                         <div
-                          key={`bar-${idx}`}
+                          key={`bar-${bar.delay}`}
                           className={`flex-1 ${bar.color} rounded-t transition-all duration-700 ease-in-out`}
                           style={{
                             height: `${bar.h}%`,
