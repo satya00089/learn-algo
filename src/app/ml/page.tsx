@@ -71,7 +71,7 @@ export default function MLPage() {
       iconType: 'image' as const,
       color: 'text-orange-600 dark:text-orange-400',
       darkFilter: 'dark:invert',
-      difficulty: 'Beginner',
+      difficulty: 'Intermediate',
       comingSoon: false,
     },
     {
@@ -82,7 +82,7 @@ export default function MLPage() {
       iconType: 'image' as const,
       color: 'text-pink-600 dark:text-pink-400',
       darkFilter: 'dark:invert',
-      difficulty: 'Beginner',
+      difficulty: 'Intermediate',
       comingSoon: false,
     },
     {
