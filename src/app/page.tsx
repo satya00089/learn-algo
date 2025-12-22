@@ -72,10 +72,10 @@ export default function Home() {
             <div className="">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                 {/* Left Column - Content */}
-                <div className="lg:col-span-5 space-y-8">
+                <div className="lg:col-span-6 space-y-8">
                   <div className="space-y-4">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      See algorithms
+                      See algorithms{" "}
                       <span className="block mt-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         in motion
                       </span>
@@ -150,7 +150,7 @@ export default function Home() {
                 </div>
 
                 {/* Right Column - Visualization Canvas */}
-                <div className="lg:col-span-7">
+                <div className="lg:col-span-6">
                   <div className="relative aspect-[4/3] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden">
                     {/* Canvas Header - Browser-like */}
                     <div className="absolute top-0 left-0 right-0 h-10 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 gap-2">
@@ -179,9 +179,9 @@ export default function Home() {
                         { h: 70, color: 'bg-purple-400', delay: 900 },
                         { h: 40, color: 'bg-blue-400', delay: 1000 },
                         { h: 65, color: 'bg-purple-500', delay: 1100 },
-                      ].map((bar, idx) => (
+                      ].map((bar) => (
                         <div
-                          key={`bar-${idx}`}
+                          key={`bar-${bar.delay}`}
                           className={`flex-1 ${bar.color} rounded-t transition-all duration-700 ease-in-out`}
                           style={{
                             height: `${bar.h}%`,
@@ -496,7 +496,7 @@ export default function Home() {
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">About</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    Free & Open Source • MIT License
+                    Free & Open Source
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Built for developers, by developers
