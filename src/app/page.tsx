@@ -46,9 +46,7 @@ export default function Home() {
                 className="rounded-lg dark:invert"
               />
               <div className="space-y-1">
-                <div className="bg-clip-text text-3xl font-black tracking-tight">
-                  LEARN ALGO
-                </div>
+                <div className="bg-clip-text text-3xl font-black tracking-tight">LEARN ALGO</div>
                 <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
                   <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-bold">
                     DSA
@@ -75,7 +73,7 @@ export default function Home() {
                 <div className="lg:col-span-6 space-y-8">
                   <div className="space-y-4">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      See algorithms{" "}
+                      See algorithms{' '}
                       <span className="block mt-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         in motion
                       </span>

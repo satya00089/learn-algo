@@ -9,49 +9,57 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: '',
       priority: 1,
       changeFrequency: 'daily' as const,
-      description: 'Interactive algorithm visualizations for learning data structures, machine learning, and AI concepts',
+      description:
+        'Interactive algorithm visualizations for learning data structures, machine learning, and AI concepts',
     },
     {
       url: '/dsa',
       priority: 0.9,
       changeFrequency: 'weekly' as const,
-      description: 'Data Structures & Algorithms - Interactive visualizations of fundamental computer science concepts',
+      description:
+        'Data Structures & Algorithms - Interactive visualizations of fundamental computer science concepts',
     },
     {
       url: '/dsa/array-operations',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Learn array operations with step-by-step interactive visualizations and examples',
+      description:
+        'Learn array operations with step-by-step interactive visualizations and examples',
     },
     {
       url: '/dsa/binary-search-tree',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Binary Search Tree operations - insertion, deletion, traversal with visual demonstrations',
+      description:
+        'Binary Search Tree operations - insertion, deletion, traversal with visual demonstrations',
     },
     {
       url: '/dsa/bit-manipulation',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Bit manipulation techniques and algorithms with interactive bitwise operation visualizations',
+      description:
+        'Bit manipulation techniques and algorithms with interactive bitwise operation visualizations',
     },
     {
       url: '/dsa/bubble-sort',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Bubble Sort algorithm - step-by-step visualization of this fundamental sorting technique',
+      description:
+        'Bubble Sort algorithm - step-by-step visualization of this fundamental sorting technique',
     },
     {
       url: '/dsa/heap-sort',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Heap Sort algorithm - understand heap data structure and sorting with visual aids',
+      description:
+        'Heap Sort algorithm - understand heap data structure and sorting with visual aids',
     },
     {
       url: '/dsa/insertion-sort',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Insertion Sort algorithm - interactive visualization of comparison-based sorting',
+      description:
+        'Insertion Sort algorithm - interactive visualization of comparison-based sorting',
     },
     {
       url: '/dsa/merge-sort',
@@ -75,7 +83,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: '/dsa/recursion',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Recursion concepts - understand recursive functions with call stack visualizations',
+      description:
+        'Recursion concepts - understand recursive functions with call stack visualizations',
     },
     {
       url: '/dsa/selection-sort',
@@ -87,49 +96,57 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: '/dsa/stack',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Stack data structure - LIFO operations with interactive push/pop demonstrations',
+      description:
+        'Stack data structure - LIFO operations with interactive push/pop demonstrations',
     },
     {
       url: '/dsa/strings',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'String algorithms and operations - pattern matching, manipulation with visualizations',
+      description:
+        'String algorithms and operations - pattern matching, manipulation with visualizations',
     },
     {
       url: '/ml',
       priority: 0.9,
       changeFrequency: 'weekly' as const,
-      description: 'Machine Learning algorithms - interactive visualizations of ML concepts and techniques',
+      description:
+        'Machine Learning algorithms - interactive visualizations of ML concepts and techniques',
     },
     {
       url: '/ml/gradient-descent',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Gradient Descent optimization - understand convergence and parameter updates visually',
+      description:
+        'Gradient Descent optimization - understand convergence and parameter updates visually',
     },
     {
       url: '/ml/k-means',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'K-Means clustering algorithm - centroid-based clustering with step-by-step visualization',
+      description:
+        'K-Means clustering algorithm - centroid-based clustering with step-by-step visualization',
     },
     {
       url: '/ml/knn',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'K-Nearest Neighbors classification - distance-based learning with interactive examples',
+      description:
+        'K-Nearest Neighbors classification - distance-based learning with interactive examples',
     },
     {
       url: '/ml/linear-regression',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Linear Regression - understand line fitting and prediction with visual demonstrations',
+      description:
+        'Linear Regression - understand line fitting and prediction with visual demonstrations',
     },
     {
       url: '/ml/logistic-regression',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Logistic Regression - binary classification with sigmoid function visualizations',
+      description:
+        'Logistic Regression - binary classification with sigmoid function visualizations',
     },
     {
       url: '/ml/minmax-scaler',
@@ -153,7 +170,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: '/ai',
       priority: 0.9,
       changeFrequency: 'weekly' as const,
-      description: 'Artificial Intelligence concepts - explore AI algorithms and intelligent systems',
+      description:
+        'Artificial Intelligence concepts - explore AI algorithms and intelligent systems',
     },
   ]
 
