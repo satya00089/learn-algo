@@ -44,6 +44,7 @@ export default function Home() {
                 width={64}
                 height={64}
                 className="rounded-lg dark:invert"
+                priority
               />
               <div className="space-y-1">
                 <div className="bg-clip-text text-3xl font-black tracking-tight">LEARN ALGO</div>
@@ -83,16 +84,27 @@ export default function Home() {
                       understanding. Watch sorting, searching, and ML algorithms execute
                       step-by-step.
                     </p>
+                    <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                      From confused to confident — master algorithms in minutes, not months.
+                    </p>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link
                       href="/dsa"
-                      className="inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-lg shadow-gray-900/10 dark:shadow-white/10"
+                      className="group inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-lg shadow-gray-900/10 dark:shadow-white/10 hover:shadow-xl hover:scale-105"
+                      onClick={() => {
+                        if (globalThis.window !== undefined && (globalThis as any).gtag) {
+                          ;(globalThis as any).gtag('event', 'click', {
+                            event_category: 'CTA',
+                            event_label: 'Start Learning - Hero',
+                          })
+                        }
+                      }}
                     >
-                      Start Learning
+                      Start Your First Algorithm
                       <svg
-                        className="ml-2 w-5 h-5"
+                        className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -109,12 +121,35 @@ export default function Home() {
                       href="#modules"
                       className="inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
                     >
-                      View Modules
+                      Explore All Modules
                     </Link>
                   </div>
 
+                  {/* Scroll Indicator */}
+                  <div className="flex justify-center pt-8">
+                    <a
+                      href="#how-it-works"
+                      className="flex flex-col items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors animate-bounce"
+                    >
+                      <span>Scroll to explore</span>
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+
                   {/* Trust Indicators */}
-                  <div className="flex items-center gap-8 pt-4 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-8 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-2">
                       <svg
                         className="w-5 h-5 text-green-600"
@@ -149,7 +184,7 @@ export default function Home() {
 
                 {/* Right Column - Visualization Canvas */}
                 <div className="lg:col-span-6">
-                  <div className="relative aspect-[4/3] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden">
+                  <div className="relative aspect-[4/3] bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden group hover:shadow-3xl transition-shadow">
                     {/* Canvas Header - Browser-like */}
                     <div className="absolute top-0 left-0 right-0 h-10 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 gap-2">
                       <div className="flex gap-1.5">
@@ -217,6 +252,232 @@ export default function Home() {
 
           <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
 
+          {/* How It Works Section */}
+          <section id="how-it-works" className="relative z-10 py-16 px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  How It Works
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                  Three simple steps to master any algorithm
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Step 1 */}
+                <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-purple-500 dark:hover:border-purple-500 transition-all hover:shadow-lg group">
+                  <div className="mt-6">
+                    <div className="mb-4">
+                      <svg
+                        className="w-12 h-12 text-purple-500 group-hover:scale-110 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                      Choose Algorithm
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      Select from 20+ algorithms across DSA, ML, and AI. Each comes with
+                      customizable parameters and multiple datasets.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg group">
+                  <div className="mt-6">
+                    <div className="mb-4">
+                      <svg
+                        className="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                      Watch & Interact
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      See every step animated in real-time. Pause, step through, adjust speed, and
+                      modify parameters on the fly.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-green-500 dark:hover:border-green-500 transition-all hover:shadow-lg group">
+                  <div className="mt-6">
+                    <div className="mb-4">
+                      <svg
+                        className="w-12 h-12 text-green-500 group-hover:scale-110 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                      Master Concepts
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      Build intuition through visualization. Understand time complexity, space
+                      trade-offs, and real-world applications.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
+
+          {/* Who It's For Section */}
+          <section className="relative z-10 py-16 px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  Perfect For Everyone
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                  Whether you&apos;re starting out or leveling up, LEARN ALGO adapts to your journey
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Students */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center mb-4">
+                    <svg
+                      className="w-6 h-6 text-purple-600 dark:text-purple-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    CS Students
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Ace your data structures and algorithms courses with visual understanding
+                  </p>
+                </div>
+
+                {/* Self-taught */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center mb-4">
+                    <svg
+                      className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    Self-Taught Devs
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Fill knowledge gaps and build confidence in fundamental concepts
+                  </p>
+                </div>
+
+                {/* Interview Prep */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors">
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center mb-4">
+                    <svg
+                      className="w-6 h-6 text-green-600 dark:text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    Interview Prep
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Master FAANG-level algorithm questions with deep visual intuition
+                  </p>
+                </div>
+
+                {/* Educators */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors">
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center mb-4">
+                    <svg
+                      className="w-6 h-6 text-orange-600 dark:text-orange-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    Educators
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Enhance lessons with engaging visualizations that students love
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
+
           {/* Social Proof / Quick Stats */}
           <section className="relative z-10 py-8 px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -266,7 +527,18 @@ export default function Home() {
               {/* Module Cards */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* DSA Card */}
-                <Link href="/dsa" className="group">
+                <Link
+                  href="/dsa"
+                  className="group"
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && window.gtag) {
+                      window.gtag('event', 'click', {
+                        event_category: 'Module Card',
+                        event_label: 'DSA',
+                      })
+                    }
+                  }}
+                >
                   <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-xl">
                     <div className="p-8">
                       <div className="mb-6">
@@ -319,7 +591,18 @@ export default function Home() {
                 </Link>
 
                 {/* ML Card */}
-                <Link href="/ml" className="group">
+                <Link
+                  href="/ml"
+                  className="group"
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && window.gtag) {
+                      window.gtag('event', 'click', {
+                        event_category: 'Module Card',
+                        event_label: 'ML',
+                      })
+                    }
+                  }}
+                >
                   <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl">
                     <div className="p-8">
                       <div className="mb-6">
@@ -426,6 +709,162 @@ export default function Home() {
             </div>
           </section>
 
+          <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
+
+          {/* FAQ Section */}
+          <section className="relative z-10 py-16 px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  Frequently Asked Questions
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400">
+                  Everything you need to know about LEARN ALGO
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {/* FAQ 1 */}
+                <details className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      Do I need programming experience to use LEARN ALGO?
+                    </span>
+                    <svg
+                      className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
+                    No! LEARN ALGO is designed for all skill levels. While basic programming
+                    knowledge helps, our visualizations make algorithms intuitive even for
+                    beginners. Each algorithm includes explanations and you can learn by watching
+                    and experimenting.
+                  </div>
+                </details>
+
+                {/* FAQ 2 */}
+                <details className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      Are new algorithms added regularly?
+                    </span>
+                    <svg
+                      className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
+                    Yes! We&apos;re constantly expanding our library. Currently, we have 20+
+                    algorithms across DSA and ML domains, with AI algorithms coming soon. We
+                    prioritize adding algorithms based on user requests and educational value.
+                  </div>
+                </details>
+
+                {/* FAQ 3 */}
+                <details className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      How long does it take to learn an algorithm?
+                    </span>
+                    <svg
+                      className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
+                    Most users gain a solid understanding of an algorithm in 15-30 minutes through
+                    our interactive visualizations. For deeper mastery, we recommend spending 1-2
+                    hours experimenting with different parameters, datasets, and edge cases.
+                  </div>
+                </details>
+
+                {/* FAQ 4 */}
+                <details className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      Can I use this for interview preparation?
+                    </span>
+                    <svg
+                      className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
+                    Absolutely! LEARN ALGO is perfect for technical interview prep. Our
+                    visualizations help you build the intuition needed to solve algorithm problems
+                    in interviews. Many users report improved performance on coding challenges after
+                    using our platform.
+                  </div>
+                </details>
+
+                {/* FAQ 5 */}
+                <details className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      What makes LEARN ALGO different from other resources?
+                    </span>
+                    <svg
+                      className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
+                    Unlike static tutorials, LEARN ALGO provides fully interactive, real-time
+                    visualizations. You control the speed, pause at any step, modify parameters, and
+                    experiment with your own data. Our focus is on building intuition through visual
+                    understanding, not just memorizing code.
+                  </div>
+                </details>
+              </div>
+            </div>
+          </section>
+
           {/* Footer */}
           <footer className="relative z-10 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
@@ -493,12 +932,35 @@ export default function Home() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">About</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    Free & Open Source
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Built for developers, by developers
-                  </p>
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>Free & Open Source</li>
+                    <li>Built for developers, by developers</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                  <p>&copy; 2025 LEARN ALGO. All rights reserved.</p>
+                  <div className="flex gap-6">
+                    <Link
+                      href="/privacy"
+                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
+                      Privacy Policy
+                    </Link>
+                    <Link
+                      href="/terms"
+                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
+                      Terms of Service
+                    </Link>
+                    <Link
+                      href="/contact"
+                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
+                      Contact
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
