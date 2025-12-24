@@ -44,7 +44,7 @@ export default function Home() {
                 width={64}
                 height={64}
                 className="rounded-lg dark:invert"
-                priority
+                apple-mobile-web-app-capable
               />
               <div className="space-y-1">
                 <div className="bg-clip-text text-3xl font-black tracking-tight">LEARN ALGO</div>

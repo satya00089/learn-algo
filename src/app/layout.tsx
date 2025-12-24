@@ -3,6 +3,9 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import Script from 'next/script'
+import { PWARegister } from '@/components/PWARegister'
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
+import { StructuredData } from '@/components/StructuredData'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -97,6 +100,7 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
   },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -159,7 +163,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body className={inter.className} suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <PWARegister />
+        <Providers>
+          {children}
+          <PWAInstallPrompt />
+        </Providers>
+        <StructuredData />
       </body>
     </html>
   )
