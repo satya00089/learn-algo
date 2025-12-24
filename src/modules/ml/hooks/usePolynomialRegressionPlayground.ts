@@ -8,6 +8,7 @@ export interface PolynomialRegressionPlaygroundState {
   learningRate: number
   maxIterations: number
   showResiduals: boolean
+  compareMode: boolean
 }
 
 export function usePolynomialRegressionPlayground() {
@@ -18,6 +19,7 @@ export function usePolynomialRegressionPlayground() {
   const [learningRate, setLearningRate] = useState(0.01)
   const [maxIterations, setMaxIterations] = useState(1000)
   const [showResiduals, setShowResiduals] = useState(false)
+  const [compareMode, setCompareMode] = useState(false)
 
   return {
     animationSpeed,
@@ -34,5 +36,7 @@ export function usePolynomialRegressionPlayground() {
     setMaxIterations,
     showResiduals,
     setShowResiduals,
+    compareMode,
+    setCompareMode,
   }
 }
