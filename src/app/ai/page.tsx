@@ -35,6 +35,7 @@ export default function AIPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Advanced',
       comingSoon: true,
+      beta: false,
     },
   ]
 
@@ -86,15 +87,22 @@ export default function AIPage() {
                       <div className="text-4xl">{algo.icon}</div>
                     )}
                   </div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-left mb-2">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">
                       {algo.title}
                     </h2>
-                    {algo.comingSoon && (
-                      <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                        Soon
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {algo.comingSoon && (
+                        <span className="text-xs bg-yellow-100 text-yellow-800 mx-2 px-2 py-1 rounded">
+                          Soon
+                        </span>
+                      )}
+                      {algo.beta && (
+                        <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mx-2 px-2 py-1 rounded font-semibold">
+                          Beta
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
                     {algo.description}
