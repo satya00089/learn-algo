@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
@@ -8,7 +9,7 @@ export function PWAInstallPrompt() {
 
   useEffect(() => {
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (globalThis.matchMedia('(display-mode: standalone)').matches) {
       return
     }
 
@@ -19,10 +20,10 @@ export function PWAInstallPrompt() {
       setShowInstallPrompt(true)
     }
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    globalThis.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      globalThis.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     }
   }, [])
 
@@ -50,7 +51,7 @@ export function PWAInstallPrompt() {
   useEffect(() => {
     const dismissed = localStorage.getItem('pwa-install-dismissed')
     if (dismissed) {
-      const dismissedTime = parseInt(dismissed)
+      const dismissedTime = Number.parseInt(dismissed)
       const sevenDays = 7 * 24 * 60 * 60 * 1000
       if (Date.now() - dismissedTime < sevenDays) {
         setShowInstallPrompt(false)
@@ -65,20 +66,14 @@ export function PWAInstallPrompt() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
+            <div className="w-12 h-12 rounded-xl overflow-hidden bg-white dark:bg-gray-900 flex items-center justify-center relative">
+              <Image
+                src="/logo/logo.png"
+                alt="LEARN ALGO Logo"
+                width={48}
+                height={48}
+                className="object-contain"
+              />
             </div>
           </div>
           <div className="flex-1 min-w-0">
