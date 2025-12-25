@@ -24,6 +24,13 @@ export function RecursionPlayground() {
   const [nInput, setNInput] = useState('5')
   const [baseInput, setBaseInput] = useState('2')
   const [expInput, setExpInput] = useState('3')
+  
+  // Pan and zoom state for Fibonacci tree
+  const [pan, setPan] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const svgContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     engineRef.current = new RecursionEngine()
@@ -53,6 +60,9 @@ export function RecursionPlayground() {
     if (playIntervalRef.current) {
       clearInterval(playIntervalRef.current)
     }
+    // Reset pan and zoom for Fibonacci tree
+    setPan({ x: 0, y: 0 })
+    setZoom(1)
   }
 
   const handlePlayPause = () => {
@@ -117,6 +127,257 @@ export function RecursionPlayground() {
     setEngineState(engineRef.current.getState())
   }
 
+  const renderFibonacciTree = () => {
+    if (!engineState || engineState.callStack.length === 0) return null
+
+    // Mouse event handlers for pan and zoom
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+      setIsDragging(true)
+      setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y })
+    }
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isDragging) {
+        setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y })
+      }
+    }
+
+    const handleMouseUp = () => {
+      setIsDragging(false)
+    }
+
+    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
+      setZoom((prevZoom) => Math.max(0.1, Math.min(prevZoom * zoomFactor, 5)))
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      const panStep = 20
+      const zoomStep = 0.1
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          setPan((prev) => ({ ...prev, x: prev.x + panStep }))
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          setPan((prev) => ({ ...prev, x: prev.x - panStep }))
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setPan((prev) => ({ ...prev, y: prev.y + panStep }))
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          setPan((prev) => ({ ...prev, y: prev.y - panStep }))
+          break
+        case '+':
+        case '=':
+          e.preventDefault()
+          setZoom((prev) => Math.min(prev + zoomStep, 5))
+          break
+        case '-':
+        case '_':
+          e.preventDefault()
+          setZoom((prev) => Math.max(prev - zoomStep, 0.1))
+          break
+        case '0':
+          e.preventDefault()
+          setPan({ x: 0, y: 0 })
+          setZoom(1)
+          break
+      }
+    }
+
+    // Build a tree structure from call stack
+    interface TreeNode {
+      n: number
+      result?: number
+      state: string
+      children: TreeNode[]
+      depth: number
+      x?: number
+      y?: number
+    }
+
+    const renderNode = (node: TreeNode, x: number, y: number, width: number): JSX.Element => {
+      const nodeSize = 50
+      const childY = y + 100
+      const childCount = node.children.length
+      const childSpacing = width / Math.max(childCount, 1)
+
+      let fillColor = '#E5E7EB' // gray-200
+      let strokeColor = '#9CA3AF' // gray-400
+      let textFill = '#1F2937' // gray-800
+
+      if (node.state === 'active') {
+        fillColor = '#60A5FA' // blue-400
+        strokeColor = '#2563EB' // blue-600
+        textFill = '#FFFFFF' // white
+      } else if (node.state === 'waiting' || node.state === 'waiting-second') {
+        fillColor = '#FCD34D' // yellow-300
+        strokeColor = '#F59E0B' // yellow-500
+        textFill = '#1F2937' // gray-900
+      } else if (node.state === 'complete') {
+        fillColor = '#34D399' // green-400
+        strokeColor = '#10B981' // green-500
+        textFill = '#FFFFFF' // white
+      }
+
+      return (
+        <g key={`${node.n}-${node.depth}-${x}-${y}`}>
+          {/* Lines to children */}
+          {node.children.map((_, idx) => {
+            const childX = x - width / 2 + (idx + 0.5) * childSpacing
+            return (
+              <line
+                key={`line-${idx}`}
+                x1={x}
+                y1={y + nodeSize / 2}
+                x2={childX}
+                y2={childY - nodeSize / 2}
+                stroke="#9CA3AF"
+                strokeWidth="2"
+              />
+            )
+          })}
+
+          {/* Node circle */}
+          <circle
+            cx={x}
+            cy={y}
+            r={nodeSize / 2}
+            fill={fillColor}
+            stroke={strokeColor}
+            strokeWidth="2"
+          />
+
+          {/* Node text */}
+          <text x={x} y={y - 5} textAnchor="middle" fill={textFill} className="text-xs font-bold">
+            fib({node.n})
+          </text>
+          {node.result !== undefined && (
+            <text
+              x={x}
+              y={y + 10}
+              textAnchor="middle"
+              fill={textFill}
+              className="text-[10px] font-semibold"
+            >
+              = {node.result}
+            </text>
+          )}
+
+          {/* Render children */}
+          {node.children.map((child, idx) => {
+            const childX = x - width / 2 + (idx + 0.5) * childSpacing
+            return renderNode(child, childX, childY, childSpacing)
+          })}
+        </g>
+      )
+    }
+
+    // Build a complete tree showing all potential recursive calls
+    const buildCompleteTree = (n: number, maxDepth: number): TreeNode => {
+      const node: TreeNode = {
+        n,
+        state: 'inactive',
+        children: [],
+        depth: 0,
+      }
+
+      if (n <= 1 || maxDepth <= 0) {
+        node.result = n
+        return node
+      }
+
+      // Add both children for visualization
+      if (n > 1) {
+        node.children.push(buildCompleteTree(n - 1, maxDepth - 1))
+        node.children.push(buildCompleteTree(n - 2, maxDepth - 1))
+      }
+
+      return node
+    }
+
+    // Update tree with current call stack state
+    const updateTreeWithCallStack = (tree: TreeNode, callStack: typeof engineState.callStack) => {
+      const updateNode = (node: TreeNode) => {
+        const matchingCall = callStack.find((c) => c.n === node.n)
+        if (matchingCall) {
+          node.state = matchingCall.state
+          node.result = matchingCall.result
+        }
+        node.children.forEach(updateNode)
+      }
+
+      updateNode(tree)
+    }
+
+    const tree = buildCompleteTree(engineState.n, Math.min(engineState.n, 5))
+    updateTreeWithCallStack(tree, engineState.callStack)
+
+    // Calculate tree depth
+    const getTreeDepth = (node: TreeNode): number => {
+      if (node.children.length === 0) return 1
+      return 1 + Math.max(...node.children.map(getTreeDepth))
+    }
+
+    const treeDepth = getTreeDepth(tree)
+    const svgWidth = Math.min(1200, Math.max(600, Math.pow(2, engineState.n) * 80))
+    const svgHeight = treeDepth * 100 + 100 // Add padding at bottom
+
+    return (
+      <div className="space-y-2">
+        <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Fibonacci Recursion Tree
+        </div>
+        <div
+          ref={svgContainerRef}
+          role="application"
+          aria-label="Interactive Fibonacci recursion tree - drag to pan, scroll to zoom. Use arrow keys to pan, +/- to zoom, 0 to reset"
+          tabIndex={0}
+          className="bg-white dark:bg-gray-900 rounded-lg border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center p-4 overflow-hidden cursor-grab active:cursor-grabbing h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
+          onKeyDown={handleKeyDown}
+        >
+          <svg width={svgWidth} height={svgHeight}>
+            <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+              {renderNode(tree, svgWidth / 2, 60, svgWidth * 0.9)}
+            </g>
+          </svg>
+        </div>
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 flex items-center justify-between">
+          <span className="inline-flex items-center gap-2">
+            <span className="w-3 h-3 bg-blue-400 rounded-full"></span> Active{' '}
+            <span className="w-3 h-3 bg-yellow-300 rounded-full ml-2"></span> Waiting{' '}
+            <span className="w-3 h-3 bg-green-400 rounded-full ml-2"></span> Complete{' '}
+            <span className="w-3 h-3 bg-gray-200 dark:bg-gray-700 rounded-full ml-2"></span> Not yet
+            called{' '}
+          </span>
+          <button
+            onClick={() => {
+              setPan({ x: 0, y: 0 })
+              setZoom(1)
+            }}
+            className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded transition-colors"
+          >
+            Reset View
+          </button>
+        </div>
+        <div className="text-xs text-gray-500 dark:text-gray-500 italic">
+          💡 Drag to pan, scroll to zoom • Keyboard: Arrow keys to pan, +/- to zoom, 0 to reset
+        </div>
+      </div>
+    )
+  }
+
   const renderCallStack = () => {
     if (!engineState || engineState.callStack.length === 0) return null
 
@@ -136,7 +397,7 @@ export function RecursionPlayground() {
             if (call.state === 'active') {
               bgColor = 'bg-blue-100 dark:bg-blue-900/30'
               borderColor = 'border-blue-500'
-            } else if (call.state === 'waiting') {
+            } else if (call.state === 'waiting' || call.state === 'waiting-second') {
               bgColor = 'bg-yellow-100 dark:bg-yellow-900/30'
               borderColor = 'border-yellow-500'
             } else if (call.state === 'complete') {
@@ -308,28 +569,13 @@ export function RecursionPlayground() {
 
             {/* Visualization */}
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 overflow-auto">
-              {engineState && engineState.operation ? (
+              {engineState?.operation ? (
                 <div>
                   {engineState.operation === 'TOWER_OF_HANOI' && engineState.towers
                     ? renderTowerOfHanoi()
-                    : renderCallStack()}
-
-                  {engineState.result > 0 && (
-                    <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                      <div className="text-sm font-semibold text-green-900 dark:text-green-300 mb-1">
-                        Final Result:
-                      </div>
-                      <div className="text-3xl font-mono font-bold text-green-700 dark:text-green-400">
-                        {engineState.result}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="text-sm text-blue-900 dark:text-blue-300">
-                      {engineState.message}
-                    </div>
-                  </div>
+                    : engineState.operation === 'FIBONACCI'
+                      ? renderFibonacciTree()
+                      : renderCallStack()}
 
                   {engineState.moves && engineState.moves.length > 0 && (
                     <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg max-h-40 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-purple-100 dark:[&::-webkit-scrollbar-track]:bg-purple-900/30 [&::-webkit-scrollbar-thumb]:bg-purple-300 dark:[&::-webkit-scrollbar-thumb]:bg-purple-700 [&::-webkit-scrollbar-thumb]:rounded">
@@ -365,8 +611,11 @@ export function RecursionPlayground() {
             <ControlGroup title="Input Parameters">
               <div className="space-y-2">
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">N (1-10)</label>
+                  <label htmlFor="n-input" className="text-xs text-gray-600 dark:text-gray-400">
+                    N (1-10)
+                  </label>
                   <input
+                    id="n-input"
                     type="number"
                     value={nInput}
                     onChange={(e) => setNInput(e.target.value)}
@@ -376,10 +625,11 @@ export function RecursionPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                  <label htmlFor="base-input" className="text-xs text-gray-600 dark:text-gray-400">
                     Base (for Power)
                   </label>
                   <input
+                    id="base-input"
                     type="number"
                     value={baseInput}
                     onChange={(e) => setBaseInput(e.target.value)}
@@ -389,10 +639,11 @@ export function RecursionPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                  <label htmlFor="exp-input" className="text-xs text-gray-600 dark:text-gray-400">
                     Exponent (for Power)
                   </label>
                   <input
+                    id="exp-input"
                     type="number"
                     value={expInput}
                     onChange={(e) => setExpInput(e.target.value)}
@@ -439,7 +690,7 @@ export function RecursionPlayground() {
             </ControlGroup>
 
             {/* Current State */}
-            {engineState && engineState.operation && (
+            {engineState?.operation && (
               <ControlGroup title="Current State">
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
@@ -463,7 +714,7 @@ export function RecursionPlayground() {
             )}
 
             {/* Debug Info */}
-            {isDebugMode && engineState && engineState.history.length > 0 && (
+            {isDebugMode && engineState?.history.length && (
               <ControlGroup title="Debug History">
                 <div className="space-y-1 max-h-40 overflow-y-auto text-[10px] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-blue-100 dark:[&::-webkit-scrollbar-track]:bg-blue-900/30 [&::-webkit-scrollbar-thumb]:bg-blue-300 dark:[&::-webkit-scrollbar-thumb]:bg-blue-700 [&::-webkit-scrollbar-thumb]:rounded">
                   {engineState.history

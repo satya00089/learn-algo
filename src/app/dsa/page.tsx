@@ -48,7 +48,7 @@ export default function DSAPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       complexity: 'O(2^n)',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: 'Stack (LIFO)',

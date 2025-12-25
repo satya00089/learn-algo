@@ -18,7 +18,13 @@ export interface RecursionCall {
   depth: number
   n: number
   result?: number
-  state: 'active' | 'waiting' | 'complete'
+  state: 'active' | 'waiting' | 'complete' | 'waiting-second'
+  // For Tower of Hanoi
+  from?: string
+  to?: string
+  aux?: string
+  // For Fibonacci tracking
+  waitingForSecond?: boolean
 }
 
 export interface RecursionState {
@@ -123,6 +129,7 @@ export class RecursionEngine {
     }
     this.state.moves = []
     this.addHistory(`TOWER_OF_HANOI(${n}, A, C, B)`)
+    this.state.callStack.push({ depth: 0, n, state: 'active', from: 'A', to: 'C', aux: 'B' })
   }
 
   // Power
@@ -163,7 +170,7 @@ export class RecursionEngine {
     const { phase, callStack } = this.state
 
     if (phase === 'calling') {
-      const current = callStack[callStack.length - 1]
+      const current = callStack.at(-1)!
       if (current.n <= 1) {
         current.result = 1
         current.state = 'complete'
@@ -190,7 +197,7 @@ export class RecursionEngine {
       }
 
       const completed = callStack.pop()!
-      const parent = callStack[callStack.length - 1]
+      const parent = callStack.at(-1)!
       parent.result = parent.n * (completed.result || 1)
       parent.state = 'complete'
       this.addHistory(
@@ -204,58 +211,140 @@ export class RecursionEngine {
     const { phase, callStack } = this.state
 
     if (phase === 'calling') {
-      const current = callStack[callStack.length - 1]
+      const current = callStack.at(-1)!
       if (current.n <= 1) {
         current.result = current.n
         current.state = 'complete'
         this.state.phase = 'returning'
         this.addHistory(`Base case: fib(${current.n}) = ${current.n}`, current.depth)
       } else {
-        // Simplified: just compute iteratively for visualization
-        let a = 0,
-          b = 1
-        for (let i = 2; i <= current.n; i++) {
-          const temp = a + b
-          a = b
-          b = temp
-        }
-        current.result = b
-        current.state = 'complete'
-        this.state.phase = 'returning'
-        this.addHistory(`Computed: fib(${current.n}) = ${b}`, current.depth)
+        // Make first recursive call: fib(n-1)
+        const nextN = current.n - 1
+        const nextDepth = current.depth + 1
+        callStack.push({ depth: nextDepth, n: nextN, state: 'active' })
+        current.state = 'waiting'
+        this.addHistory(`Call: fib(${nextN})`, nextDepth)
       }
       return
     }
 
     if (phase === 'returning') {
-      this.state.result = callStack[0].result || 0
-      this.state.phase = 'complete'
-      this.state.message = `Result: ${this.state.result}`
-      this.state.isOperationComplete = true
-      this.addHistory(`Final result: ${this.state.result}`)
+      if (callStack.length === 1) {
+        this.state.result = callStack[0].result || 0
+        this.state.phase = 'complete'
+        this.state.message = `Result: ${this.state.result}`
+        this.state.isOperationComplete = true
+        this.addHistory(`Final result: ${this.state.result}`)
+        return
+      }
+
+      callStack.pop()
+      const parent = callStack.at(-1)!
+
+      if (parent.state === 'waiting' && !parent.waitingForSecond) {
+        // First recursive call completed, now make second call: fib(n-2)
+        parent.waitingForSecond = true
+
+        const nextN = parent.n - 2
+        const nextDepth = parent.depth + 1
+        callStack.push({ depth: nextDepth, n: nextN, state: 'active' })
+        this.addHistory(`Call: fib(${nextN})`, nextDepth)
+      } else if (parent.waitingForSecond) {
+        // Second recursive call completed, compute result
+        // Need to get both results - this is simplified for visualization
+        const n = parent.n
+        // Calculate fibonacci value
+        if (n <= 1) {
+          parent.result = n
+        } else {
+          // For proper visualization, we'll compute it
+          let a = 0,
+            b = 1
+          for (let i = 2; i <= n; i++) {
+            const temp = a + b
+            a = b
+            b = temp
+          }
+          parent.result = b
+        }
+        parent.state = 'complete'
+        this.addHistory(`Return: fib(${parent.n}) = ${parent.result}`, parent.depth)
+      }
     }
   }
 
   private stepTowerOfHanoi(): void {
-    if (this.state.phase === 'calling') {
-      // Solve iteratively and record moves
-      this.solveTowerOfHanoi(this.state.n, 'A', 'C', 'B')
-      this.state.phase = 'complete'
-      this.state.result = this.state.moves?.length || 0
-      this.state.message = `Solved in ${this.state.result} moves`
-      this.state.isOperationComplete = true
-      this.addHistory(`Total moves: ${this.state.result}`)
-    }
-  }
+    const { phase, callStack } = this.state
 
-  private solveTowerOfHanoi(n: number, from: string, to: string, aux: string): void {
-    if (n === 1) {
-      this.moveDisk(from, to)
+    if (phase === 'calling') {
+      const current = callStack.at(-1)!
+
+      if (current.n === 1) {
+        // Base case: move one disk
+        this.moveDisk(current.from!, current.to!)
+        current.state = 'complete'
+        this.state.phase = 'returning'
+        this.addHistory(`Base case: Move disk from ${current.from} to ${current.to}`, current.depth)
+      } else {
+        // Recursive case: need to move n-1 disks from source to aux first
+        const nextDepth = current.depth + 1
+        current.state = 'waiting'
+        // First recursive call: move n-1 disks from 'from' to 'aux' using 'to'
+        callStack.push({
+          depth: nextDepth,
+          n: current.n - 1,
+          state: 'active',
+          from: current.from,
+          to: current.aux,
+          aux: current.to,
+        })
+        this.addHistory(
+          `Call: hanoi(${current.n - 1}, ${current.from}, ${current.aux}, ${current.to})`,
+          nextDepth
+        )
+      }
       return
     }
-    this.solveTowerOfHanoi(n - 1, from, aux, to)
-    this.moveDisk(from, to)
-    this.solveTowerOfHanoi(n - 1, aux, to, from)
+
+    if (phase === 'returning') {
+      if (callStack.length === 1) {
+        this.state.result = this.state.moves?.length || 0
+        this.state.phase = 'complete'
+        this.state.message = `Solved in ${this.state.result} moves`
+        this.state.isOperationComplete = true
+        this.addHistory(`Total moves: ${this.state.result}`)
+        return
+      }
+
+      callStack.pop()
+      const parent = callStack.at(-1)!
+
+      if (parent.state === 'waiting') {
+        // First recursive call completed, now move the disk
+        this.moveDisk(parent.from!, parent.to!)
+        parent.state = 'waiting-second'
+        this.addHistory(`Move disk from ${parent.from} to ${parent.to}`, parent.depth)
+
+        // Second recursive call: move n-1 disks from 'aux' to 'to' using 'from'
+        const nextDepth = parent.depth + 1
+        callStack.push({
+          depth: nextDepth,
+          n: parent.n - 1,
+          state: 'active',
+          from: parent.aux,
+          to: parent.to,
+          aux: parent.from,
+        })
+        this.addHistory(
+          `Call: hanoi(${parent.n - 1}, ${parent.aux}, ${parent.to}, ${parent.from})`,
+          nextDepth
+        )
+      } else {
+        // Second recursive call completed
+        parent.state = 'complete'
+        this.addHistory(`Return: hanoi(${parent.n}) complete`, parent.depth)
+      }
+    }
   }
 
   private moveDisk(from: string, to: string): void {
@@ -271,7 +360,7 @@ export class RecursionEngine {
     const { phase, callStack } = this.state
 
     if (phase === 'calling') {
-      const current = callStack[callStack.length - 1]
+      const current = callStack.at(-1)!
       if (current.n === 0) {
         current.result = 1
         current.state = 'complete'
@@ -309,6 +398,8 @@ export class RecursionEngine {
     this.state.result = 0
     this.state.message = 'Reset'
     this.state.isOperationComplete = true
+    this.state.towers = undefined
+    this.state.moves = undefined
   }
 
   getState(): RecursionState {
