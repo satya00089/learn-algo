@@ -40,3 +40,9 @@ declare module '*.ico' {
   const src: string
   export default src
 }
+
+// Google Analytics gtag.js
+interface Window {
+  gtag?: (...args: unknown[]) => void
+  dataLayer?: unknown[]
+}

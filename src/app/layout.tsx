@@ -3,17 +3,20 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import Script from 'next/script'
+import { PWARegister } from '@/components/PWARegister'
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
+import { StructuredData } from '@/components/StructuredData'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.learn-algo.com'),
   title: {
-    default: 'LEARN ALGO - Interactive Algorithm Visualizations',
+    default: 'LEARN ALGO - Interactive Algorithm Visualizations | Master DSA, ML & AI',
     template: '%s | LEARN ALGO',
   },
   description:
-    'Master data structures, algorithms, and machine learning through interactive visualizations. Step-by-step exploration of sorting, searching, trees, graphs, regression, clustering, and more.',
+    'Master data structures, algorithms, and machine learning through interactive visualizations. Step-by-step exploration of sorting, searching, trees, graphs, regression, clustering, and more. Perfect for students, developers, and interview preparation.',
   keywords: [
     'algorithms',
     'data structures',
@@ -22,12 +25,19 @@ export const metadata: Metadata = {
     'interactive learning',
     'DSA',
     'sorting algorithms',
+    'quicksort visualization',
     'binary search tree',
     'graph algorithms',
     'ML algorithms',
     'linear regression',
+    'polynomial regression',
     'k-means clustering',
     'programming education',
+    'coding interview prep',
+    'algorithm animation',
+    'computer science education',
+    'learn algorithms online',
+    'free algorithm visualizer',
   ],
   authors: [{ name: 'LEARN ALGO' }],
   creator: 'LEARN ALGO',
@@ -48,14 +58,23 @@ export const metadata: Metadata = {
     url: 'https://www.learn-algo.com',
     title: 'LEARN ALGO - Interactive Algorithm Visualizations',
     description:
-      'Master algorithms through interactive visualizations. See every step, understand every concept.',
+      'Master algorithms through interactive visualizations. Watch sorting, searching, and ML algorithms execute step-by-step. Free forever.',
     siteName: 'LEARN ALGO',
+    images: [
+      {
+        url: '/og/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'LEARN ALGO - Interactive Algorithm Visualizations',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'LEARN ALGO - Interactive Algorithm Visualizations',
     description:
-      'Master algorithms through interactive visualizations. See every step, understand every concept.',
+      'Master algorithms through interactive visualizations. Watch sorting, searching, and ML algorithms execute step-by-step. Free forever.',
+    images: ['/og/og-image.png'],
   },
   robots: {
     index: true,
@@ -73,6 +92,15 @@ export const metadata: Metadata = {
     // yandex: 'your-yandex-verification-code',
     // bing: 'your-bing-verification-code',
   },
+  alternates: {
+    canonical: 'https://www.learn-algo.com',
+  },
+  other: {
+    'theme-color': '#ffffff',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+  },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -91,9 +119,56 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-K9C8S5RSSR');`,
           }}
         />
+        {/* Structured Data - Organization */}
+        <Script
+          id="structured-data-org"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'EducationalOrganization',
+              name: 'LEARN ALGO',
+              url: 'https://www.learn-algo.com',
+              logo: 'https://www.learn-algo.com/logo/logo.png',
+              description:
+                'Interactive algorithm visualizations for learning data structures, algorithms, and machine learning',
+              educationalLevel: ['Beginner', 'Intermediate', 'Advanced'],
+              teaches: [
+                'Data Structures',
+                'Algorithms',
+                'Machine Learning',
+                'Sorting Algorithms',
+                'Graph Algorithms',
+                'Regression Analysis',
+                'Clustering',
+              ],
+            }),
+          }}
+        />
+        {/* Structured Data - Website */}
+        <Script
+          id="structured-data-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'LEARN ALGO',
+              url: 'https://www.learn-algo.com',
+              description:
+                'Master data structures, algorithms, and machine learning through interactive visualizations',
+              inLanguage: 'en-US',
+            }),
+          }}
+        />
       </head>
       <body className={inter.className} suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <PWARegister />
+        <Providers>
+          {children}
+          <PWAInstallPrompt />
+        </Providers>
+        <StructuredData />
       </body>
     </html>
   )
