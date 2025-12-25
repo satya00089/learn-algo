@@ -6,3 +6,5 @@ export { PolynomialRegressionPlayground } from './PolynomialRegressionPlayground
 export { KNNPlayground } from './KNNPlayground'
 export { MinMaxScalerPlayground } from './MinMaxScalerPlayground'
 export { StandardScalerPlayground } from './StandardScalerPlayground'
+export { DecisionTreePlayground } from './DecisionTreePlayground'
+export { EnsembleModelsPlayground } from './EnsembleModelsPlayground'
