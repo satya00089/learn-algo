@@ -20,10 +20,10 @@ export function PWAInstallPrompt() {
       setShowInstallPrompt(true)
     }
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    globalThis.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      globalThis.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     }
   }, [])
 
@@ -51,7 +51,7 @@ export function PWAInstallPrompt() {
   useEffect(() => {
     const dismissed = localStorage.getItem('pwa-install-dismissed')
     if (dismissed) {
-      const dismissedTime = parseInt(dismissed)
+      const dismissedTime = Number.parseInt(dismissed)
       const sevenDays = 7 * 24 * 60 * 60 * 1000
       if (Date.now() - dismissedTime < sevenDays) {
         setShowInstallPrompt(false)

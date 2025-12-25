@@ -24,7 +24,7 @@ export function PWARegister() {
                   // New service worker available
                   if (confirm('New version available! Reload to update?')) {
                     newWorker.postMessage({ type: 'SKIP_WAITING' })
-                    window.location.reload()
+                    globalThis.location.reload()
                   }
                 }
               })
