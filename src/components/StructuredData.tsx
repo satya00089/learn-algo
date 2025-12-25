@@ -11,11 +11,6 @@ export function StructuredData() {
       'Interactive algorithm visualizations for Data Structures, Machine Learning, and Artificial Intelligence',
     educationalLevel: ['Beginner', 'Intermediate', 'Advanced'],
     sameAs: ['https://github.com/satya00089/learn-algo'],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'Customer Support',
-      email: 'contact@learn-algo.com',
-    },
   }
 
   const websiteSchema = {

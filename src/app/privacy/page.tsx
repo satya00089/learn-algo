@@ -278,9 +278,6 @@ export default function PrivacyPolicy() {
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                     <p className="text-gray-600 dark:text-gray-400">
-                      <strong>Email:</strong> privacy@learn-algo.com
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400">
                       <strong>GitHub:</strong>{' '}
                       <a
                         href="https://github.com/satya00089/learn-algo"

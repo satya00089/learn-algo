@@ -84,13 +84,13 @@ export default function Contact() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div className="max-w-2xl mx-auto mb-12">
               {/* GitHub */}
               <a
                 href="https://github.com/satya00089/learn-algo"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg transition-all"
+                className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg transition-all block"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -109,7 +109,7 @@ export default function Contact() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">GitHub</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Report bugs, request features, or contribute to the project
+                      The best way to reach us! Report bugs, request features, or contribute to the project
                     </p>
                     <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium">
                       <span>Visit Repository</span>
@@ -126,39 +126,6 @@ export default function Contact() {
                           d="M13 7l5 5m0 0l-5 5m5-5H6"
                         />
                       </svg>
-                    </div>
-                  </div>
-                </div>
-              </a>
-
-              {/* Email */}
-              <a
-                href="mailto:contact@learn-algo.com"
-                className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <svg
-                      className="w-6 h-6 text-blue-600 dark:text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Email</h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Send us your questions, feedback, or collaboration ideas
-                    </p>
-                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
-                      <span>contact@learn-algo.com</span>
                     </div>
                   </div>
                 </div>
