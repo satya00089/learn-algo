@@ -40,10 +40,7 @@ export function bootstrapSample(data: DataPoint[], sampleRatio = 1): DataPoint[]
 /**
  * Build a Random Forest ensemble
  */
-export function buildRandomForest(
-  data: DataPoint[],
-  config: EnsembleConfig
-): RandomForest {
+export function buildRandomForest(data: DataPoint[], config: EnsembleConfig): RandomForest {
   const trees: TreeNode[] = []
 
   for (let i = 0; i < config.numTrees; i++) {
@@ -51,12 +48,7 @@ export function buildRandomForest(
     const sample = bootstrapSample(data, config.sampleRatio)
 
     // Build tree on the sample
-    const tree = buildTree(
-      sample,
-      config.maxDepth,
-      config.minSamplesSplit,
-      config.criterion
-    )
+    const tree = buildTree(sample, config.maxDepth, config.minSamplesSplit, config.criterion)
 
     trees.push(tree)
   }
@@ -70,10 +62,7 @@ export function buildRandomForest(
 /**
  * Predict using ensemble (majority voting)
  */
-export function predictEnsemble(
-  point: { x: number; y: number },
-  forest: RandomForest
-): 0 | 1 {
+export function predictEnsemble(point: { x: number; y: number }, forest: RandomForest): 0 | 1 {
   const votes = { 0: 0, 1: 0 }
 
   for (const tree of forest.trees) {
@@ -87,10 +76,7 @@ export function predictEnsemble(
 /**
  * Calculate ensemble accuracy
  */
-export function calculateEnsembleAccuracy(
-  data: DataPoint[],
-  forest: RandomForest
-): number {
+export function calculateEnsembleAccuracy(data: DataPoint[], forest: RandomForest): number {
   if (data.length === 0) return 0
 
   let correct = 0
@@ -195,10 +181,7 @@ export function calculateFeatureImportance(forest: RandomForest): {
 /**
  * Get diversity metric (disagreement rate among trees)
  */
-export function calculateTreeDiversity(
-  data: DataPoint[],
-  forest: RandomForest
-): number {
+export function calculateTreeDiversity(data: DataPoint[], forest: RandomForest): number {
   if (data.length === 0 || forest.trees.length < 2) return 0
 
   let totalDisagreements = 0

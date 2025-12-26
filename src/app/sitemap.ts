@@ -27,6 +27,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'Learn array operations with step-by-step interactive visualizations and examples',
     },
     {
+      url: '/dsa/binary-search',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Binary Search algorithm - efficient searching in sorted arrays with step-by-step visualization',
+    },
+    {
       url: '/dsa/binary-search-tree',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
@@ -112,6 +119,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly' as const,
       description:
         'Machine Learning algorithms - interactive visualizations of ML concepts and techniques',
+    },
+    {
+      url: '/ml/decision-tree',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Decision Tree algorithm - classification and regression with tree-based learning visualization',
+    },
+    {
+      url: '/ml/ensemble-models',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Ensemble Models - Random Forest, Bagging, Boosting with interactive model combination demos',
     },
     {
       url: '/ml/gradient-descent',
