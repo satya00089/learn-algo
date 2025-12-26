@@ -8,7 +8,7 @@ import type { ArrayElement } from '../engines/BinarySearchEngine'
 export function drawBinarySearchArray(
   ctx: CanvasRenderingContext2D,
   elements: ArrayElement[],
-  target: number,
+  _target: number,
   config: {
     canvasWidth: number
     canvasHeight: number
