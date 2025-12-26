@@ -29,6 +29,18 @@ export default function DSAPage() {
       comingSoon: false,
     },
     {
+      title: 'Binary Search',
+      description: 'Divide and conquer search on sorted arrays',
+      href: '/dsa/binary-search',
+      icon: '/icons/dsa/binary-search.png',
+      iconType: 'image' as const,
+      darkFilter: 'dark:invert',
+      difficulty: 'Beginner',
+      complexity: 'O(log n)',
+      comingSoon: false,
+      beta: true,
+    },
+    {
       title: 'Bit Manipulation',
       description: 'Bitwise operations: AND, OR, XOR, shifts, and bit tricks',
       href: '/dsa/bit-manipulation',

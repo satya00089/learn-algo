@@ -95,8 +95,7 @@ export function findBestSplit(
 ): SplitResult | null {
   if (data.length === 0) return null
 
-  const calculateImpurity =
-    criterion === 'entropy' ? calculateEntropy : calculateGiniImpurity
+  const calculateImpurity = criterion === 'entropy' ? calculateEntropy : calculateGiniImpurity
 
   const parentImpurity = calculateImpurity(data)
   let bestGain = 0
@@ -154,15 +153,10 @@ export function buildTree(
   criterion: 'entropy' | 'gini' = 'gini',
   currentDepth: number = 0
 ): TreeNode {
-  const calculateImpurity =
-    criterion === 'entropy' ? calculateEntropy : calculateGiniImpurity
+  const calculateImpurity = criterion === 'entropy' ? calculateEntropy : calculateGiniImpurity
 
   // Base cases for leaf node
-  if (
-    currentDepth >= maxDepth ||
-    data.length < minSamplesSplit ||
-    calculateImpurity(data) === 0
-  ) {
+  if (currentDepth >= maxDepth || data.length < minSamplesSplit || calculateImpurity(data) === 0) {
     return {
       isLeaf: true,
       prediction: getMajorityLabel(data),
@@ -189,20 +183,8 @@ export function buildTree(
   }
 
   // Recursively build left and right subtrees
-  const left = buildTree(
-    split.leftData,
-    maxDepth,
-    minSamplesSplit,
-    criterion,
-    currentDepth + 1
-  )
-  const right = buildTree(
-    split.rightData,
-    maxDepth,
-    minSamplesSplit,
-    criterion,
-    currentDepth + 1
-  )
+  const left = buildTree(split.leftData, maxDepth, minSamplesSplit, criterion, currentDepth + 1)
+  const right = buildTree(split.rightData, maxDepth, minSamplesSplit, criterion, currentDepth + 1)
 
   return {
     feature: split.feature,

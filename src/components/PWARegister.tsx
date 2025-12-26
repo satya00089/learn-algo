@@ -11,9 +11,12 @@ export function PWARegister() {
           console.log('Service Worker registered:', registration.scope)
 
           // Check for updates every hour
-          setInterval(() => {
-            registration.update()
-          }, 60 * 60 * 1000)
+          setInterval(
+            () => {
+              registration.update()
+            },
+            60 * 60 * 1000
+          )
 
           // Listen for updates
           registration.addEventListener('updatefound', () => {

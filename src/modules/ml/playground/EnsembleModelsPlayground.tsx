@@ -266,7 +266,7 @@ export function EnsembleModelsPlayground() {
 
         ctx.font = '11px monospace'
         ctx.fillStyle = '#475569'
-        
+
         ctx.fillText(`Trees Built: ${engineState.currentTreeIndex} / ${numTrees}`, 20, yOffset)
         yOffset += 16
         ctx.fillText(`Total Trees: ${engineState.forest.trees.length}`, 20, yOffset)
@@ -275,9 +275,17 @@ export function EnsembleModelsPlayground() {
         yOffset += 16
         ctx.fillText(`Diversity: ${(engineState.treeDiversity * 100).toFixed(2)}%`, 20, yOffset)
         yOffset += 16
-        ctx.fillText(`Feature X Importance: ${(engineState.featureImportance.x * 100).toFixed(1)}%`, 20, yOffset)
+        ctx.fillText(
+          `Feature X Importance: ${(engineState.featureImportance.x * 100).toFixed(1)}%`,
+          20,
+          yOffset
+        )
         yOffset += 16
-        ctx.fillText(`Feature Y Importance: ${(engineState.featureImportance.y * 100).toFixed(1)}%`, 20, yOffset)
+        ctx.fillText(
+          `Feature Y Importance: ${(engineState.featureImportance.y * 100).toFixed(1)}%`,
+          20,
+          yOffset
+        )
         yOffset += 16
         ctx.fillText(`Max Depth: ${maxDepth}`, 20, yOffset)
         yOffset += 16
@@ -288,7 +296,21 @@ export function EnsembleModelsPlayground() {
         ctx.restore()
       }
     },
-    [canvasConfig, dataPoints, engineState, showDecisionBoundary, isDebugMode, numTrees, maxDepth, sampleRatio, criterion, xMin, xMax, yMin, yMax]
+    [
+      canvasConfig,
+      dataPoints,
+      engineState,
+      showDecisionBoundary,
+      isDebugMode,
+      numTrees,
+      maxDepth,
+      sampleRatio,
+      criterion,
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+    ]
   )
 
   const { canvasRef, redraw } = useCanvas({ config: canvasConfig, draw })
@@ -355,7 +377,8 @@ export function EnsembleModelsPlayground() {
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Ensemble learning using multiple decision trees with bootstrap sampling and majority voting
+          Ensemble learning using multiple decision trees with bootstrap sampling and majority
+          voting
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -525,7 +548,11 @@ export function EnsembleModelsPlayground() {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                   <span className="text-gray-600 dark:text-gray-400">Status:</span>
                   <span className="font-semibold text-right">
-                    {engineState.isBuilt ? '✓ Built' : engineState.forest ? '⏳ Building...' : '○ Not Started'}
+                    {engineState.isBuilt
+                      ? '✓ Built'
+                      : engineState.forest
+                        ? '⏳ Building...'
+                        : '○ Not Started'}
                   </span>
 
                   <span className="text-gray-600 dark:text-gray-400">Progress:</span>
@@ -545,7 +572,9 @@ export function EnsembleModelsPlayground() {
 
                   <span className="text-gray-600 dark:text-gray-400">Diversity:</span>
                   <span className="font-semibold text-right">
-                    {engineState.forest && engineState.forest.trees.length > 1 ? `${(engineState.treeDiversity * 100).toFixed(1)}%` : '-'}
+                    {engineState.forest && engineState.forest.trees.length > 1
+                      ? `${(engineState.treeDiversity * 100).toFixed(1)}%`
+                      : '-'}
                   </span>
                 </div>
               </ControlGroup>
@@ -675,7 +704,8 @@ export function EnsembleModelsPlayground() {
                 </ul>
 
                 <p className="mt-2">
-                  <strong className="text-gray-800 dark:text-white">Space Complexity:</strong> O(n × k)
+                  <strong className="text-gray-800 dark:text-white">Space Complexity:</strong> O(n ×
+                  k)
                 </p>
 
                 <p className="mt-2">
@@ -696,8 +726,8 @@ export function EnsembleModelsPlayground() {
                   trained on a random sample (with replacement), creating diverse trees.
                 </p>
                 <p>
-                  <strong className="text-gray-800 dark:text-white">Diversity:</strong> Shows how much
-                  trees disagree. Higher diversity often leads to better performance.
+                  <strong className="text-gray-800 dark:text-white">Diversity:</strong> Shows how
+                  much trees disagree. Higher diversity often leads to better performance.
                 </p>
                 <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
                   <p className="text-yellow-800 dark:text-yellow-200 font-semibold text-[10px]">

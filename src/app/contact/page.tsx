@@ -109,7 +109,8 @@ export default function Contact() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">GitHub</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      The best way to reach us! Report bugs, request features, or contribute to the project
+                      The best way to reach us! Report bugs, request features, or contribute to the
+                      project
                     </p>
                     <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium">
                       <span>Visit Repository</span>

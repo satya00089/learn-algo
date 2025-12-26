@@ -24,7 +24,7 @@ export function RecursionPlayground() {
   const [nInput, setNInput] = useState('5')
   const [baseInput, setBaseInput] = useState('2')
   const [expInput, setExpInput] = useState('3')
-  
+
   // Pan and zoom state for Fibonacci tree
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
