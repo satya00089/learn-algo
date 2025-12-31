@@ -737,20 +737,38 @@ export function EnsembleModelsPlayground() {
         </div>
       </div>
 
-      {/* Related Algorithms Accordion */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700">
+      {/* Related Algorithms Accordion Footer - Fixed Bottom */}
+      <div className="fixed bottom-0 right-4 z-50 w-96 max-w-[calc(100vw-2rem)]">
+        <div
+          className={`bg-white dark:bg-gray-800 rounded-t-lg shadow-2xl border border-b-0 border-gray-200 dark:border-gray-700 transition-opacity ${
+            isRelatedOpen ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+          }`}
+        >
           <button
             onClick={() => setIsRelatedOpen(!isRelatedOpen)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2"
+            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            Related Algorithms
-            <span className={`transform transition-transform ${isRelatedOpen ? 'rotate-180' : ''}`}>
-              ▼
+            <span className="text-sm font-semibold text-gray-800 dark:text-white">
+              Related Algorithms
             </span>
+            <svg
+              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                isRelatedOpen ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 15l7-7 7 7"
+              />
+            </svg>
           </button>
           {isRelatedOpen && (
-            <div className="border-t border-gray-200 dark:border-gray-700">
+            <div className="px-4 pb-4 pt-2 border-t border-gray-200 dark:border-gray-700 max-h-[60vh] overflow-y-auto">
               <RelatedAlgorithms route="ensemble-models" type="ml" compact />
             </div>
           )}
