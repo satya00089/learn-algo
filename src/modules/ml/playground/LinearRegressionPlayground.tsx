@@ -515,7 +515,7 @@ export function LinearRegressionPlayground() {
       <div className="h-full flex flex-col">
         {/* Header with Breadcrumbs and Theme Toggle */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center">
             <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
           </div>

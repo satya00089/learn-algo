@@ -277,7 +277,7 @@ export function MinMaxScalerPlayground() {
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center">
             <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">MinMax Scaler</h1>
           </div>
