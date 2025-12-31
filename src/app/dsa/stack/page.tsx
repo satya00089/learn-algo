@@ -8,7 +8,7 @@ export const metadata: Metadata = generateDSAMetadata('stack', 'Stack Algorithm 
 export default function StackPage() {
   return (
     <>
-      <AlgorithmStructuredData route="stack" />
+      <AlgorithmStructuredData type="dsa" route="stack" />
       <StackPlayground />
     </>
   )

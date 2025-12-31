@@ -8,7 +8,7 @@ export const metadata: Metadata = generateDSAMetadata('queue', 'Queue Algorithm 
 export default function QueuePage() {
   return (
     <>
-      <AlgorithmStructuredData route="queue" />
+      <AlgorithmStructuredData type="dsa" route="queue" />
       <QueuePlayground />
     </>
   )

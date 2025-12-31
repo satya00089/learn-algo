@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function SelectionSortPage() {
   return (
     <>
-      <AlgorithmStructuredData route="selection-sort" />
+      <AlgorithmStructuredData type="dsa" route="selection-sort" />
       <SelectionSortPlayground />
     </>
   )

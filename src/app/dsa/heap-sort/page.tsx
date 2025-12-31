@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function HeapSortPage() {
   return (
     <>
-      <AlgorithmStructuredData route="heap-sort" />
+      <AlgorithmStructuredData type="dsa" route="heap-sort" />
       <HeapSortPlayground />
     </>
   )

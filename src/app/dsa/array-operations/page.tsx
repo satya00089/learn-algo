@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function ArrayOperationsPage() {
   return (
     <>
-      <AlgorithmStructuredData route="array-operations" />
+      <AlgorithmStructuredData type="dsa" route="array-operations" />
       <ArrayOperationsPlayground />
     </>
   )

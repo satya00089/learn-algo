@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function StringsPage() {
   return (
     <>
-      <AlgorithmStructuredData route="strings" />
+      <AlgorithmStructuredData type="dsa" route="strings" />
       <StringOperationsPlayground />
     </>
   )

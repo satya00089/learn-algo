@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function BubbleSortPage() {
   return (
     <>
-      <AlgorithmStructuredData route="bubble-sort" />
+      <AlgorithmStructuredData type="dsa" route="bubble-sort" />
       <BubbleSortPlayground />
     </>
   )

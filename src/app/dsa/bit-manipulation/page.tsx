@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function BitManipulationPage() {
   return (
     <>
-      <AlgorithmStructuredData route="bit-manipulation" />
+      <AlgorithmStructuredData type="dsa" route="bit-manipulation" />
       <BitManipulationPlayground />
     </>
   )

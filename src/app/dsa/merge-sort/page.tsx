@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function MergeSortPage() {
   return (
     <>
-      <AlgorithmStructuredData route="merge-sort" />
+      <AlgorithmStructuredData type="dsa" route="merge-sort" />
       <MergeSortPlayground />
     </>
   )

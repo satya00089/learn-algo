@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function InsertionSortPage() {
   return (
     <>
-      <AlgorithmStructuredData route="insertion-sort" />
+      <AlgorithmStructuredData type="dsa" route="insertion-sort" />
       <InsertionSortPlayground />
     </>
   )

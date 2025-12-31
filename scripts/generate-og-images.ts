@@ -198,6 +198,22 @@ const mlPages: OGImageConfig[] = [
     filename: 'og-ml-knn.png',
   },
   {
+    title: 'Decision Tree',
+    subtitle: 'Classification & Regression',
+    description: 'Build tree structure using Gini impurity splits',
+    category: 'ML • Classification',
+    categoryColor: '#10B981',
+    filename: 'og-ml-decision-tree.png',
+  },
+  {
+    title: 'Random Forest',
+    subtitle: 'Ensemble Learning',
+    description: 'Combine multiple decision trees for robust predictions',
+    category: 'ML • Ensemble',
+    categoryColor: '#10B981',
+    filename: 'og-ml-ensemble-models.png',
+  },
+  {
     title: 'K-Means Clustering',
     subtitle: 'Unsupervised Learning',
     description: 'Group data points into K distinct clusters',

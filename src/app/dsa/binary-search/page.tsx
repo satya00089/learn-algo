@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function BinarySearchPage() {
   return (
     <>
-      <AlgorithmStructuredData route="binary-search" />
+      <AlgorithmStructuredData type="dsa" route="binary-search" />
       <BinarySearchPlayground />
     </>
   )

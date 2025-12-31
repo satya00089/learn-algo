@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function RecursionPage() {
   return (
     <>
-      <AlgorithmStructuredData route="recursion" />
+      <AlgorithmStructuredData type="dsa" route="recursion" />
       <RecursionPlayground />
     </>
   )

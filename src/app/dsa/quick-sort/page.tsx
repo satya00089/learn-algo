@@ -11,7 +11,7 @@ export const metadata: Metadata = generateDSAMetadata(
 export default function QuickSortPage() {
   return (
     <>
-      <AlgorithmStructuredData route="quick-sort" />
+      <AlgorithmStructuredData type="dsa" route="quick-sort" />
       <QuickSortPlayground />
     </>
   )
