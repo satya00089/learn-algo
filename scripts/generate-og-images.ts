@@ -138,6 +138,14 @@ const dsaPages: OGImageConfig[] = [
     filename: 'og-dsa-strings.png',
   },
   {
+    title: 'Binary Search',
+    subtitle: 'Efficient Search Algorithm',
+    description: 'Divide and conquer search on sorted arrays',
+    category: 'DSA • Searching',
+    categoryColor: '#9333EA',
+    filename: 'og-dsa-binary-search.png',
+  },
+  {
     title: 'Bit Manipulation',
     subtitle: 'Binary Operations & Tricks',
     description: 'AND, OR, XOR, shifts and bitwise optimization',
@@ -188,6 +196,22 @@ const mlPages: OGImageConfig[] = [
     category: 'ML • Classification',
     categoryColor: '#10B981',
     filename: 'og-ml-knn.png',
+  },
+  {
+    title: 'Decision Tree',
+    subtitle: 'Classification & Regression',
+    description: 'Build tree structure using Gini impurity splits',
+    category: 'ML • Classification',
+    categoryColor: '#10B981',
+    filename: 'og-ml-decision-tree.png',
+  },
+  {
+    title: 'Random Forest',
+    subtitle: 'Ensemble Learning',
+    description: 'Combine multiple decision trees for robust predictions',
+    category: 'ML • Ensemble',
+    categoryColor: '#10B981',
+    filename: 'og-ml-ensemble-models.png',
   },
   {
     title: 'K-Means Clustering',

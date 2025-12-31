@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   FaPlay,
   FaPause,
@@ -17,6 +16,8 @@ import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { BinarySearchTreeEngine } from '../engines/BinarySearchTreeEngine'
 import { useBinarySearchTreePlayground } from '../hooks/useBinarySearchTreePlayground'
 import { drawTree } from '../visualizers/treeVisualizer'
@@ -27,7 +28,7 @@ import { drawTree } from '../visualizers/treeVisualizer'
  * Follows strict separation of concerns
  */
 export function BinarySearchTreePlayground() {
-  const router = useRouter()
+  const [isRelatedOpen, setIsRelatedOpen] = useState(false)
   const {
     animationSpeed,
     setAnimationSpeed,
@@ -277,14 +278,9 @@ export function BinarySearchTreePlayground() {
       <div className="h-full flex flex-col">
         {/* Header with Back Button and Theme Toggle */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/dsa')}
-              className="px-3 py-1.5 flex items-center gap-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-            >
-              <span>←</span> Back to DSA
-            </button>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Binary Search Tree</h1>
+          <div className="flex-1 flex items-center">
+            <Breadcrumbs />
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Binary Search Tree</h1>
           </div>
           <ThemeToggle />
         </div>
@@ -619,6 +615,44 @@ export function BinarySearchTreePlayground() {
                 </div>
               </div>
             </ControlGroup>
+          </div>
+        </div>
+
+        {/* Related Algorithms Accordion Footer - Fixed Bottom */}
+        <div className="fixed bottom-0 right-4 z-50 w-96 max-w-[calc(100vw-2rem)]">
+          <div
+            className={`bg-white dark:bg-gray-800 rounded-t-lg shadow-2xl border border-b-0 border-gray-200 dark:border-gray-700 transition-opacity ${
+              isRelatedOpen ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+            }`}
+          >
+            <button
+              onClick={() => setIsRelatedOpen(!isRelatedOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <span className="text-sm font-semibold text-gray-800 dark:text-white">
+                Related Algorithms
+              </span>
+              <svg
+                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                  isRelatedOpen ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 15l7-7 7 7"
+                />
+              </svg>
+            </button>
+            {isRelatedOpen && (
+              <div className="px-4 pb-4 pt-2 border-t border-gray-200 dark:border-gray-700 max-h-[60vh] overflow-y-auto">
+                <RelatedAlgorithms currentRoute="binary-search-tree" compact />
+              </div>
+            )}
           </div>
         </div>
       </div>
