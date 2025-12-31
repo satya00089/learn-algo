@@ -546,7 +546,7 @@ export function SelectionSortPlayground() {
             </button>
             {isRelatedOpen && (
               <div className="px-4 pb-4 pt-2 border-t border-gray-200 dark:border-gray-700 max-h-[60vh] overflow-y-auto">
-                <RelatedAlgorithms currentRoute="selection-sort" compact />
+                <RelatedAlgorithms route="selection-sort" type="dsa" compact />
               </div>
             )}
           </div>
