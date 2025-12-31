@@ -138,6 +138,14 @@ const dsaPages: OGImageConfig[] = [
     filename: 'og-dsa-strings.png',
   },
   {
+    title: 'Binary Search',
+    subtitle: 'Efficient Search Algorithm',
+    description: 'Divide and conquer search on sorted arrays',
+    category: 'DSA • Searching',
+    categoryColor: '#9333EA',
+    filename: 'og-dsa-binary-search.png',
+  },
+  {
     title: 'Bit Manipulation',
     subtitle: 'Binary Operations & Tricks',
     description: 'AND, OR, XOR, shifts and bitwise optimization',
