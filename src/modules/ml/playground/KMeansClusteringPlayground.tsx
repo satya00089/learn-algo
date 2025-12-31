@@ -1,18 +1,19 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { KMeansClusteringEngine } from '../engines/KMeansClusteringEngine'
 import { useKMeansPlayground } from '../hooks/useKMeansPlayground'
 import type { DataPoint } from '../types'
 
 export function KMeansClusteringPlayground() {
-  const router = useRouter()
+  const [isRelatedOpen, setIsRelatedOpen] = useState(false)
   const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } = useKMeansPlayground()
 
   const engineRef = useRef<KMeansClusteringEngine | null>(null)
@@ -477,12 +478,7 @@ export function KMeansClusteringPlayground() {
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/ml')}
-              className="px-3 py-1.5 flex items-center gap-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-            >
-              <span>←</span> Back to ML
-            </button>
+            <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">K-Means Clustering</h1>
           </div>
           <ThemeToggle />
@@ -976,6 +972,26 @@ export function KMeansClusteringPlayground() {
               </div>
             </ControlGroup>
           </div>
+        </div>
+      </div>
+
+      {/* Related Algorithms Accordion */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setIsRelatedOpen(!isRelatedOpen)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2"
+          >
+            Related Algorithms
+            <span className={`transform transition-transform ${isRelatedOpen ? 'rotate-180' : ''}`}>
+              ▼
+            </span>
+          </button>
+          {isRelatedOpen && (
+            <div className="border-t border-gray-200 dark:border-gray-700">
+              <RelatedAlgorithms route="k-means" type="ml" compact />
+            </div>
+          )}
         </div>
       </div>
     </div>

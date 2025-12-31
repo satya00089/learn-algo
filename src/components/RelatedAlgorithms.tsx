@@ -2,12 +2,21 @@
 
 import Link from 'next/link'
 import { DSARoute } from '@/app/dsa/metadata-config'
+import { MLRoute, mlAlgorithmRelations } from '@/modules/ml/config/algorithmRelations'
 
 interface RelatedAlgorithm {
-  route: DSARoute
+  route: DSARoute | MLRoute
   title: string
   description: string
   category: string
+}
+
+type AlgorithmType = 'dsa' | 'ml'
+
+interface RelatedAlgorithmsProps {
+  route: DSARoute | MLRoute
+  type: AlgorithmType
+  compact?: boolean
 }
 
 const algorithmRelations: Record<DSARoute, DSARoute[]> = {
@@ -88,19 +97,86 @@ const algorithmInfo: Record<DSARoute, { title: string; description: string; cate
   },
 }
 
-interface RelatedAlgorithmsProps {
-  currentRoute: DSARoute
-  compact?: boolean
+const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; category: string }> = {
+  'linear-regression': {
+    title: 'Linear Regression',
+    description: 'Fit a line to predict values',
+    category: 'Regression',
+  },
+  'polynomial-regression': {
+    title: 'Polynomial Regression',
+    description: 'Non-linear curve fitting',
+    category: 'Regression',
+  },
+  'logistic-regression': {
+    title: 'Logistic Regression',
+    description: 'Binary classification with sigmoid',
+    category: 'Classification',
+  },
+  'decision-tree': {
+    title: 'Decision Tree',
+    description: 'Tree-based classification',
+    category: 'Classification',
+  },
+  'ensemble-models': {
+    title: 'Random Forest',
+    description: 'Ensemble of decision trees',
+    category: 'Ensemble',
+  },
+  knn: {
+    title: 'K-Nearest Neighbors',
+    description: 'Instance-based classification',
+    category: 'Classification',
+  },
+  'k-means': {
+    title: 'K-Means Clustering',
+    description: 'Unsupervised clustering',
+    category: 'Clustering',
+  },
+  'gradient-descent': {
+    title: 'Gradient Descent',
+    description: 'Optimization algorithm',
+    category: 'Optimization',
+  },
+  'minmax-scaler': {
+    title: 'MinMax Scaler',
+    description: 'Feature normalization [0,1]',
+    category: 'Preprocessing',
+  },
+  'standard-scaler': {
+    title: 'Standard Scaler',
+    description: 'Feature standardization (z-score)',
+    category: 'Preprocessing',
+  },
 }
 
-export function RelatedAlgorithms({ currentRoute, compact = false }: RelatedAlgorithmsProps) {
-  const related = algorithmRelations[currentRoute] || []
-  const relatedAlgorithms: RelatedAlgorithm[] = related.map((route) => ({
-    route,
-    ...algorithmInfo[route],
-  }))
+export function RelatedAlgorithms({ route, type, compact = false }: RelatedAlgorithmsProps) {
+  let relatedAlgorithms: RelatedAlgorithm[]
+
+  if (type === 'ml') {
+    const mlRoute = route as MLRoute
+    const relations = mlAlgorithmRelations[mlRoute]
+    if (!relations) return null
+
+    relatedAlgorithms = relations.map((algo) => ({
+      route: algo.route,
+      title: algo.name,
+      description: mlAlgorithmInfo[algo.route]?.description || '',
+      category: algo.category,
+    }))
+  } else {
+    // DSA type
+    const dsaRoute = route as DSARoute
+    const related = algorithmRelations[dsaRoute] || []
+    relatedAlgorithms = related.map((r) => ({
+      route: r,
+      ...algorithmInfo[r],
+    }))
+  }
 
   if (relatedAlgorithms.length === 0) return null
+
+  const baseUrl = type === 'ml' ? '/ml' : '/dsa'
 
   if (compact) {
     return (
@@ -109,7 +185,7 @@ export function RelatedAlgorithms({ currentRoute, compact = false }: RelatedAlgo
           {relatedAlgorithms.map((algo) => (
             <Link
               key={algo.route}
-              href={`/dsa/${algo.route}`}
+              href={`${baseUrl}/${algo.route}`}
               className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400 hover:shadow-lg transition-all group"
             >
               <div className="flex items-start justify-between mb-1">
@@ -138,7 +214,7 @@ export function RelatedAlgorithms({ currentRoute, compact = false }: RelatedAlgo
         {relatedAlgorithms.map((algo) => (
           <Link
             key={algo.route}
-            href={`/dsa/${algo.route}`}
+            href={`${baseUrl}/${algo.route}`}
             className="p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400 hover:shadow-lg transition-all group"
           >
             <div className="flex items-start justify-between mb-2">

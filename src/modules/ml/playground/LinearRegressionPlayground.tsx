@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   FaPlay,
   FaPause,
@@ -18,6 +17,8 @@ import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { LinearRegressionEngine } from '../engines/LinearRegressionEngine'
 import { useLinearRegressionPlayground } from '../hooks/useLinearRegressionPlayground'
 import {
@@ -34,7 +35,7 @@ import { closedFormSolution } from '../algorithms/linearRegression'
  * Follows strict separation of concerns
  */
 export function LinearRegressionPlayground() {
-  const router = useRouter()
+  const [isRelatedOpen, setIsRelatedOpen] = useState(false)
   const {
     points,
     generateNewPoints,
@@ -512,15 +513,10 @@ export function LinearRegressionPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header with Back Button and Theme Toggle */}
+        {/* Header with Breadcrumbs and Theme Toggle */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/ml')}
-              className="px-3 py-1.5 flex items-center gap-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-            >
-              <span>←</span> Back to ML
-            </button>
+            <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
           </div>
           <ThemeToggle />
@@ -996,6 +992,28 @@ export function LinearRegressionPlayground() {
                   </div>
                 </div>
               </ControlGroup>
+            )}
+          </div>
+        </div>
+
+        {/* Related Algorithms Accordion - Bottom Right */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden max-w-sm">
+            <button
+              onClick={() => setIsRelatedOpen(!isRelatedOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all"
+            >
+              <span className="font-semibold">Related Algorithms</span>
+              <span
+                className={`transform transition-transform ${isRelatedOpen ? 'rotate-180' : ''}`}
+              >
+                ▼
+              </span>
+            </button>
+            {isRelatedOpen && (
+              <div className="max-h-96 overflow-y-auto">
+                <RelatedAlgorithms route="linear-regression" type="ml" compact />
+              </div>
             )}
           </div>
         </div>

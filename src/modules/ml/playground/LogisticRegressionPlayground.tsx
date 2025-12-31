@@ -1,18 +1,19 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { LogisticRegressionEngine } from '../engines/LogisticRegressionEngine'
 import { useLogisticRegressionPlayground } from '../hooks/useLogisticRegressionPlayground'
 import type { DataPoint } from '../types'
 
 export function LogisticRegressionPlayground() {
-  const router = useRouter()
+  const [isRelatedOpen, setIsRelatedOpen] = useState(false)
   const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } =
     useLogisticRegressionPlayground()
 
@@ -651,12 +652,7 @@ export function LogisticRegressionPlayground() {
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/ml')}
-              className="px-3 py-1.5 flex items-center gap-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-            >
-              <span>←</span> Back to ML
-            </button>
+            <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
               Logistic Regression
             </h1>
@@ -1024,6 +1020,28 @@ export function LogisticRegressionPlayground() {
                 <p className="text-[9px] italic">where d = polynomial degree</p>
               </div>
             </ControlGroup>
+          </div>
+        </div>
+
+        {/* Related Algorithms Accordion - Bottom Right */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden max-w-sm">
+            <button
+              onClick={() => setIsRelatedOpen(!isRelatedOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all"
+            >
+              <span className="font-semibold">Related Algorithms</span>
+              <span
+                className={`transform transition-transform ${isRelatedOpen ? 'rotate-180' : ''}`}
+              >
+                ▼
+              </span>
+            </button>
+            {isRelatedOpen && (
+              <div className="max-h-96 overflow-y-auto">
+                <RelatedAlgorithms route="logistic-regression" type="ml" compact />
+              </div>
+            )}
           </div>
         </div>
       </div>
