@@ -1,14 +1,22 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 
 export default function Home() {
-  // Function to generate random value between 16 and 36
-  const getRandomSize = () => {
-    return Math.floor(Math.random() * (36 - 16 + 1)) + 16
-  }
+  const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28, bgSize: 30 })
+
+  useEffect(() => {
+    // Generate random values only on client side to avoid hydration mismatch
+    const getRandomSize = () => Math.floor(Math.random() * (36 - 16 + 1)) + 16
+    setPatternValues({
+      size1: getRandomSize(),
+      size2: getRandomSize(),
+      bgSize: getRandomSize(),
+    })
+  }, [])
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -29,10 +37,10 @@ export default function Home() {
                 45deg,
                 transparent,
                 transparent 10px,
-                var(--bg-pattern) ${getRandomSize()}px,
-                var(--bg-pattern) ${getRandomSize()}px
+                var(--bg-pattern) ${patternValues.size1}px,
+                var(--bg-pattern) ${patternValues.size2}px
               )`,
-              backgroundSize: `${getRandomSize()}px ${getRandomSize()}px`,
+              backgroundSize: `${patternValues.bgSize}px ${patternValues.bgSize}px`,
             }}
           />
           {/* Header */}
@@ -74,18 +82,22 @@ export default function Home() {
                 <div className="lg:col-span-6 space-y-8">
                   <div className="space-y-4">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      See algorithms{' '}
+                      Master algorithms{' '}
                       <span className="block mt-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        in motion
+                        visually
                       </span>
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
-                      Interactive visualizations that transform abstract concepts into intuitive
-                      understanding. Watch sorting, searching, and ML algorithms execute
-                      step-by-step.
+                      Interactive, step-by-step visualizations of sorting, searching, and ML
+                      algorithms.{' '}
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
+                        See every step
+                      </span>{' '}
+                      with full control — play, pause, adjust speed, and explore different
+                      scenarios.
                     </p>
                     <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                      From confused to confident — master algorithms in minutes, not months.
+                      Build deep intuition through visualization. From confused to confident.
                     </p>
                   </div>
 
@@ -260,7 +272,7 @@ export default function Home() {
                   How It Works
                 </h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                  Three simple steps to master any algorithm
+                  Three simple steps to visualize and master any algorithm
                 </p>
               </div>
 
@@ -284,11 +296,11 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                      Choose Algorithm
+                      Choose Your Algorithm
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                      Select from 20+ algorithms across DSA, ML, and AI. Each comes with
-                      customizable parameters and multiple datasets.
+                      Select from 20+ algorithms across DSA, ML, and AI. Generate random datasets,
+                      adjust parameters, and explore different scenarios interactively.
                     </p>
                   </div>
                 </div>
@@ -318,11 +330,11 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                      Watch & Interact
+                      Think Through Each Step
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                       See every step animated in real-time. Pause, step through, adjust speed, and
-                      modify parameters on the fly.
+                      modify parameters on the fly to understand how algorithms work.
                     </p>
                   </div>
                 </div>
@@ -346,11 +358,11 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                      Master Concepts
+                      Build Deep Understanding
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                      Build intuition through visualization. Understand time complexity, space
-                      trade-offs, and real-world applications.
+                      Master algorithms through visualization. Understand time complexity, space
+                      trade-offs, and real-world applications with interactive controls.
                     </p>
                   </div>
                 </div>
@@ -506,6 +518,182 @@ export default function Home() {
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Forever</div>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
+
+          {/* What Makes Us Different Section */}
+          <section className="relative z-10 py-16 px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  Why Learners Choose LEARN ALGO
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                  Interactive, real-time visualizations that help you{' '}
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">see</span> how
+                  algorithms work step-by-step
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {/* Feature 1 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-purple-500 dark:hover:border-purple-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-purple-600 dark:text-purple-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Real-Time Step Visualization
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Watch every comparison, swap, and operation as it happens. See the
+                        algorithm&apos;s logic unfold with color-coded highlights and animated
+                        transitions.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature 2 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Full Interactive Control
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Play, pause, step forward/backward, and adjust speed. Change array sizes,
+                        modify parameters, and generate random data to explore different scenarios.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature 3 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-green-500 dark:hover:border-green-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-green-600 dark:text-green-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Multiple Algorithms & Domains
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Explore 20+ algorithms across Data Structures (sorting, searching, trees),
+                        Machine Learning (regression, clustering), and AI concepts.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature 4 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-orange-500 dark:hover:border-orange-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-orange-600 dark:text-orange-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Debug Mode & Insights
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Enable debug mode to see detailed information about each step. Track
+                        comparisons, swaps, and understand why the algorithm makes each decision.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Call to Action */}
+              <div className="text-center">
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    Free, interactive, and powerful
+                  </span>{' '}
+                  — explore 20+ algorithms with full control
+                </p>
+                <Link
+                  href="/dsa"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  Start Visualizing
+                  <svg
+                    className="ml-2 w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
               </div>
             </div>
           </section>
@@ -855,10 +1043,11 @@ export default function Home() {
                     </svg>
                   </summary>
                   <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
-                    Unlike static tutorials, LEARN ALGO provides fully interactive, real-time
-                    visualizations. You control the speed, pause at any step, modify parameters, and
-                    experiment with your own data. Our focus is on building intuition through visual
-                    understanding, not just memorizing code.
+                    LEARN ALGO provides fully interactive, real-time visualizations with complete
+                    control. You can play, pause, step forward/backward, adjust animation speed,
+                    modify parameters like array size, and generate random data to explore different
+                    scenarios. Our focus is on helping you build intuition through visual
+                    understanding by seeing every step of the algorithm as it executes.
                   </div>
                 </details>
               </div>
