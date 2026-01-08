@@ -19,10 +19,17 @@ export interface KMeansState {
   points: ClusteredPoint[]
   iteration: number
   isConverged: boolean
-  phase: 'assign' | 'update' | 'complete'
+  phase: 'init' | 'assign' | 'update' | 'complete'
   currentPointIndex: number // For step-by-step assignment visualization
   history: KMeansStep[]
   inertia: number // Sum of squared distances (within-cluster sum of squares)
+  // K-Means++ initialization state
+  isInitializing: boolean
+  initializationStep: number // Which centroid we're selecting (0-indexed)
+  candidateDistances: number[] // Distance to nearest centroid for each point
+  selectedCentroidIndices: number[] // Indices of points selected as centroids
+  // Centroid trajectory tracking
+  centroidTrajectories: Map<number, DataPoint[]> // Maps clusterId to array of historical positions
 }
 
 export interface KMeansStep {
@@ -37,6 +44,8 @@ export interface KMeansConfig {
   k: number // Number of clusters
   maxIterations: number
   initialCentroids?: Centroid[]
+  initMethod?: 'random' | 'kmeans++' // Initialization method
+  visualizeInit?: boolean // Whether to visualize initialization step-by-step
 }
 
 export class KMeansClusteringEngine {
@@ -49,10 +58,18 @@ export class KMeansClusteringEngine {
   }
 
   private initializeState(): KMeansState {
+    // Check if we should visualize initialization
+    const shouldVisualizeInit =
+      this.config.visualizeInit &&
+      this.config.initMethod === 'kmeans++' &&
+      !this.config.initialCentroids
+
     // Initialize centroids
     const centroids = this.config.initialCentroids
       ? this.config.initialCentroids
-      : this.initializeRandomCentroids()
+      : shouldVisualizeInit
+        ? [] // Start empty for step-by-step visualization
+        : this.initializeCentroids()
 
     // Initialize points with no cluster assignment
     const points: ClusteredPoint[] = this.config.points.map((p) => ({
@@ -61,22 +78,72 @@ export class KMeansClusteringEngine {
       distance: 0,
     }))
 
+    // Initialize trajectory tracking with initial centroid positions
+    const centroidTrajectories = new Map<number, DataPoint[]>()
+    centroids.forEach((centroid) => {
+      centroidTrajectories.set(centroid.clusterId, [{ x: centroid.x, y: centroid.y }])
+    })
+
     return {
       centroids,
       points,
       iteration: 0,
       isConverged: false,
-      phase: 'assign',
+      phase: shouldVisualizeInit ? 'init' : 'assign',
       currentPointIndex: 0,
       history: [],
       inertia: 0,
+      isInitializing: shouldVisualizeInit || false,
+      initializationStep: 0,
+      candidateDistances: [],
+      selectedCentroidIndices: [],
+      centroidTrajectories,
     }
+  }
+
+  /**
+   * Initialize centroids based on configured method
+   */
+  private initializeCentroids(): Centroid[] {
+    const method = this.config.initMethod || 'kmeans++'
+    if (method === 'random') {
+      return this.initializeRandomCentroids()
+    } else {
+      return this.initializeKMeansPlusPlusCentroids()
+    }
+  }
+
+  /**
+   * Initialize centroids using simple random selection
+   */
+  private initializeRandomCentroids(): Centroid[] {
+    const { points, k } = this.config
+    const centroids: Centroid[] = []
+
+    if (points.length === 0) return centroids
+
+    // Randomly select k points as initial centroids
+    const selectedIndices = new Set<number>()
+    while (selectedIndices.size < k && selectedIndices.size < points.length) {
+      const idx = Math.floor(Math.random() * points.length)
+      selectedIndices.add(idx)
+    }
+
+    let clusterId = 0
+    for (const idx of selectedIndices) {
+      centroids.push({
+        ...points[idx],
+        clusterId: clusterId++,
+      })
+    }
+
+    return centroids
   }
 
   /**
    * Initialize centroids using K-Means++ algorithm for better initialization
    */
-  private initializeRandomCentroids(): Centroid[] {
+  private initializeKMeansPlusPlusCentroids(): Centroid[] {
     const { points, k } = this.config
     const centroids: Centroid[] = []
 
@@ -197,6 +264,12 @@ export class KMeansClusteringEngine {
         y: meanY,
         clusterId,
       })
+
+      // Record trajectory of centroid movement
+      if (!this.state.centroidTrajectories.has(clusterId)) {
+        this.state.centroidTrajectories.set(clusterId, [])
+      }
+      this.state.centroidTrajectories.get(clusterId)?.push({ x: meanX, y: meanY })
     }
 
     this.state.centroids = newCentroids
@@ -215,9 +288,84 @@ export class KMeansClusteringEngine {
   }
 
   /**
+   * Perform one step of K-Means++ initialization
+   */
+  private stepKMeansPlusPlusInit(): void {
+    const { points, k } = this.config
+
+    if (this.state.centroids.length === 0) {
+      // Step 1: Choose first centroid randomly
+      const firstIdx = Math.floor(Math.random() * points.length)
+      this.state.centroids.push({
+        ...points[firstIdx],
+        clusterId: 0,
+      })
+      this.state.selectedCentroidIndices.push(firstIdx)
+      this.state.initializationStep = 1
+    } else if (this.state.centroids.length < k) {
+      // Calculate distances to nearest centroid for all points
+      const distances: number[] = []
+      let totalDistance = 0
+
+      for (const point of points) {
+        let minDist = Infinity
+        for (const centroid of this.state.centroids) {
+          const dist = this.euclideanDistance(point, centroid)
+          minDist = Math.min(minDist, dist)
+        }
+        distances.push(minDist * minDist) // Square the distance
+        totalDistance += minDist * minDist
+      }
+
+      this.state.candidateDistances = distances
+
+      // Choose next centroid with probability proportional to distance squared
+      let random = Math.random() * totalDistance
+      let selectedIdx = 0
+      for (let j = 0; j < distances.length; j++) {
+        random -= distances[j]
+        if (random <= 0) {
+          selectedIdx = j
+          break
+        }
+      }
+
+      this.state.centroids.push({
+        ...points[selectedIdx],
+        clusterId: this.state.centroids.length,
+      })
+      this.state.selectedCentroidIndices.push(selectedIdx)
+      this.state.initializationStep++
+
+      // Add to trajectory
+      const clusterId = this.state.centroids.length - 1
+      if (!this.state.centroidTrajectories.has(clusterId)) {
+        this.state.centroidTrajectories.set(clusterId, [])
+      }
+      this.state.centroidTrajectories.get(clusterId)?.push({
+        x: points[selectedIdx].x,
+        y: points[selectedIdx].y,
+      })
+    }
+
+    // Check if initialization is complete
+    if (this.state.centroids.length === k) {
+      this.state.isInitializing = false
+      this.state.phase = 'assign'
+      this.state.candidateDistances = []
+    }
+  }
+
+  /**
    * Perform one step of the algorithm
    */
   step(): void {
+    // Handle initialization phase
+    if (this.state.isInitializing && this.state.phase === 'init') {
+      this.stepKMeansPlusPlusInit()
+      return
+    }
+
     if (this.state.isConverged || this.state.iteration >= this.config.maxIterations) {
       this.state.isConverged = true
       this.state.phase = 'complete'
@@ -261,6 +409,12 @@ export class KMeansClusteringEngine {
    * Run algorithm to completion
    */
   run(): void {
+    // Complete initialization if needed
+    while (this.state.isInitializing && this.state.phase === 'init') {
+      this.stepKMeansPlusPlusInit()
+    }
+
+    // Run main algorithm
     while (!this.state.isConverged && this.state.iteration < this.config.maxIterations) {
       if (this.state.phase === 'assign') {
         this.assignAllPointsToClusters()
@@ -293,6 +447,16 @@ export class KMeansClusteringEngine {
       currentPointIndex: this.state.currentPointIndex,
       history: [...this.state.history],
       inertia: this.state.inertia,
+      isInitializing: this.state.isInitializing,
+      initializationStep: this.state.initializationStep,
+      candidateDistances: [...this.state.candidateDistances],
+      selectedCentroidIndices: [...this.state.selectedCentroidIndices],
+      centroidTrajectories: new Map(
+        Array.from(this.state.centroidTrajectories.entries()).map(([id, trajectory]) => [
+          id,
+          trajectory.map((p) => ({ ...p })),
+        ])
+      ),
     }
   }
 

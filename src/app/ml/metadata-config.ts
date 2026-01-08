@@ -121,14 +121,17 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-ensemble-models.png',
   },
   'k-means': {
-    title: 'K-Means Clustering Algorithm',
+    title: 'K-Means & K-Means++ Clustering Algorithm',
     description:
-      'Master K-Means unsupervised learning with interactive clustering visualization. Watch centroids update and data points cluster in real-time.',
+      'Master K-Means and K-Means++ unsupervised learning with interactive clustering visualization. Compare initialization methods, watch centroids update, and explore the elbow method for optimal k selection.',
     keywords: [
       'k-means clustering',
+      'k-means++ algorithm',
+      'kmeans++ initialization',
       'unsupervised learning',
       'clustering algorithm',
       'centroid-based clustering',
+      'elbow method',
       'machine learning clustering',
       'ML',
     ],
