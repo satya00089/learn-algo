@@ -205,36 +205,190 @@ export default function Home() {
                         <div className="w-3 h-3 rounded-full bg-green-500"></div>
                       </div>
                       <div className="flex-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
-                        QuickSort Visualization
+                        K-Means Clustering Visualization
                       </div>
                     </div>
 
-                    {/* Visualization Area */}
-                    <div className="absolute inset-0 top-10 flex items-end justify-center gap-1.5 p-12">
-                      {[
-                        { h: 60, color: 'bg-blue-500', delay: 0 },
-                        { h: 30, color: 'bg-blue-400', delay: 100 },
-                        { h: 85, color: 'bg-purple-500', delay: 200 },
-                        { h: 45, color: 'bg-blue-400', delay: 300 },
-                        { h: 75, color: 'bg-purple-400', delay: 400 },
-                        { h: 20, color: 'bg-blue-500', delay: 500 },
-                        { h: 90, color: 'bg-purple-500', delay: 600 },
-                        { h: 55, color: 'bg-blue-400', delay: 700 },
-                        { h: 10, color: 'bg-blue-500', delay: 800 },
-                        { h: 70, color: 'bg-purple-400', delay: 900 },
-                        { h: 40, color: 'bg-blue-400', delay: 1000 },
-                        { h: 65, color: 'bg-purple-500', delay: 1100 },
-                      ].map((bar) => (
+                    {/* Visualization Area - K-Means Scatter Plot */}
+                    <div className="absolute inset-0 top-10 p-8">
+                      <div className="relative w-full h-full">
+                        {/* Cluster regions (subtle background) */}
                         <div
-                          key={`bar-${bar.delay}`}
-                          className={`flex-1 ${bar.color} rounded-t transition-all duration-700 ease-in-out`}
+                          className="absolute rounded-full bg-purple-500/10 dark:bg-purple-500/20 blur-2xl"
                           style={{
-                            height: `${bar.h}%`,
-                            animation: 'sortBounce 3s ease-in-out infinite',
-                            animationDelay: `${bar.delay}ms`,
+                            left: '5%',
+                            top: '10%',
+                            width: '30%',
+                            height: '40%',
+                            animation: 'pulse 3s ease-in-out infinite',
                           }}
                         />
-                      ))}
+                        <div
+                          className="absolute rounded-full bg-blue-500/10 dark:bg-blue-500/20 blur-2xl"
+                          style={{
+                            left: '55%',
+                            top: '5%',
+                            width: '35%',
+                            height: '45%',
+                            animation: 'pulse 3s ease-in-out infinite',
+                            animationDelay: '1s',
+                          }}
+                        />
+                        <div
+                          className="absolute rounded-full bg-green-500/10 dark:bg-green-500/20 blur-2xl"
+                          style={{
+                            left: '25%',
+                            top: '55%',
+                            width: '35%',
+                            height: '40%',
+                            animation: 'pulse 3s ease-in-out infinite',
+                            animationDelay: '2s',
+                          }}
+                        />
+
+                        {/* Data Points - Cluster 1 (Purple) */}
+                        {[
+                          { x: 15, y: 20, delay: 0 },
+                          { x: 22, y: 28, delay: 50 },
+                          { x: 18, y: 35, delay: 100 },
+                          { x: 12, y: 25, delay: 150 },
+                          { x: 28, y: 30, delay: 200 },
+                          { x: 20, y: 22, delay: 250 },
+                          { x: 14, y: 32, delay: 300 },
+                          { x: 25, y: 26, delay: 350 },
+                          { x: 17, y: 29, delay: 400 },
+                          { x: 30, y: 24, delay: 450 },
+                          { x: 19, y: 36, delay: 500 },
+                          { x: 11, y: 27, delay: 550 },
+                          { x: 16, y: 23, delay: 600 },
+                          { x: 24, y: 33, delay: 650 },
+                          { x: 21, y: 21, delay: 700 },
+                          { x: 13, y: 31, delay: 750 },
+                          { x: 27, y: 28, delay: 800 },
+                          { x: 23, y: 25, delay: 850 },
+                          { x: 18, y: 34, delay: 900 },
+                          { x: 29, y: 27, delay: 950 },
+                          { x: 20, y: 19, delay: 1000 },
+                          { x: 15, y: 30, delay: 1050 },
+                        ].map((point) => (
+                          <div
+                            key={`purple-${point.x}-${point.y}-${point.delay}`}
+                            className="absolute w-3 h-3 bg-purple-500 rounded-full"
+                            style={{
+                              left: `${point.x}%`,
+                              top: `${point.y}%`,
+                              animation: 'pulse 2s ease-in-out infinite',
+                              animationDelay: `${point.delay}ms`,
+                              boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)',
+                            }}
+                          />
+                        ))}
+
+                        {/* Data Points - Cluster 2 (Blue) */}
+                        {[
+                          { x: 60, y: 15, delay: 1100 },
+                          { x: 68, y: 22, delay: 1150 },
+                          { x: 63, y: 30, delay: 1200 },
+                          { x: 75, y: 18, delay: 1250 },
+                          { x: 65, y: 25, delay: 1300 },
+                          { x: 72, y: 20, delay: 1350 },
+                          { x: 61, y: 12, delay: 1400 },
+                          { x: 69, y: 27, delay: 1450 },
+                          { x: 64, y: 17, delay: 1500 },
+                          { x: 77, y: 23, delay: 1550 },
+                          { x: 62, y: 19, delay: 1600 },
+                          { x: 71, y: 28, delay: 1650 },
+                          { x: 66, y: 14, delay: 1700 },
+                          { x: 74, y: 21, delay: 1750 },
+                          { x: 60, y: 26, delay: 1800 },
+                          { x: 68, y: 16, delay: 1850 },
+                          { x: 76, y: 24, delay: 1900 },
+                          { x: 63, y: 11, delay: 1950 },
+                          { x: 73, y: 29, delay: 2000 },
+                          { x: 67, y: 20, delay: 2050 },
+                          { x: 70, y: 15, delay: 2100 },
+                          { x: 64, y: 25, delay: 2150 },
+                        ].map((point) => (
+                          <div
+                            key={`blue-${point.x}-${point.y}-${point.delay}`}
+                            className="absolute w-3 h-3 bg-blue-500 rounded-full"
+                            style={{
+                              left: `${point.x}%`,
+                              top: `${point.y}%`,
+                              animation: 'pulse 2s ease-in-out infinite',
+                              animationDelay: `${point.delay}ms`,
+                              boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)',
+                            }}
+                          />
+                        ))}
+
+                        {/* Data Points - Cluster 3 (Green) */}
+                        {[
+                          { x: 35, y: 62, delay: 2200 },
+                          { x: 42, y: 70, delay: 2250 },
+                          { x: 38, y: 78, delay: 2300 },
+                          { x: 50, y: 66, delay: 2350 },
+                          { x: 40, y: 73, delay: 2400 },
+                          { x: 48, y: 64, delay: 2450 },
+                          { x: 36, y: 71, delay: 2500 },
+                          { x: 45, y: 76, delay: 2550 },
+                          { x: 39, y: 63, delay: 2600 },
+                          { x: 52, y: 74, delay: 2650 },
+                          { x: 43, y: 68, delay: 2700 },
+                          { x: 47, y: 79, delay: 2750 },
+                          { x: 37, y: 69, delay: 2800 },
+                          { x: 46, y: 65, delay: 2850 },
+                          { x: 34, y: 72, delay: 2900 },
+                          { x: 51, y: 67, delay: 2950 },
+                          { x: 41, y: 77, delay: 3000 },
+                          { x: 49, y: 70, delay: 3050 },
+                          { x: 44, y: 64, delay: 3100 },
+                          { x: 38, y: 75, delay: 3150 },
+                        ].map((point) => (
+                          <div
+                            key={`green-${point.x}-${point.y}-${point.delay}`}
+                            className="absolute w-3 h-3 bg-green-500 rounded-full"
+                            style={{
+                              left: `${point.x}%`,
+                              top: `${point.y}%`,
+                              animation: 'pulse 2s ease-in-out infinite',
+                              animationDelay: `${point.delay}ms`,
+                              boxShadow: '0 0 10px rgba(34, 197, 94, 0.5)',
+                            }}
+                          />
+                        ))}
+
+                        {/* Centroids (larger, with glow) */}
+                        <div
+                          className="absolute w-5 h-5 bg-purple-600 rounded-full border-2 border-white dark:border-gray-900"
+                          style={{
+                            left: '20%',
+                            top: '27%',
+                            boxShadow: '0 0 20px rgba(168, 85, 247, 0.8)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                          }}
+                        />
+                        <div
+                          className="absolute w-5 h-5 bg-blue-600 rounded-full border-2 border-white dark:border-gray-900"
+                          style={{
+                            left: '68%',
+                            top: '20%',
+                            boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            animationDelay: '0.5s',
+                          }}
+                        />
+                        <div
+                          className="absolute w-5 h-5 bg-green-600 rounded-full border-2 border-white dark:border-gray-900"
+                          style={{
+                            left: '43%',
+                            top: '70%',
+                            boxShadow: '0 0 20px rgba(34, 197, 94, 0.8)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            animationDelay: '1s',
+                          }}
+                        />
+                      </div>
                     </div>
 
                     {/* Control Bar */}
@@ -246,14 +400,21 @@ export default function Home() {
                           </svg>
                         </div>
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Step 7 of 24
+                          Iteration 3 of 10
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Running
-                        </span>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            K = 3
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Clustering
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -719,8 +880,8 @@ export default function Home() {
                   href="/dsa"
                   className="group"
                   onClick={() => {
-                    if (typeof window !== 'undefined' && window.gtag) {
-                      window.gtag('event', 'click', {
+                    if (globalThis?.window?.gtag) {
+                      globalThis.window.gtag('event', 'click', {
                         event_category: 'Module Card',
                         event_label: 'DSA',
                       })
@@ -783,8 +944,8 @@ export default function Home() {
                   href="/ml"
                   className="group"
                   onClick={() => {
-                    if (typeof window !== 'undefined' && window.gtag) {
-                      window.gtag('event', 'click', {
+                    if (globalThis?.window?.gtag) {
+                      globalThis.window.gtag('event', 'click', {
                         event_category: 'Module Card',
                         event_label: 'ML',
                       })
