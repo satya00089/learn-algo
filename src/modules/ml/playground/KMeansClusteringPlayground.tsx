@@ -23,6 +23,17 @@ export function KMeansClusteringPlayground() {
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
+  // Initialization method
+  const [initMethod, setInitMethod] = useState<'random' | 'kmeans++'>('kmeans++')
+  const [visualizeInit, setVisualizeInit] = useState(false)
+
+  // Comparison mode
+  const [comparisonMode, setComparisonMode] = useState(false)
+  const comparisonEngineRef = useRef<KMeansClusteringEngine | null>(null)
+  const [comparisonEngineState, setComparisonEngineState] = useState<ReturnType<
+    KMeansClusteringEngine['getState']
+  > | null>(null)
+
   // Elbow method state
   const [elbowData, setElbowData] = useState<{ k: number; inertia: number }[]>([])
   const [isComputingElbow, setIsComputingElbow] = useState(false)
@@ -191,15 +202,34 @@ export function KMeansClusteringPlayground() {
           ? pickedCentroids.map((p, idx) => ({ ...p, clusterId: idx }))
           : undefined
 
+      // Main engine
       engineRef.current = new KMeansClusteringEngine({
         points,
         k,
         maxIterations,
         initialCentroids,
+        initMethod,
+        visualizeInit,
       })
       setEngineState(engineRef.current.getState())
+
+      // Comparison engine (opposite init method)
+      if (comparisonMode && !initialCentroids) {
+        const oppositeMethod = initMethod === 'kmeans++' ? 'random' : 'kmeans++'
+        comparisonEngineRef.current = new KMeansClusteringEngine({
+          points,
+          k,
+          maxIterations,
+          initMethod: oppositeMethod,
+          visualizeInit: false,
+        })
+        setComparisonEngineState(comparisonEngineRef.current.getState())
+      } else {
+        comparisonEngineRef.current = null
+        setComparisonEngineState(null)
+      }
     }
-  }, [points, k, maxIterations, pickedCentroids, isPickingCentroids])
+  }, [points, k, maxIterations, pickedCentroids, isPickingCentroids, initMethod, visualizeInit, comparisonMode])
 
   // Transform coordinates
   const toCanvasCoords = useCallback(
@@ -245,6 +275,93 @@ export function KMeansClusteringPlayground() {
       setPickedCentroids([...pickedCentroids, { x, y }])
     },
     [isPickingCentroids, pickedCentroids, toDataCoords]
+  )
+
+  // Helper function to draw engine state on a specific canvas
+  const drawEngineState = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      state: ReturnType<KMeansClusteringEngine['getState']> | null,
+      width: number,
+      height: number
+    ) => {
+      ctx.clearRect(0, 0, width, height)
+
+      if (!state) return
+
+      // Calculate padding proportionally
+      const padding = {
+        top: (40 * height) / canvasConfig.height,
+        right: (40 * width) / canvasConfig.width,
+        bottom: (40 * height) / canvasConfig.height,
+        left: (40 * width) / canvasConfig.width,
+      }
+
+      // Helper to transform coordinates for this specific canvas
+      const toCanvasX = (x: number) =>
+        padding.left + ((x - xMin) / (xMax - xMin)) * (width - padding.left - padding.right)
+      const toCanvasY = (y: number) =>
+        height - padding.bottom - ((y - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom)
+
+      // Draw axes
+      ctx.strokeStyle = '#94a3b8'
+      ctx.lineWidth = 1
+      const originX = toCanvasX(0)
+      const originY = toCanvasY(0)
+      ctx.beginPath()
+      ctx.moveTo(toCanvasX(xMin), originY)
+      ctx.lineTo(toCanvasX(xMax), originY)
+      ctx.moveTo(originX, toCanvasY(yMin))
+      ctx.lineTo(originX, toCanvasY(yMax))
+      ctx.stroke()
+
+      // Draw data points
+      state.points.forEach((point) => {
+        const canvasX = toCanvasX(point.x)
+        const canvasY = toCanvasY(point.y)
+
+        if (point.clusterId >= 0) {
+          ctx.fillStyle = clusterColors[point.clusterId % clusterColors.length]
+        } else {
+          ctx.fillStyle = '#94a3b8'
+        }
+
+        ctx.beginPath()
+        ctx.arc(canvasX, canvasY, 3, 0, Math.PI * 2)
+        ctx.fill()
+      })
+
+      // Draw centroids
+      state.centroids.forEach((centroid, idx) => {
+        const canvasX = toCanvasX(centroid.x)
+        const canvasY = toCanvasY(centroid.y)
+        const color = clusterColors[idx % clusterColors.length]
+
+        // Draw outer glow
+        ctx.fillStyle = color + '40'
+        ctx.beginPath()
+        ctx.arc(canvasX, canvasY, 10, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Draw cross
+        ctx.strokeStyle = color
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.moveTo(canvasX - 6, canvasY)
+        ctx.lineTo(canvasX + 6, canvasY)
+        ctx.moveTo(canvasX, canvasY - 6)
+        ctx.lineTo(canvasX, canvasY + 6)
+        ctx.stroke()
+
+        // Draw number
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 8px monospace'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(String(idx + 1), canvasX, canvasY)
+      })
+    },
+    [canvasConfig, clusterColors, xMin, xMax, yMin, yMax]
   )
 
   // Draw function
@@ -308,6 +425,117 @@ export function KMeansClusteringPlayground() {
       }
 
       if (!engineState) return
+
+      // Draw centroid trajectories in debug mode (before other elements so they're in background)
+      if (isDebugMode && engineState.centroidTrajectories.size > 0 && !engineState.isInitializing) {
+        engineState.centroidTrajectories.forEach((trajectory, clusterId) => {
+          if (trajectory.length < 2) return // Need at least 2 points to draw a path
+
+          const color = clusterColors[clusterId % clusterColors.length]
+          
+          // Draw trajectory path
+          ctx.strokeStyle = color
+          ctx.lineWidth = 2
+          ctx.setLineDash([5, 3]) // Dashed line
+          ctx.globalAlpha = 0.6
+          ctx.beginPath()
+          
+          const firstPoint = toCanvasCoords(trajectory[0].x, trajectory[0].y)
+          ctx.moveTo(firstPoint.canvasX, firstPoint.canvasY)
+          
+          for (let i = 1; i < trajectory.length; i++) {
+            const point = toCanvasCoords(trajectory[i].x, trajectory[i].y)
+            ctx.lineTo(point.canvasX, point.canvasY)
+          }
+          ctx.stroke()
+          ctx.setLineDash([]) // Reset to solid line
+          ctx.globalAlpha = 1.0
+
+          // Draw small circles at each trajectory point (except the last which is the current centroid)
+          for (let i = 0; i < trajectory.length - 1; i++) {
+            const point = toCanvasCoords(trajectory[i].x, trajectory[i].y)
+            
+            // Fade older points
+            const age = (trajectory.length - 1 - i) / trajectory.length
+            ctx.globalAlpha = 0.3 + age * 0.4
+            
+            ctx.fillStyle = color
+            ctx.beginPath()
+            ctx.arc(point.canvasX, point.canvasY, 3, 0, Math.PI * 2)
+            ctx.fill()
+            
+            // Draw step number for significant points
+            if (i % 2 === 0) {
+              ctx.fillStyle = color
+              ctx.font = 'bold 8px monospace'
+              ctx.textAlign = 'center'
+              ctx.textBaseline = 'bottom'
+              ctx.fillText(String(i), point.canvasX, point.canvasY - 5)
+            }
+          }
+          ctx.globalAlpha = 1.0
+        })
+      }
+
+      // Draw K-Means++ initialization visualization
+      if (engineState.isInitializing && engineState.phase === 'init') {
+        // Draw all data points
+        points.forEach((point, idx) => {
+          const { canvasX, canvasY } = toCanvasCoords(point.x, point.y)
+          const isSelected = engineState.selectedCentroidIndices.includes(idx)
+          
+          if (isSelected) {
+            // Already selected as centroid - don't draw as point
+            return
+          }
+
+          // Color based on distance to nearest centroid
+          if (engineState.candidateDistances.length > 0) {
+            const maxDist = Math.max(...engineState.candidateDistances)
+            const dist = engineState.candidateDistances[idx]
+            const intensity = maxDist > 0 ? dist / maxDist : 0
+            ctx.fillStyle = `rgba(239, 68, 68, ${0.3 + intensity * 0.7})` // Red with varying opacity
+          } else {
+            ctx.fillStyle = '#94a3b8'
+          }
+
+          ctx.beginPath()
+          ctx.arc(canvasX, canvasY, 4, 0, Math.PI * 2)
+          ctx.fill()
+        })
+
+        // Draw selected centroids with animation
+        engineState.centroids.forEach((centroid, idx) => {
+          const { canvasX, canvasY } = toCanvasCoords(centroid.x, centroid.y)
+          const color = clusterColors[idx % clusterColors.length]
+          const isLatest = idx === engineState.centroids.length - 1
+
+          // Draw outer glow (larger for latest)
+          ctx.fillStyle = color + '40'
+          ctx.beginPath()
+          ctx.arc(canvasX, canvasY, isLatest ? 18 : 14, 0, Math.PI * 2)
+          ctx.fill()
+
+          // Draw cross
+          ctx.strokeStyle = color
+          ctx.lineWidth = isLatest ? 4 : 3
+          ctx.beginPath()
+          ctx.moveTo(canvasX - 8, canvasY)
+          ctx.lineTo(canvasX + 8, canvasY)
+          ctx.moveTo(canvasX, canvasY - 8)
+          ctx.lineTo(canvasX, canvasY + 8)
+          ctx.stroke()
+
+          // Draw number
+          ctx.fillStyle = '#ffffff'
+          ctx.font = `bold ${isLatest ? '12px' : '10px'} monospace`
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(String(idx + 1), canvasX, canvasY)
+        })
+
+        return // Don't draw regular state during initialization
+      }
 
       // Draw assignment lines (during assign phase)
       if (engineState.phase === 'assign' && engineState.currentPointIndex > 0) {
@@ -390,6 +618,7 @@ export function KMeansClusteringPlayground() {
       isPickingCentroids,
       pickedCentroids,
       points,
+      isDebugMode,
     ]
   )
 
@@ -399,13 +628,23 @@ export function KMeansClusteringPlayground() {
   // Trigger redraw when state changes
   useEffect(() => {
     redraw()
-  }, [engineState, redraw, pickedCentroids, isPickingCentroids])
+    // Redraw comparison canvas if in comparison mode
+    if (comparisonMode && comparisonEngineState) {
+      // The comparison canvas will be redrawn through the ref callback
+      // Force a re-render to trigger the canvas ref callback
+      setComparisonEngineState({ ...comparisonEngineState })
+    }
+  }, [engineState, redraw, pickedCentroids, isPickingCentroids, comparisonEngineState, comparisonMode])
 
   // Playback controls
   const handleStep = () => {
     if (engineRef.current) {
       engineRef.current.step()
       setEngineState(engineRef.current.getState())
+    }
+    if (comparisonMode && comparisonEngineRef.current) {
+      comparisonEngineRef.current.step()
+      setComparisonEngineState(comparisonEngineRef.current.getState())
     }
   }
 
@@ -414,12 +653,20 @@ export function KMeansClusteringPlayground() {
       engineRef.current.run()
       setEngineState(engineRef.current.getState())
     }
+    if (comparisonMode && comparisonEngineRef.current) {
+      comparisonEngineRef.current.run()
+      setComparisonEngineState(comparisonEngineRef.current.getState())
+    }
   }
 
   const handleReset = () => {
     if (engineRef.current) {
       engineRef.current.reset()
       setEngineState(engineRef.current.getState())
+    }
+    if (comparisonMode && comparisonEngineRef.current) {
+      comparisonEngineRef.current.reset()
+      setComparisonEngineState(comparisonEngineRef.current.getState())
     }
     setIsPlaying(false)
     if (playIntervalRef.current) clearInterval(playIntervalRef.current)
@@ -461,6 +708,14 @@ export function KMeansClusteringPlayground() {
           } else {
             engineRef.current.step()
             setEngineState(engineRef.current.getState())
+          }
+        }
+        // Also step comparison engine
+        if (comparisonMode && comparisonEngineRef.current) {
+          const compState = comparisonEngineRef.current.getState()
+          if (!compState.isConverged && compState.phase !== 'complete') {
+            comparisonEngineRef.current.step()
+            setComparisonEngineState(comparisonEngineRef.current.getState())
           }
         }
       }, animationSpeed)
@@ -579,23 +834,87 @@ export function KMeansClusteringPlayground() {
             </div>
 
             {/* Canvas Visualization */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 overflow-hidden flex items-center justify-center relative">
-              <canvas
-                ref={canvasRef}
-                width={canvasConfig.width}
-                height={canvasConfig.height}
-                onClick={handleCanvasClick}
-                className={`border border-gray-300 rounded-lg ${isPickingCentroids ? 'cursor-crosshair' : ''}`}
-                style={{
-                  maxWidth: '100%',
-                  height: 'auto',
-                }}
-              />
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 overflow-hidden flex flex-col relative">
+              {comparisonMode && comparisonEngineState ? (
+                /* Comparison Mode: Two Canvases Side by Side */
+                <div className="flex-1 flex gap-4 items-center justify-center">
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-2 text-center">
+                      {initMethod === 'kmeans++' ? 'K-Means++' : 'Random'} Initialization
+                    </h3>
+                    <canvas
+                      ref={canvasRef}
+                      width={canvasConfig.width / 1.5}
+                      height={canvasConfig.height / 1.5}
+                      className="border border-gray-300 rounded-lg mx-auto"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
+                    />
+                    <div className="mt-2 text-xs text-center">
+                      <span className="text-gray-600 dark:text-gray-400">Iter: </span>
+                      <span className="font-bold">{engineState?.iteration || 0}</span>
+                      <span className="text-gray-600 dark:text-gray-400 ml-3">Inertia: </span>
+                      <span className="font-bold">{engineState?.inertia.toFixed(2) || '0.00'}</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-2 text-center">
+                      {initMethod === 'kmeans++' ? 'Random' : 'K-Means++'} Initialization
+                    </h3>
+                    <canvas
+                      ref={(el) => {
+                        if (el && comparisonEngineState) {
+                          const ctx = el.getContext('2d')
+                          if (ctx) {
+                            // Draw comparison engine state here - we'll use same draw logic
+                            drawEngineState(ctx, comparisonEngineState, canvasConfig.width / 1.5, canvasConfig.height / 1.5)
+                          }
+                        }
+                      }}
+                      width={canvasConfig.width / 1.5}
+                      height={canvasConfig.height / 1.5}
+                      className="border border-gray-300 rounded-lg mx-auto"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
+                    />
+                    <div className="mt-2 text-xs text-center">
+                      <span className="text-gray-600 dark:text-gray-400">Iter: </span>
+                      <span className="font-bold">{comparisonEngineState?.iteration || 0}</span>
+                      <span className="text-gray-600 dark:text-gray-400 ml-3">Inertia: </span>
+                      <span className="font-bold">{comparisonEngineState?.inertia.toFixed(2) || '0.00'}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Single Canvas Mode */
+                <div className="flex-1 flex items-center justify-center">
+                  <canvas
+                    ref={canvasRef}
+                    width={canvasConfig.width}
+                    height={canvasConfig.height}
+                    onClick={handleCanvasClick}
+                    className={`border border-gray-300 rounded-lg ${isPickingCentroids ? 'cursor-crosshair' : ''}`}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
+                  />
+                </div>
+              )}
               {isPickingCentroids && (
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
                   {pickedCentroids.length === 0
                     ? 'Click to place centroids'
                     : `${pickedCentroids.length} centroid${pickedCentroids.length > 1 ? 's' : ''} placed`}
+                </div>
+              )}
+              {engineState?.isInitializing && engineState?.phase === 'init' && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
+                  K-Means++ Init: Selecting centroid {engineState.initializationStep + 1} of {k}
                 </div>
               )}
             </div>
@@ -651,7 +970,7 @@ export function KMeansClusteringPlayground() {
                   <p className="text-[10px] text-gray-600 dark:text-gray-400">
                     {pickedCentroids.length === k
                       ? '✓ Using manually picked centroids'
-                      : 'Using K-Means++ initialization'}
+                      : `Using ${initMethod === 'kmeans++' ? 'K-Means++' : 'Random'} initialization`}
                   </p>
                 </div>
               ) : (
@@ -674,6 +993,85 @@ export function KMeansClusteringPlayground() {
                   </button>
                 </div>
               )}
+            </ControlGroup>
+
+            {/* Initialization Method */}
+            <ControlGroup title="Initialization Method">
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setInitMethod('kmeans++')
+                      setPickedCentroids([])
+                    }}
+                    disabled={isPlaying || isPickingCentroids}
+                    className={`flex-1 px-2 py-2 text-xs rounded font-semibold transition-colors ${
+                      initMethod === 'kmeans++'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    } disabled:opacity-50`}
+                  >
+                    K-Means++
+                  </button>
+                  <button
+                    onClick={() => {
+                      setInitMethod('random')
+                      setPickedCentroids([])
+                    }}
+                    disabled={isPlaying || isPickingCentroids}
+                    className={`flex-1 px-2 py-2 text-xs rounded font-semibold transition-colors ${
+                      initMethod === 'random'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    } disabled:opacity-50`}
+                  >
+                    Random
+                  </button>
+                </div>
+                
+                <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={visualizeInit}
+                    onChange={(e) => setVisualizeInit(e.target.checked)}
+                    disabled={isPlaying || isPickingCentroids || initMethod === 'random' || pickedCentroids.length > 0}
+                    className="rounded"
+                  />
+                  <span>Visualize K-Means++ initialization</span>
+                </label>
+
+                <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={comparisonMode}
+                    onChange={(e) => setComparisonMode(e.target.checked)}
+                    disabled={isPlaying || isPickingCentroids || pickedCentroids.length > 0}
+                    className="rounded"
+                  />
+                  <span>Compare with {initMethod === 'kmeans++' ? 'Random' : 'K-Means++'}</span>
+                </label>
+
+                {/* Educational Content */}
+                <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                  <h4 className="text-xs font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                    Why K-Means++?
+                  </h4>
+                  <p className="text-[10px] text-blue-800 dark:text-blue-200 leading-relaxed">
+                    K-Means++ is a smart initialization algorithm that selects initial centroids
+                    far apart from each other. This leads to:
+                  </p>
+                  <ul className="text-[10px] text-blue-800 dark:text-blue-200 mt-1 ml-3 space-y-0.5 list-disc">
+                    <li>Faster convergence</li>
+                    <li>Better final clustering quality</li>
+                    <li>More consistent results</li>
+                  </ul>
+                  <p className="text-[10px] text-blue-800 dark:text-blue-200 mt-2 leading-relaxed">
+                    <strong>Algorithm:</strong> First centroid is chosen randomly. Each subsequent
+                    centroid is selected with probability proportional to the square of its distance
+                    from the nearest existing centroid.
+                  </p>
+                </div>
+              </div>
             </ControlGroup>
 
             {/* Elbow Method */}
@@ -951,11 +1349,27 @@ export function KMeansClusteringPlayground() {
                   <div className="w-3 h-3 rounded-full border-2 border-yellow-500"></div>
                   <span>Currently Assigning</span>
                 </div>
+                {isDebugMode && (
+                  <div className="flex items-center gap-2 pt-1 mt-1 border-t border-gray-300 dark:border-gray-600">
+                    <svg width="16" height="16">
+                      <line
+                        x1="2"
+                        y1="8"
+                        x2="14"
+                        y2="8"
+                        stroke="#3b82f6"
+                        strokeWidth="2"
+                        strokeDasharray="3,2"
+                      />
+                    </svg>
+                    <span>Centroid Trajectory</span>
+                  </div>
+                )}
               </div>
             </ControlGroup>
 
             {/* About */}
-            <ControlGroup title="About K-Means">
+            <ControlGroup title="About K-Means & K-Means++">
               <div className="text-[10px] text-gray-600 dark:text-gray-400 space-y-1">
                 <p>
                   <strong>Type:</strong> Unsupervised Learning
@@ -964,10 +1378,17 @@ export function KMeansClusteringPlayground() {
                   <strong>Goal:</strong> Minimize within-cluster variance
                 </p>
                 <p>
-                  <strong>Init:</strong> K-Means++ for better results
+                  <strong>Init Methods:</strong>
                 </p>
+                <ul className="ml-3 space-y-0.5 list-disc">
+                  <li><strong>K-Means++:</strong> Smart initialization (default) - selects centroids far apart</li>
+                  <li><strong>Random:</strong> Randomly selects k points as initial centroids</li>
+                </ul>
                 <p>
                   <strong>Complexity:</strong> O(n × k × i) where i = iterations
+                </p>
+                <p className="pt-1 border-t border-gray-300 dark:border-gray-600">
+                  <strong>K-Means++ Advantage:</strong> Reduces iterations needed and improves final cluster quality by up to 1000x compared to random initialization.
                 </p>
               </div>
             </ControlGroup>
