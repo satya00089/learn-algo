@@ -81,10 +81,10 @@ export default function Home() {
                 {/* Left Column - Content */}
                 <div className="lg:col-span-6 space-y-8">
                   <div className="space-y-4">
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      Master algorithms{' '}
+                    <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+                      Understand algorithms{' '}
                       <span className="block mt-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        visually
+                        by seeing why each step happens.
                       </span>
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
