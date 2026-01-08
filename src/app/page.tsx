@@ -1,14 +1,22 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 
 export default function Home() {
-  // Function to generate random value between 16 and 36
-  const getRandomSize = () => {
-    return Math.floor(Math.random() * (36 - 16 + 1)) + 16
-  }
+  const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28, bgSize: 30 })
+
+  useEffect(() => {
+    // Generate random values only on client side to avoid hydration mismatch
+    const getRandomSize = () => Math.floor(Math.random() * (36 - 16 + 1)) + 16
+    setPatternValues({
+      size1: getRandomSize(),
+      size2: getRandomSize(),
+      bgSize: getRandomSize(),
+    })
+  }, [])
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -29,10 +37,10 @@ export default function Home() {
                 45deg,
                 transparent,
                 transparent 10px,
-                var(--bg-pattern) ${getRandomSize()}px,
-                var(--bg-pattern) ${getRandomSize()}px
+                var(--bg-pattern) ${patternValues.size1}px,
+                var(--bg-pattern) ${patternValues.size2}px
               )`,
-              backgroundSize: `${getRandomSize()}px ${getRandomSize()}px`,
+              backgroundSize: `${patternValues.bgSize}px ${patternValues.bgSize}px`,
             }}
           />
           {/* Header */}
@@ -74,18 +82,22 @@ export default function Home() {
                 <div className="lg:col-span-6 space-y-8">
                   <div className="space-y-4">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      See algorithms{' '}
+                      Master algorithms{' '}
                       <span className="block mt-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        in motion
+                        visually
                       </span>
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
-                      Interactive visualizations that transform abstract concepts into intuitive
-                      understanding. Watch sorting, searching, and ML algorithms execute
-                      step-by-step.
+                      Interactive, step-by-step visualizations of sorting, searching, and ML
+                      algorithms.{' '}
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
+                        See every step
+                      </span>{' '}
+                      with full control — play, pause, adjust speed, and explore different
+                      scenarios.
                     </p>
                     <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                      From confused to confident — master algorithms in minutes, not months.
+                      Build deep intuition through visualization. From confused to confident.
                     </p>
                   </div>
 
@@ -193,36 +205,190 @@ export default function Home() {
                         <div className="w-3 h-3 rounded-full bg-green-500"></div>
                       </div>
                       <div className="flex-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
-                        QuickSort Visualization
+                        K-Means Clustering Visualization
                       </div>
                     </div>
 
-                    {/* Visualization Area */}
-                    <div className="absolute inset-0 top-10 flex items-end justify-center gap-1.5 p-12">
-                      {[
-                        { h: 60, color: 'bg-blue-500', delay: 0 },
-                        { h: 30, color: 'bg-blue-400', delay: 100 },
-                        { h: 85, color: 'bg-purple-500', delay: 200 },
-                        { h: 45, color: 'bg-blue-400', delay: 300 },
-                        { h: 75, color: 'bg-purple-400', delay: 400 },
-                        { h: 20, color: 'bg-blue-500', delay: 500 },
-                        { h: 90, color: 'bg-purple-500', delay: 600 },
-                        { h: 55, color: 'bg-blue-400', delay: 700 },
-                        { h: 10, color: 'bg-blue-500', delay: 800 },
-                        { h: 70, color: 'bg-purple-400', delay: 900 },
-                        { h: 40, color: 'bg-blue-400', delay: 1000 },
-                        { h: 65, color: 'bg-purple-500', delay: 1100 },
-                      ].map((bar) => (
+                    {/* Visualization Area - K-Means Scatter Plot */}
+                    <div className="absolute inset-0 top-10 p-8">
+                      <div className="relative w-full h-full">
+                        {/* Cluster regions (subtle background) */}
                         <div
-                          key={`bar-${bar.delay}`}
-                          className={`flex-1 ${bar.color} rounded-t transition-all duration-700 ease-in-out`}
+                          className="absolute rounded-full bg-purple-500/10 dark:bg-purple-500/20 blur-2xl"
                           style={{
-                            height: `${bar.h}%`,
-                            animation: 'sortBounce 3s ease-in-out infinite',
-                            animationDelay: `${bar.delay}ms`,
+                            left: '5%',
+                            top: '10%',
+                            width: '30%',
+                            height: '40%',
+                            animation: 'pulse 3s ease-in-out infinite',
                           }}
                         />
-                      ))}
+                        <div
+                          className="absolute rounded-full bg-blue-500/10 dark:bg-blue-500/20 blur-2xl"
+                          style={{
+                            left: '55%',
+                            top: '5%',
+                            width: '35%',
+                            height: '45%',
+                            animation: 'pulse 3s ease-in-out infinite',
+                            animationDelay: '1s',
+                          }}
+                        />
+                        <div
+                          className="absolute rounded-full bg-green-500/10 dark:bg-green-500/20 blur-2xl"
+                          style={{
+                            left: '25%',
+                            top: '55%',
+                            width: '35%',
+                            height: '40%',
+                            animation: 'pulse 3s ease-in-out infinite',
+                            animationDelay: '2s',
+                          }}
+                        />
+
+                        {/* Data Points - Cluster 1 (Purple) */}
+                        {[
+                          { x: 15, y: 20, delay: 0 },
+                          { x: 22, y: 28, delay: 50 },
+                          { x: 18, y: 35, delay: 100 },
+                          { x: 12, y: 25, delay: 150 },
+                          { x: 28, y: 30, delay: 200 },
+                          { x: 20, y: 22, delay: 250 },
+                          { x: 14, y: 32, delay: 300 },
+                          { x: 25, y: 26, delay: 350 },
+                          { x: 17, y: 29, delay: 400 },
+                          { x: 30, y: 24, delay: 450 },
+                          { x: 19, y: 36, delay: 500 },
+                          { x: 11, y: 27, delay: 550 },
+                          { x: 16, y: 23, delay: 600 },
+                          { x: 24, y: 33, delay: 650 },
+                          { x: 21, y: 21, delay: 700 },
+                          { x: 13, y: 31, delay: 750 },
+                          { x: 27, y: 28, delay: 800 },
+                          { x: 23, y: 25, delay: 850 },
+                          { x: 18, y: 34, delay: 900 },
+                          { x: 29, y: 27, delay: 950 },
+                          { x: 20, y: 19, delay: 1000 },
+                          { x: 15, y: 30, delay: 1050 },
+                        ].map((point) => (
+                          <div
+                            key={`purple-${point.x}-${point.y}-${point.delay}`}
+                            className="absolute w-3 h-3 bg-purple-500 rounded-full"
+                            style={{
+                              left: `${point.x}%`,
+                              top: `${point.y}%`,
+                              animation: 'pulse 2s ease-in-out infinite',
+                              animationDelay: `${point.delay}ms`,
+                              boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)',
+                            }}
+                          />
+                        ))}
+
+                        {/* Data Points - Cluster 2 (Blue) */}
+                        {[
+                          { x: 60, y: 15, delay: 1100 },
+                          { x: 68, y: 22, delay: 1150 },
+                          { x: 63, y: 30, delay: 1200 },
+                          { x: 75, y: 18, delay: 1250 },
+                          { x: 65, y: 25, delay: 1300 },
+                          { x: 72, y: 20, delay: 1350 },
+                          { x: 61, y: 12, delay: 1400 },
+                          { x: 69, y: 27, delay: 1450 },
+                          { x: 64, y: 17, delay: 1500 },
+                          { x: 77, y: 23, delay: 1550 },
+                          { x: 62, y: 19, delay: 1600 },
+                          { x: 71, y: 28, delay: 1650 },
+                          { x: 66, y: 14, delay: 1700 },
+                          { x: 74, y: 21, delay: 1750 },
+                          { x: 60, y: 26, delay: 1800 },
+                          { x: 68, y: 16, delay: 1850 },
+                          { x: 76, y: 24, delay: 1900 },
+                          { x: 63, y: 11, delay: 1950 },
+                          { x: 73, y: 29, delay: 2000 },
+                          { x: 67, y: 20, delay: 2050 },
+                          { x: 70, y: 15, delay: 2100 },
+                          { x: 64, y: 25, delay: 2150 },
+                        ].map((point) => (
+                          <div
+                            key={`blue-${point.x}-${point.y}-${point.delay}`}
+                            className="absolute w-3 h-3 bg-blue-500 rounded-full"
+                            style={{
+                              left: `${point.x}%`,
+                              top: `${point.y}%`,
+                              animation: 'pulse 2s ease-in-out infinite',
+                              animationDelay: `${point.delay}ms`,
+                              boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)',
+                            }}
+                          />
+                        ))}
+
+                        {/* Data Points - Cluster 3 (Green) */}
+                        {[
+                          { x: 35, y: 62, delay: 2200 },
+                          { x: 42, y: 70, delay: 2250 },
+                          { x: 38, y: 78, delay: 2300 },
+                          { x: 50, y: 66, delay: 2350 },
+                          { x: 40, y: 73, delay: 2400 },
+                          { x: 48, y: 64, delay: 2450 },
+                          { x: 36, y: 71, delay: 2500 },
+                          { x: 45, y: 76, delay: 2550 },
+                          { x: 39, y: 63, delay: 2600 },
+                          { x: 52, y: 74, delay: 2650 },
+                          { x: 43, y: 68, delay: 2700 },
+                          { x: 47, y: 79, delay: 2750 },
+                          { x: 37, y: 69, delay: 2800 },
+                          { x: 46, y: 65, delay: 2850 },
+                          { x: 34, y: 72, delay: 2900 },
+                          { x: 51, y: 67, delay: 2950 },
+                          { x: 41, y: 77, delay: 3000 },
+                          { x: 49, y: 70, delay: 3050 },
+                          { x: 44, y: 64, delay: 3100 },
+                          { x: 38, y: 75, delay: 3150 },
+                        ].map((point) => (
+                          <div
+                            key={`green-${point.x}-${point.y}-${point.delay}`}
+                            className="absolute w-3 h-3 bg-green-500 rounded-full"
+                            style={{
+                              left: `${point.x}%`,
+                              top: `${point.y}%`,
+                              animation: 'pulse 2s ease-in-out infinite',
+                              animationDelay: `${point.delay}ms`,
+                              boxShadow: '0 0 10px rgba(34, 197, 94, 0.5)',
+                            }}
+                          />
+                        ))}
+
+                        {/* Centroids (larger, with glow) */}
+                        <div
+                          className="absolute w-5 h-5 bg-purple-600 rounded-full border-2 border-white dark:border-gray-900"
+                          style={{
+                            left: '20%',
+                            top: '27%',
+                            boxShadow: '0 0 20px rgba(168, 85, 247, 0.8)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                          }}
+                        />
+                        <div
+                          className="absolute w-5 h-5 bg-blue-600 rounded-full border-2 border-white dark:border-gray-900"
+                          style={{
+                            left: '68%',
+                            top: '20%',
+                            boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            animationDelay: '0.5s',
+                          }}
+                        />
+                        <div
+                          className="absolute w-5 h-5 bg-green-600 rounded-full border-2 border-white dark:border-gray-900"
+                          style={{
+                            left: '43%',
+                            top: '70%',
+                            boxShadow: '0 0 20px rgba(34, 197, 94, 0.8)',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            animationDelay: '1s',
+                          }}
+                        />
+                      </div>
                     </div>
 
                     {/* Control Bar */}
@@ -234,14 +400,21 @@ export default function Home() {
                           </svg>
                         </div>
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Step 7 of 24
+                          Iteration 3 of 10
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Running
-                        </span>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            K = 3
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Clustering
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -260,7 +433,7 @@ export default function Home() {
                   How It Works
                 </h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                  Three simple steps to master any algorithm
+                  Three simple steps to visualize and master any algorithm
                 </p>
               </div>
 
@@ -284,11 +457,11 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                      Choose Algorithm
+                      Choose Your Algorithm
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                      Select from 20+ algorithms across DSA, ML, and AI. Each comes with
-                      customizable parameters and multiple datasets.
+                      Select from 20+ algorithms across DSA, ML, and AI. Generate random datasets,
+                      adjust parameters, and explore different scenarios interactively.
                     </p>
                   </div>
                 </div>
@@ -318,11 +491,11 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                      Watch & Interact
+                      Think Through Each Step
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                       See every step animated in real-time. Pause, step through, adjust speed, and
-                      modify parameters on the fly.
+                      modify parameters on the fly to understand how algorithms work.
                     </p>
                   </div>
                 </div>
@@ -346,11 +519,11 @@ export default function Home() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                      Master Concepts
+                      Build Deep Understanding
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                      Build intuition through visualization. Understand time complexity, space
-                      trade-offs, and real-world applications.
+                      Master algorithms through visualization. Understand time complexity, space
+                      trade-offs, and real-world applications with interactive controls.
                     </p>
                   </div>
                 </div>
@@ -512,6 +685,182 @@ export default function Home() {
 
           <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
 
+          {/* What Makes Us Different Section */}
+          <section className="relative z-10 py-16 px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  Why Learners Choose LEARN ALGO
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                  Interactive, real-time visualizations that help you{' '}
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">see</span> how
+                  algorithms work step-by-step
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {/* Feature 1 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-purple-500 dark:hover:border-purple-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-purple-600 dark:text-purple-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Real-Time Step Visualization
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Watch every comparison, swap, and operation as it happens. See the
+                        algorithm&apos;s logic unfold with color-coded highlights and animated
+                        transitions.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature 2 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Full Interactive Control
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Play, pause, step forward/backward, and adjust speed. Change array sizes,
+                        modify parameters, and generate random data to explore different scenarios.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature 3 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-green-500 dark:hover:border-green-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-green-600 dark:text-green-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Multiple Algorithms & Domains
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Explore 20+ algorithms across Data Structures (sorting, searching, trees),
+                        Machine Learning (regression, clustering), and AI concepts.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Feature 4 */}
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-800 hover:border-orange-500 dark:hover:border-orange-500 transition-all hover:shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-orange-600 dark:text-orange-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Debug Mode & Insights
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Enable debug mode to see detailed information about each step. Track
+                        comparisons, swaps, and understand why the algorithm makes each decision.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Call to Action */}
+              <div className="text-center">
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    Free, interactive, and powerful
+                  </span>{' '}
+                  — explore 20+ algorithms with full control
+                </p>
+                <Link
+                  href="/dsa"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  Start Visualizing
+                  <svg
+                    className="ml-2 w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <div className="col-span-full col-start-2 row-start-4 h-px bg-gray-950/5 dark:bg-white/10"></div>
+
           {/* Module Cards Section */}
           <section id="modules" className="relative z-10 py-8 px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -531,8 +880,8 @@ export default function Home() {
                   href="/dsa"
                   className="group"
                   onClick={() => {
-                    if (typeof window !== 'undefined' && window.gtag) {
-                      window.gtag('event', 'click', {
+                    if (globalThis?.window?.gtag) {
+                      globalThis.window.gtag('event', 'click', {
                         event_category: 'Module Card',
                         event_label: 'DSA',
                       })
@@ -595,8 +944,8 @@ export default function Home() {
                   href="/ml"
                   className="group"
                   onClick={() => {
-                    if (typeof window !== 'undefined' && window.gtag) {
-                      window.gtag('event', 'click', {
+                    if (globalThis?.window?.gtag) {
+                      globalThis.window.gtag('event', 'click', {
                         event_category: 'Module Card',
                         event_label: 'ML',
                       })
@@ -855,10 +1204,11 @@ export default function Home() {
                     </svg>
                   </summary>
                   <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
-                    Unlike static tutorials, LEARN ALGO provides fully interactive, real-time
-                    visualizations. You control the speed, pause at any step, modify parameters, and
-                    experiment with your own data. Our focus is on building intuition through visual
-                    understanding, not just memorizing code.
+                    LEARN ALGO provides fully interactive, real-time visualizations with complete
+                    control. You can play, pause, step forward/backward, adjust animation speed,
+                    modify parameters like array size, and generate random data to explore different
+                    scenarios. Our focus is on helping you build intuition through visual
+                    understanding by seeing every step of the algorithm as it executes.
                   </div>
                 </details>
               </div>

@@ -1,7 +1,5 @@
 'use client'
 
-import React from 'react'
-
 interface ToggleProps {
   label: string
   checked: boolean
@@ -20,7 +18,7 @@ export function Toggle({
   onChange,
   disabled = false,
   className = '',
-}: ToggleProps) {
+}: Readonly<ToggleProps>) {
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
       <button

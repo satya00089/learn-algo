@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { ControlGroup } from '@/core/controls'
@@ -239,7 +239,7 @@ export function StringOperationsPlayground() {
 
             {/* Visualization */}
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 overflow-auto">
-              {engineState && engineState.operation ? (
+              {engineState?.operation ? (
                 <div className="max-w-4xl mx-auto">
                   {renderStringChars(engineState.str1Chars, `String 1: "${engineState.str1}"`)}
 
@@ -327,8 +327,9 @@ export function StringOperationsPlayground() {
             <ControlGroup title="Input Strings">
               <div className="space-y-2">
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">String 1</label>
+                  <label htmlFor="str1-input" className="text-xs text-gray-600 dark:text-gray-400">String 1</label>
                   <input
+                    id="str1-input"
                     type="text"
                     value={str1Input}
                     onChange={(e) => setStr1Input(e.target.value)}
@@ -336,10 +337,11 @@ export function StringOperationsPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                  <label htmlFor="str2-input" className="text-xs text-gray-600 dark:text-gray-400">
                     String 2 (for comparison)
                   </label>
                   <input
+                    id="str2-input"
                     type="text"
                     value={str2Input}
                     onChange={(e) => setStr2Input(e.target.value)}
@@ -347,10 +349,11 @@ export function StringOperationsPlayground() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600 dark:text-gray-400">
+                  <label htmlFor="pattern-input" className="text-xs text-gray-600 dark:text-gray-400">
                     Pattern (for search)
                   </label>
                   <input
+                    id="pattern-input"
                     type="text"
                     value={patternInput}
                     onChange={(e) => setPatternInput(e.target.value)}

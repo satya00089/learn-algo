@@ -3,9 +3,9 @@
 import React from 'react'
 
 interface ControlGroupProps {
-  title?: string
-  children: React.ReactNode
-  className?: string
+  readonly title?: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 /**

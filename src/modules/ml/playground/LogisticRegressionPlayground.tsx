@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
@@ -64,30 +64,34 @@ export function LogisticRegressionPlayground() {
       if (type === 'linear') {
         // Linearly separable data
         for (let i = 0; i < 50; i++) {
-          newPoints.push({
-            x: Math.random() * 8 - 4,
-            y: Math.random() * 8 - 6,
-            label: 0,
-          })
-          newPoints.push({
-            x: Math.random() * 8 - 4,
-            y: Math.random() * 8 + 2,
-            label: 1,
-          })
+          newPoints.push(
+            {
+              x: Math.random() * 8 - 4,
+              y: Math.random() * 8 - 6,
+              label: 0,
+            },
+            {
+              x: Math.random() * 8 - 4,
+              y: Math.random() * 8 + 2,
+              label: 1,
+            }
+          )
         }
       } else if (type === 'clusters') {
         // Two distinct clusters
         for (let i = 0; i < 50; i++) {
-          newPoints.push({
-            x: (Math.random() - 0.5) * 4 - 4,
-            y: (Math.random() - 0.5) * 4 - 4,
-            label: 0,
-          })
-          newPoints.push({
-            x: (Math.random() - 0.5) * 4 + 4,
-            y: (Math.random() - 0.5) * 4 + 4,
-            label: 1,
-          })
+          newPoints.push(
+            {
+              x: (Math.random() - 0.5) * 4 - 4,
+              y: (Math.random() - 0.5) * 4 - 4,
+              label: 0,
+            },
+            {
+              x: (Math.random() - 0.5) * 4 + 4,
+              y: (Math.random() - 0.5) * 4 + 4,
+              label: 1,
+            }
+          )
         }
       } else if (type === 'circle') {
         // Circular pattern (non-linear)
@@ -105,20 +109,23 @@ export function LogisticRegressionPlayground() {
           // Healthy patients: younger, lower glucose
           const age = 20 + Math.random() * 40 // 20-60 years
           const glucose = 70 + Math.random() * 40 + (age - 20) * 0.3 // 70-120 mg/dL
-          newPoints.push({
-            x: (age - 45) / 10, // Normalize around 0
-            y: (glucose - 100) / 20,
-            label: 0,
-          })
 
           // Diabetic patients: older, higher glucose
           const age2 = 40 + Math.random() * 40 // 40-80 years
           const glucose2 = 120 + Math.random() * 60 + (age2 - 40) * 0.5 // 120-200 mg/dL
-          newPoints.push({
-            x: (age2 - 45) / 10,
-            y: (glucose2 - 100) / 20,
-            label: 1,
-          })
+
+          newPoints.push(
+            {
+              x: (age - 45) / 10, // Normalize around 0
+              y: (glucose - 100) / 20,
+              label: 0,
+            },
+            {
+              x: (age2 - 45) / 10,
+              y: (glucose2 - 100) / 20,
+              label: 1,
+            }
+          )
         }
       } else if (type === 'credit') {
         // Simulated: Credit card fraud detection (Transaction Amount vs Time of Day)
@@ -127,20 +134,23 @@ export function LogisticRegressionPlayground() {
           // Legitimate transactions: normal hours, reasonable amounts
           const hour = 8 + Math.random() * 12 // 8am-8pm
           const amount = 10 + Math.random() * 200 // $10-$210
-          newPoints.push({
-            x: (hour - 14) / 4,
-            y: (amount - 100) / 50,
-            label: 0,
-          })
 
           // Fraudulent transactions: odd hours, high amounts
           const hour2 = Math.random() < 0.5 ? Math.random() * 6 : 20 + Math.random() * 4 // late night/early morning
           const amount2 = 200 + Math.random() * 400 // $200-$600
-          newPoints.push({
-            x: (hour2 - 14) / 4,
-            y: (amount2 - 100) / 50,
-            label: 1,
-          })
+
+          newPoints.push(
+            {
+              x: (hour - 14) / 4,
+              y: (amount - 100) / 50,
+              label: 0,
+            },
+            {
+              x: (hour2 - 14) / 4,
+              y: (amount2 - 100) / 50,
+              label: 1,
+            }
+          )
         }
       } else if (type === 'exam') {
         // Simulated: Student exam pass/fail (Study Hours vs Previous Score)
@@ -149,52 +159,68 @@ export function LogisticRegressionPlayground() {
           // Failing students: low study hours, low previous scores
           const studyHours = Math.random() * 3 // 0-3 hours
           const prevScore = 30 + Math.random() * 30 + studyHours * 5 // 30-60 + study bonus
-          newPoints.push({
-            x: (studyHours - 4) / 2,
-            y: (prevScore - 60) / 20,
-            label: 0,
-          })
 
           // Passing students: more study hours, higher previous scores
           const studyHours2 = 3 + Math.random() * 5 // 3-8 hours
           const prevScore2 = 50 + Math.random() * 30 + studyHours2 * 5 // 50-90 + study bonus
-          newPoints.push({
-            x: (studyHours2 - 4) / 2,
-            y: (prevScore2 - 60) / 20,
-            label: 1,
-          })
+
+          newPoints.push(
+            {
+              x: (studyHours - 4) / 2,
+              y: (prevScore - 60) / 20,
+              label: 0,
+            },
+            {
+              x: (studyHours2 - 4) / 2,
+              y: (prevScore2 - 60) / 20,
+              label: 1,
+            }
+          )
         }
       } else if (type === 'xor') {
         // XOR pattern (requires polynomial features)
         for (let i = 0; i < 50; i++) {
           // Quadrant 1 & 3: Class 0
           if (Math.random() < 0.5) {
-            newPoints.push({
-              x: Math.random() * 4 + 1,
-              y: Math.random() * 4 + 1,
-              label: 0,
-            })
+            newPoints.push(
+              {
+                x: Math.random() * 4 + 1,
+                y: Math.random() * 4 + 1,
+                label: 0,
+              },
+              // Quadrant 2 & 4: Class 1
+              Math.random() < 0.5
+                ? {
+                    x: Math.random() * 4 - 5,
+                    y: Math.random() * 4 + 1,
+                    label: 1,
+                  }
+                : {
+                    x: Math.random() * 4 + 1,
+                    y: Math.random() * 4 - 5,
+                    label: 1,
+                  }
+            )
           } else {
-            newPoints.push({
-              x: Math.random() * 4 - 5,
-              y: Math.random() * 4 - 5,
-              label: 0,
-            })
-          }
-
-          // Quadrant 2 & 4: Class 1
-          if (Math.random() < 0.5) {
-            newPoints.push({
-              x: Math.random() * 4 - 5,
-              y: Math.random() * 4 + 1,
-              label: 1,
-            })
-          } else {
-            newPoints.push({
-              x: Math.random() * 4 + 1,
-              y: Math.random() * 4 - 5,
-              label: 1,
-            })
+            newPoints.push(
+              {
+                x: Math.random() * 4 - 5,
+                y: Math.random() * 4 - 5,
+                label: 0,
+              },
+              // Quadrant 2 & 4: Class 1
+              Math.random() < 0.5
+                ? {
+                    x: Math.random() * 4 - 5,
+                    y: Math.random() * 4 + 1,
+                    label: 1,
+                  }
+                : {
+                    x: Math.random() * 4 + 1,
+                    y: Math.random() * 4 - 5,
+                    label: 1,
+                  }
+            )
           }
         }
       }

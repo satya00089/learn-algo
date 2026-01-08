@@ -239,7 +239,7 @@ export function PolynomialRegressionPlayground() {
         compareEnginesRef.current.forEach((engine, d) => {
           const isHovered = hoveredDegree === d
           ctx.strokeStyle = colors[d - 1]
-          ctx.globalAlpha = isHovered ? 1.0 : 0.3
+          ctx.globalAlpha = isHovered ? 1 : 0.3
           ctx.lineWidth = isHovered ? 4 : 2
           ctx.beginPath()
 
@@ -257,45 +257,42 @@ export function PolynomialRegressionPlayground() {
           }
           ctx.stroke()
         })
-        ctx.globalAlpha = 1.0
-      } else {
-        // Normal mode: draw fitted polynomial curve
-        if (engineState.iteration > 0) {
-          ctx.strokeStyle = '#ef4444'
-          ctx.lineWidth = 3
-          ctx.beginPath()
+        ctx.globalAlpha = 1
+      } else if (engineState.iteration > 0) {
+        ctx.strokeStyle = '#ef4444'
+        ctx.lineWidth = 3
+        ctx.beginPath()
 
-          const steps = 200
-          for (let i = 0; i <= steps; i++) {
-            const t = i / steps
-            const x = xMin + t * (xMax - xMin)
-            const y = engineRef.current?.getPredictionAt(x) || 0
+        const steps = 200
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps
+          const x = xMin + t * (xMax - xMin)
+          const y = engineRef.current?.getPredictionAt(x) || 0
 
-            const { canvasX, canvasY } = toCanvasCoords(x, y)
-            if (i === 0) {
-              ctx.moveTo(canvasX, canvasY)
-            } else {
-              ctx.lineTo(canvasX, canvasY)
-            }
+          const { canvasX, canvasY } = toCanvasCoords(x, y)
+          if (i === 0) {
+            ctx.moveTo(canvasX, canvasY)
+          } else {
+            ctx.lineTo(canvasX, canvasY)
           }
-          ctx.stroke()
+        }
+        ctx.stroke()
 
-          // Draw residuals if enabled
-          if (showResiduals) {
-            ctx.strokeStyle = '#10b981'
-            ctx.lineWidth = 1
+        // Draw residuals if enabled
+        if (showResiduals) {
+          ctx.strokeStyle = '#10b981'
+          ctx.lineWidth = 1
 
-            currentPoints.forEach((point, index) => {
-              const prediction = engineState.predictions[index]
-              const { canvasX: dataX, canvasY: dataY } = toCanvasCoords(point.x, point.y)
-              const { canvasX: predX, canvasY: predY } = toCanvasCoords(point.x, prediction)
+          currentPoints.forEach((point, index) => {
+            const prediction = engineState.predictions[index]
+            const { canvasX: dataX, canvasY: dataY } = toCanvasCoords(point.x, point.y)
+            const { canvasX: predX, canvasY: predY } = toCanvasCoords(point.x, prediction)
 
-              ctx.beginPath()
-              ctx.moveTo(dataX, dataY)
-              ctx.lineTo(predX, predY)
-              ctx.stroke()
-            })
-          }
+            ctx.beginPath()
+            ctx.moveTo(dataX, dataY)
+            ctx.lineTo(predX, predY)
+            ctx.stroke()
+          })
         }
       }
 
@@ -483,52 +480,50 @@ export function PolynomialRegressionPlayground() {
     if (isPlaying) {
       setIsPlaying(false)
       if (playIntervalRef.current) clearInterval(playIntervalRef.current)
-    } else {
-      if (compareMode) {
-        if (allConverged) return
-        setIsPlaying(true)
-        playIntervalRef.current = setInterval(() => {
-          let anyActive = false
-          compareEnginesRef.current.forEach((engine) => {
-            const state = engine.getState()
-            if (!state.isConverged) {
-              engine.step()
-              anyActive = true
-            }
-          })
-
-          if (anyActive) {
-            setCompareIteration((prev) => prev + 1)
-            redraw()
+    } else if (compareMode) {
+      if (allConverged) return
+      setIsPlaying(true)
+      playIntervalRef.current = setInterval(() => {
+        let anyActive = false
+        compareEnginesRef.current.forEach((engine) => {
+          const state = engine.getState()
+          if (!state.isConverged) {
+            engine.step()
+            anyActive = true
           }
+        })
 
-          // Check if all converged
-          const allDone = Array.from(compareEnginesRef.current.values()).every(
-            (eng) => eng.getState().isConverged
-          )
+        if (anyActive) {
+          setCompareIteration((prev) => prev + 1)
+          redraw()
+        }
 
-          if (allDone) {
-            setAllConverged(true)
+        // Check if all converged
+        const allDone = Array.from(compareEnginesRef.current.values()).every(
+          (eng) => eng.getState().isConverged
+        )
+
+        if (allDone) {
+          setAllConverged(true)
+          setIsPlaying(false)
+          if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+        }
+      }, animationSpeed)
+    } else {
+      if (!engineRef.current || engineState?.isConverged) return
+      setIsPlaying(true)
+      playIntervalRef.current = setInterval(() => {
+        if (engineRef.current) {
+          const state = engineRef.current.getState()
+          if (state.isConverged) {
             setIsPlaying(false)
             if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+          } else {
+            engineRef.current.step()
+            setEngineState(engineRef.current.getState())
           }
-        }, animationSpeed)
-      } else {
-        if (!engineRef.current || engineState?.isConverged) return
-        setIsPlaying(true)
-        playIntervalRef.current = setInterval(() => {
-          if (engineRef.current) {
-            const state = engineRef.current.getState()
-            if (state.isConverged) {
-              setIsPlaying(false)
-              if (playIntervalRef.current) clearInterval(playIntervalRef.current)
-            } else {
-              engineRef.current.step()
-              setEngineState(engineRef.current.getState())
-            }
-          }
-        }, animationSpeed)
-      }
+        }
+      }, animationSpeed)
     }
   }
 

@@ -1,7 +1,5 @@
 'use client'
 
-import React from 'react'
-
 interface SliderProps {
   label: string
   value: number
@@ -26,7 +24,7 @@ export function Slider({
   onChange,
   disabled = false,
   className = '',
-}: SliderProps) {
+}: Readonly<SliderProps>) {
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex justify-between items-center">
