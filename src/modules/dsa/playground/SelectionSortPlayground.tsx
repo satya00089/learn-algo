@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
+import { MdVibration } from 'react-icons/md'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
@@ -11,6 +12,7 @@ import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { SelectionSortEngine } from '../engines/SelectionSortEngine'
 import { useSelectionSortPlayground } from '../hooks/useSelectionSortPlayground'
 import { drawArray } from '../visualizers/sortingVisualizer'
+import { initializeAudioContext, playSwapHaptic } from '../utils/hapticFeedback'
 
 /**
  * Selection Sort Playground
@@ -18,6 +20,7 @@ import { drawArray } from '../visualizers/sortingVisualizer'
  */
 export function SelectionSortPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [isVibrationEnabled, setIsVibrationEnabled] = useState(true)
   const {
     arraySize,
     setArraySize,
@@ -34,6 +37,7 @@ export function SelectionSortPlayground() {
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout>()
+  const previousSwapCountRef = useRef(0)
 
   // Canvas configuration
   const canvasConfig = useMemo(
@@ -83,6 +87,23 @@ export function SelectionSortPlayground() {
     redraw()
   }, [engineState, redraw])
 
+  // Initialize audio context on first user interaction
+  useEffect(() => {
+    const initAudio = () => initializeAudioContext()
+    document.addEventListener('click', initAudio, { once: true })
+    return () => document.removeEventListener('click', initAudio)
+  }, [])
+
+  // Watch for swaps and trigger haptic feedback
+  useEffect(() => {
+    if (engineState && engineState.swaps > previousSwapCountRef.current) {
+      if (isVibrationEnabled) {
+        playSwapHaptic()
+      }
+      previousSwapCountRef.current = engineState.swaps
+    }
+  }, [engineState, isVibrationEnabled])
+
   // Control handlers
   const handleStep = () => {
     if (engineRef.current) {
@@ -107,6 +128,7 @@ export function SelectionSortPlayground() {
     if (playIntervalRef.current) {
       clearInterval(playIntervalRef.current)
     }
+    previousSwapCountRef.current = 0
   }
 
   const handlePlayPause = () => {
@@ -162,6 +184,7 @@ export function SelectionSortPlayground() {
     if (playIntervalRef.current) {
       clearInterval(playIntervalRef.current)
     }
+    previousSwapCountRef.current = 0
   }
 
   // Tooltip component
@@ -326,6 +349,20 @@ export function SelectionSortPlayground() {
                     }`}
                   >
                     <VscDebugAltSmall size={16} />
+                  </button>
+                </Tooltip>
+
+                {/* Vibration Toggle */}
+                <Tooltip text={isVibrationEnabled ? 'Disable Vibration' : 'Enable Vibration'}>
+                  <button
+                    onClick={() => setIsVibrationEnabled(!isVibrationEnabled)}
+                    className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
+                      isVibrationEnabled
+                        ? 'bg-purple-600 border-purple-600 text-white'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <MdVibration size={16} />
                   </button>
                 </Tooltip>
 
