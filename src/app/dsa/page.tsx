@@ -90,9 +90,9 @@ export default function DSAPage() {
       title: 'Bubble Sort',
       description: 'Watch elements bubble to their correct positions',
       href: '/dsa/bubble-sort',
-      icon: '/icons/dsa/sort.png',
+      icon: '/icons/dsa/bubble-sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert',
+      darkFilter: 'object-fill',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -101,9 +101,9 @@ export default function DSAPage() {
       title: 'Insertion Sort',
       description: 'Build sorted array by inserting elements one by one',
       href: '/dsa/insertion-sort',
-      icon: '/icons/dsa/sort.png',
+      icon: '/icons/dsa/insertion-sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert',
+      darkFilter: 'object-fill',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -112,9 +112,9 @@ export default function DSAPage() {
       title: 'Selection Sort',
       description: 'Repeatedly select minimum and place at beginning',
       href: '/dsa/selection-sort',
-      icon: '/icons/dsa/sort.png',
+      icon: '/icons/dsa/selection-sort.png',
       iconType: 'image' as const,
-      darkFilter: 'dark:invert',
+      darkFilter: 'object-fill',
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
@@ -208,7 +208,7 @@ export default function DSAPage() {
                         alt={algo.title}
                         width={88}
                         height={64}
-                        className={`object-contain ${algo.className} ${algo.darkFilter}`}
+                        className={`object-contain h-16 ${algo.darkFilter}`}
                       />
                     ) : (
                       <div className="text-4xl">{algo.icon}</div>
