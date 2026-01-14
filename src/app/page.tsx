@@ -1,21 +1,79 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 
 export default function Home() {
-  const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28, bgSize: 30 })
+  const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28, bgSize: 16 })
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Generate random values only on client side to avoid hydration mismatch
     const getRandomSize = () => Math.floor(Math.random() * (36 - 16 + 1)) + 16
+    
+    // Set initial values
     setPatternValues({
       size1: getRandomSize(),
       size2: getRandomSize(),
-      bgSize: getRandomSize(),
+      bgSize: 16, // Keep bgSize constant
     })
+
+    // Function to animate to new values
+    const animateToNewValues = () => {
+      const targetSize1 = getRandomSize();
+      const targetSize2 = getRandomSize();
+
+      setPatternValues(prev => {
+        const startSize1 = prev.size1;
+        const startSize2 = prev.size2;
+        const diffSize1 = (targetSize1 - startSize1) / 100;
+        const diffSize2 = (targetSize2 - startSize2) / 100;
+
+        let step = 0;
+        
+        // Clear any existing animation
+        if (animationRef.current) {
+          clearInterval(animationRef.current);
+        }
+        
+        animationRef.current = setInterval(() => {
+          step++;
+          
+          if (step >= 100) {
+            setPatternValues({
+              size1: targetSize1,
+              size2: targetSize2,
+              bgSize: 32, // Keep bgSize constant
+            });
+            if (animationRef.current) {
+              clearInterval(animationRef.current);
+              animationRef.current = null;
+            }
+          } else {
+            setPatternValues({
+              size1: startSize1 + diffSize1 * step,
+              size2: startSize2 + diffSize2 * step,
+              bgSize: 32, // Keep bgSize constant
+            });
+          }
+        }, 10);
+
+        return prev;
+      });
+    };
+
+    // Start the main interval
+    const mainInterval = setInterval(animateToNewValues, 10000);
+
+    // Cleanup all intervals on unmount
+    return () => {
+      clearInterval(mainInterval);
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+      }
+    }
   }, [])
 
   return (
