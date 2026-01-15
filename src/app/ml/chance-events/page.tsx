@@ -1,26 +1,9 @@
 import { ChanceEventsPlayground } from '@/modules/ml/playground/ChanceEventsPlayground'
 import { AlgorithmStructuredData } from '@/components/AlgorithmStructuredData'
 import { FAQSchema } from '@/components/FAQSchema'
+import { generateMLMetadata } from '../metadata-config'
 
-export const metadata = {
-  title: 'Chance Events - Basic Probability',
-  description:
-    'Interactive chance events visualization with coin flips. Explore random events, fair and weighted coins, and understand how observed frequencies converge to true probabilities.',
-  keywords: [
-    'chance events',
-    'probability',
-    'coin flip',
-    'random events',
-    'law of large numbers',
-    'probability visualization',
-    'statistics',
-    'fair coin',
-    'weighted coin',
-    'experimental probability',
-    'basic probability',
-    'machine learning mathematics',
-  ],
-}
+export const metadata = generateMLMetadata('chance-events')
 
 export default function ChanceEventsPage() {
   const faqs = [

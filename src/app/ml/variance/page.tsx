@@ -1,26 +1,9 @@
 import { VariancePlayground } from '@/modules/ml/playground/VariancePlayground'
 import { AlgorithmStructuredData } from '@/components/AlgorithmStructuredData'
 import { FAQSchema } from '@/components/FAQSchema'
+import { generateMLMetadata } from '../metadata-config'
 
-export const metadata = {
-  title: 'Variance - Statistical Spread Visualization',
-  description:
-    'Interactive variance visualization with card drawing. Explore how variance measures the spread of a distribution and watch the running variance converge to the theoretical value through the Law of Large Numbers.',
-  keywords: [
-    'variance',
-    'statistical spread',
-    'card drawing',
-    'probability',
-    'law of large numbers',
-    'running variance',
-    'squared differences',
-    'statistics',
-    'expected value',
-    'distribution',
-    'convergence',
-    'machine learning mathematics',
-  ],
-}
+export const metadata = generateMLMetadata('variance')
 
 export default function VariancePage() {
   const faqs = [
