@@ -34,7 +34,14 @@ export class MinimaxEngine {
     this.nodeIdCounter = 0
   }
 
-  private addHistory(description: string, nodeId?: string, score?: number, move?: number, alpha?: number, beta?: number): void {
+  private addHistory(
+    description: string,
+    nodeId?: string,
+    score?: number,
+    move?: number,
+    alpha?: number,
+    beta?: number
+  ): void {
     this.iterationCount++
     this.state.history.push({
       iteration: this.iterationCount,
@@ -57,9 +64,14 @@ export class MinimaxEngine {
    */
   private checkWinner(board: Cell[]): Player | 'Draw' | null {
     const winPatterns = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-      [0, 4, 8], [2, 4, 6]              // Diagonals
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8], // Rows
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8], // Columns
+      [0, 4, 8],
+      [2, 4, 6], // Diagonals
     ]
 
     for (const pattern of winPatterns) {
@@ -70,7 +82,7 @@ export class MinimaxEngine {
     }
 
     // Check for draw
-    if (board.every(cell => cell !== null)) {
+    if (board.every((cell) => cell !== null)) {
       return 'Draw'
     }
 
@@ -81,7 +93,7 @@ export class MinimaxEngine {
    * Get available moves
    */
   private getAvailableMoves(board: Cell[]): number[] {
-    return board.map((cell, idx) => cell === null ? idx : -1).filter(idx => idx !== -1)
+    return board.map((cell, idx) => (cell === null ? idx : -1)).filter((idx) => idx !== -1)
   }
 
   /**
@@ -97,7 +109,12 @@ export class MinimaxEngine {
   /**
    * Minimax algorithm (without pruning)
    */
-  private minimax(board: Cell[], depth: number, isMaximizing: boolean, parentId: string | null): { score: number; move: number | null; nodeId: string } {
+  private minimax(
+    board: Cell[],
+    depth: number,
+    isMaximizing: boolean,
+    parentId: string | null
+  ): { score: number; move: number | null; nodeId: string } {
     const nodeId = this.generateNodeId()
     this.state.nodesEvaluated++
 
@@ -167,11 +184,11 @@ export class MinimaxEngine {
       for (const move of moves) {
         const newBoard = [...board]
         newBoard[move] = player
-        
+
         this.addHistory(`Trying move ${move} (O) at depth ${depth}`, nodeId)
-        
+
         const result = this.minimax(newBoard, depth + 1, false, nodeId)
-        
+
         if (result.score > maxScore) {
           maxScore = result.score
           bestMoveIdx = move
@@ -181,9 +198,14 @@ export class MinimaxEngine {
       node.score = maxScore
       node.move = bestMoveIdx
       node.state = 'evaluated'
-      
-      this.addHistory(`Max node evaluated: score=${maxScore}, bestMove=${bestMoveIdx}`, nodeId, maxScore, bestMoveIdx ?? undefined)
-      
+
+      this.addHistory(
+        `Max node evaluated: score=${maxScore}, bestMove=${bestMoveIdx}`,
+        nodeId,
+        maxScore,
+        bestMoveIdx ?? undefined
+      )
+
       return { score: maxScore, move: bestMoveIdx, nodeId }
     } else {
       let minScore = Infinity
@@ -192,11 +214,11 @@ export class MinimaxEngine {
       for (const move of moves) {
         const newBoard = [...board]
         newBoard[move] = player
-        
+
         this.addHistory(`Trying move ${move} (X) at depth ${depth}`, nodeId)
-        
+
         const result = this.minimax(newBoard, depth + 1, true, nodeId)
-        
+
         if (result.score < minScore) {
           minScore = result.score
           bestMoveIdx = move
@@ -206,9 +228,14 @@ export class MinimaxEngine {
       node.score = minScore
       node.move = bestMoveIdx
       node.state = 'evaluated'
-      
-      this.addHistory(`Min node evaluated: score=${minScore}, bestMove=${bestMoveIdx}`, nodeId, minScore, bestMoveIdx ?? undefined)
-      
+
+      this.addHistory(
+        `Min node evaluated: score=${minScore}, bestMove=${bestMoveIdx}`,
+        nodeId,
+        minScore,
+        bestMoveIdx ?? undefined
+      )
+
       return { score: minScore, move: bestMoveIdx, nodeId }
     }
   }
@@ -279,11 +306,18 @@ export class MinimaxEngine {
       for (const move of moves) {
         const newBoard = [...board]
         newBoard[move] = player
-        
-        this.addHistory(`Trying move ${move} (O) | α=${alpha}, β=${beta}`, nodeId, undefined, move, alpha, beta)
-        
+
+        this.addHistory(
+          `Trying move ${move} (O) | α=${alpha}, β=${beta}`,
+          nodeId,
+          undefined,
+          move,
+          alpha,
+          beta
+        )
+
         const result = this.minimaxAlphaBeta(newBoard, depth + 1, alpha, beta, false, nodeId)
-        
+
         if (result.score > maxScore) {
           maxScore = result.score
           bestMoveIdx = move
@@ -294,7 +328,14 @@ export class MinimaxEngine {
         // Beta cutoff (pruning)
         if (beta <= alpha) {
           this.state.nodesPruned++
-          this.addHistory(`Beta cutoff! Pruning remaining branches | α=${alpha}, β=${beta}`, nodeId, maxScore, bestMoveIdx ?? undefined, alpha, beta)
+          this.addHistory(
+            `Beta cutoff! Pruning remaining branches | α=${alpha}, β=${beta}`,
+            nodeId,
+            maxScore,
+            bestMoveIdx ?? undefined,
+            alpha,
+            beta
+          )
           node.state = 'pruned'
           break
         }
@@ -304,11 +345,17 @@ export class MinimaxEngine {
       node.move = bestMoveIdx
       node.alpha = alpha
       node.state = node.state === 'pruned' ? 'pruned' : 'evaluated'
-      
+
       if (node.state !== 'pruned') {
-        this.addHistory(`Max evaluated: score=${maxScore}, bestMove=${bestMoveIdx} | α=${alpha}`, nodeId, maxScore, bestMoveIdx ?? undefined, alpha)
+        this.addHistory(
+          `Max evaluated: score=${maxScore}, bestMove=${bestMoveIdx} | α=${alpha}`,
+          nodeId,
+          maxScore,
+          bestMoveIdx ?? undefined,
+          alpha
+        )
       }
-      
+
       return { score: maxScore, move: bestMoveIdx, nodeId }
     } else {
       let minScore = Infinity
@@ -317,11 +364,18 @@ export class MinimaxEngine {
       for (const move of moves) {
         const newBoard = [...board]
         newBoard[move] = player
-        
-        this.addHistory(`Trying move ${move} (X) | α=${alpha}, β=${beta}`, nodeId, undefined, move, alpha, beta)
-        
+
+        this.addHistory(
+          `Trying move ${move} (X) | α=${alpha}, β=${beta}`,
+          nodeId,
+          undefined,
+          move,
+          alpha,
+          beta
+        )
+
         const result = this.minimaxAlphaBeta(newBoard, depth + 1, alpha, beta, true, nodeId)
-        
+
         if (result.score < minScore) {
           minScore = result.score
           bestMoveIdx = move
@@ -332,7 +386,14 @@ export class MinimaxEngine {
         // Alpha cutoff (pruning)
         if (beta <= alpha) {
           this.state.nodesPruned++
-          this.addHistory(`Alpha cutoff! Pruning remaining branches | α=${alpha}, β=${beta}`, nodeId, minScore, bestMoveIdx ?? undefined, alpha, beta)
+          this.addHistory(
+            `Alpha cutoff! Pruning remaining branches | α=${alpha}, β=${beta}`,
+            nodeId,
+            minScore,
+            bestMoveIdx ?? undefined,
+            alpha,
+            beta
+          )
           node.state = 'pruned'
           break
         }
@@ -342,11 +403,18 @@ export class MinimaxEngine {
       node.move = bestMoveIdx
       node.beta = beta
       node.state = node.state === 'pruned' ? 'pruned' : 'evaluated'
-      
+
       if (node.state !== 'pruned') {
-        this.addHistory(`Min evaluated: score=${minScore}, bestMove=${bestMoveIdx} | β=${beta}`, nodeId, minScore, bestMoveIdx ?? undefined, undefined, beta)
+        this.addHistory(
+          `Min evaluated: score=${minScore}, bestMove=${bestMoveIdx} | β=${beta}`,
+          nodeId,
+          minScore,
+          bestMoveIdx ?? undefined,
+          undefined,
+          beta
+        )
       }
-      
+
       return { score: minScore, move: bestMoveIdx, nodeId }
     }
   }
@@ -368,11 +436,14 @@ export class MinimaxEngine {
     this.iterationCount = 0
     this.state.history = []
 
-    this.addHistory(`Starting ${this.state.algorithm === 'alpha-beta' ? 'Alpha-Beta Minimax' : 'Minimax'} algorithm...`)
+    this.addHistory(
+      `Starting ${this.state.algorithm === 'alpha-beta' ? 'Alpha-Beta Minimax' : 'Minimax'} algorithm...`
+    )
 
-    const result = this.state.algorithm === 'alpha-beta'
-      ? this.minimaxAlphaBeta(this.state.board, 0, -Infinity, Infinity, true, null)
-      : this.minimax(this.state.board, 0, true, null)
+    const result =
+      this.state.algorithm === 'alpha-beta'
+        ? this.minimaxAlphaBeta(this.state.board, 0, -Infinity, Infinity, true, null)
+        : this.minimax(this.state.board, 0, true, null)
 
     this.state.bestMove = result.move
     this.state.phase = 'complete'
@@ -384,7 +455,7 @@ export class MinimaxEngine {
     this.addHistory(
       `Best move found: ${result.move} with score ${result.score} | Nodes evaluated: ${this.state.nodesEvaluated}${this.state.algorithm === 'alpha-beta' ? ` | Nodes pruned: ${this.state.nodesPruned}` : ''}`
     )
-    
+
     this.state.message = `AI suggests move: ${result.move} (Score: ${result.score})`
   }
 
@@ -392,13 +463,13 @@ export class MinimaxEngine {
    * Mark the best path in the tree
    */
   private markBestPath(nodeId: string): void {
-    let current: MinimaxNode | undefined = this.state.tree.find(n => n.id === nodeId)
-    
+    let current: MinimaxNode | undefined = this.state.tree.find((n) => n.id === nodeId)
+
     while (current) {
       if (current.state !== 'pruned') {
         current.state = 'best-path'
       }
-      current = current.parent ? this.state.tree.find(n => n.id === current!.parent) : undefined
+      current = current.parent ? this.state.tree.find((n) => n.id === current!.parent) : undefined
     }
   }
 
@@ -413,14 +484,13 @@ export class MinimaxEngine {
 
     this.state.board[position] = player
     this.state.currentPlayer = player === 'X' ? 'O' : 'X'
-    
+
     // Check winner
     this.state.winner = this.checkWinner(this.state.board)
     if (this.state.winner) {
       this.state.isComplete = true
-      this.state.message = this.state.winner === 'Draw' 
-        ? 'Game ended in a draw!' 
-        : `${this.state.winner} wins!`
+      this.state.message =
+        this.state.winner === 'Draw' ? 'Game ended in a draw!' : `${this.state.winner} wins!`
     }
 
     this.state.tree = []
@@ -495,7 +565,7 @@ export class MinimaxEngine {
     if (this.state.animationStep < this.state.tree.length) {
       this.state.currentNode = this.state.tree[this.state.animationStep].id
     }
-    
+
     return this.state.animationStep < this.state.tree.length
   }
 

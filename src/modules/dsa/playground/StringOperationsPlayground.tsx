@@ -327,7 +327,9 @@ export function StringOperationsPlayground() {
             <ControlGroup title="Input Strings">
               <div className="space-y-2">
                 <div>
-                  <label htmlFor="str1-input" className="text-xs text-gray-600 dark:text-gray-400">String 1</label>
+                  <label htmlFor="str1-input" className="text-xs text-gray-600 dark:text-gray-400">
+                    String 1
+                  </label>
                   <input
                     id="str1-input"
                     type="text"
@@ -349,7 +351,10 @@ export function StringOperationsPlayground() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="pattern-input" className="text-xs text-gray-600 dark:text-gray-400">
+                  <label
+                    htmlFor="pattern-input"
+                    className="text-xs text-gray-600 dark:text-gray-400"
+                  >
                     Pattern (for search)
                   </label>
                   <input

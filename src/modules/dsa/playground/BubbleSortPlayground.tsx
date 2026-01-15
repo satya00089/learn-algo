@@ -106,7 +106,7 @@ export function BubbleSortPlayground() {
       }
       previousSwapCountRef.current = engineState.swaps
     }
-  }, [engineState, isVibrationEnabled])  // Control handlers
+  }, [engineState, isVibrationEnabled]) // Control handlers
   const handleStep = () => {
     if (engineRef.current) {
       engineRef.current.step()

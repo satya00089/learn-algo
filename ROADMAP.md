@@ -5,6 +5,7 @@
 ### In-Playground Enhancements
 
 #### 1. Guided Learning Mode
+
 **Location:** Individual algorithm playground pages
 
 - [ ] **Step Explanations**
@@ -28,6 +29,7 @@
     - "Trace the partitioning process step-by-step"
 
 #### 2. Custom Dataset Features
+
 **Location:** Individual algorithm playground pages
 
 - [ ] **Dataset Input**
@@ -48,6 +50,7 @@
   - Save custom datasets for reuse
 
 #### 3. Interview Tips Integration
+
 **Location:** Individual algorithm playground pages
 
 - [ ] **Interview Insights Tab**
@@ -94,40 +97,43 @@ import { LearningOutcomes } from '@/components/LearningOutcomes'
 import { quickSortOutcomes } from '@/data/learningOutcomes'
 
 // In your playground component:
-<LearningOutcomes 
-  algorithmName="QuickSort"
-  outcomes={quickSortOutcomes}
-/>
+;<LearningOutcomes algorithmName="QuickSort" outcomes={quickSortOutcomes} />
 ```
 
 ## 🎯 Implementation Priority
 
 ### Phase 1: Learning Outcomes (Highest ROI)
+
 - Integrate `LearningOutcomes` component into top 5 algorithms
 - Add outcomes data for remaining algorithms
 - Track completion in localStorage
 
 ### Phase 2: Dataset Customization
+
 - Add manual array input fields
 - Implement preset scenarios (sorted, reverse, random)
 - Add "Generate worst-case" buttons
 
 ### Phase 3: Guided Explanations
+
 - Add step description text that updates during execution
 - Implement pause-on-compare feature
 - Add explanatory tooltips
 
 ### Phase 4: Challenge Questions
+
 - Design question UI/UX
 - Create question bank per algorithm
 - Implement answer validation
 
 ### Phase 5: Interview Tips
+
 - Create collapsible panel in playground
 - Port content from deleted `/interview-tips` page
 - Add per-algorithm interview insights
 
 ### Phase 6: Comparison View
+
 - Design split-screen layout
 - Synchronize stepping across algorithms
 - Add performance metrics

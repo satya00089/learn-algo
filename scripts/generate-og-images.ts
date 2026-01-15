@@ -166,6 +166,30 @@ const dsaPages: OGImageConfig[] = [
 // ML algorithm pages
 const mlPages: OGImageConfig[] = [
   {
+    title: 'Chance Events',
+    subtitle: 'Probability & Randomness',
+    description: 'Visualize coin flips and dice rolls to understand probability',
+    category: 'ML • Probability',
+    categoryColor: '#10B981',
+    filename: 'og-ml-chance-events.png',
+  },
+  {
+    title: 'Expected Value',
+    subtitle: 'Probability-Weighted Average',
+    description: 'Watch running mean converge to E[X] through dice rolling',
+    category: 'ML • Probability',
+    categoryColor: '#10B981',
+    filename: 'og-ml-expectation.png',
+  },
+  {
+    title: 'Variance',
+    subtitle: 'Measuring Statistical Spread',
+    description: 'Explore how variance quantifies distribution spread',
+    category: 'ML • Probability',
+    categoryColor: '#10B981',
+    filename: 'og-ml-variance.png',
+  },
+  {
     title: 'Linear Regression',
     subtitle: 'Predicting Continuous Values',
     description: 'Fit a line to data points using gradient descent',

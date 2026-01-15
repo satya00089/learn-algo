@@ -98,6 +98,21 @@ const algorithmInfo: Record<DSARoute, { title: string; description: string; cate
 }
 
 const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; category: string }> = {
+  'chance-events': {
+    title: 'Chance Events',
+    description: 'Explore random events and probability',
+    category: 'Basic Probability',
+  },
+  expectation: {
+    title: 'Expectation',
+    description: 'Expected value and probability-weighted outcomes',
+    category: 'Basic Probability',
+  },
+  variance: {
+    title: 'Variance',
+    description: 'Measure statistical spread and distribution',
+    category: 'Basic Probability',
+  },
   'linear-regression': {
     title: 'Linear Regression',
     description: 'Fit a line to predict values',
@@ -147,6 +162,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     title: 'Standard Scaler',
     description: 'Feature standardization (z-score)',
     category: 'Preprocessing',
+  },
+  regularization: {
+    title: 'Regularization',
+    description: 'Prevent overfitting with L1/L2',
+    category: 'Optimization',
   },
 }
 

@@ -1,4 +1,7 @@
 export type MLRoute =
+  | 'chance-events'
+  | 'expectation'
+  | 'variance'
   | 'linear-regression'
   | 'polynomial-regression'
   | 'logistic-regression'
@@ -9,6 +12,7 @@ export type MLRoute =
   | 'gradient-descent'
   | 'minmax-scaler'
   | 'standard-scaler'
+  | 'regularization'
 
 export interface RelatedAlgorithm {
   name: string
@@ -17,6 +21,57 @@ export interface RelatedAlgorithm {
 }
 
 export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
+  'chance-events': [
+    {
+      name: 'Expectation',
+      route: 'expectation',
+      category: 'Probability',
+    },
+    {
+      name: 'Linear Regression',
+      route: 'linear-regression',
+      category: 'Regression',
+    },
+    {
+      name: 'Logistic Regression',
+      route: 'logistic-regression',
+      category: 'Classification',
+    },
+  ],
+  expectation: [
+    {
+      name: 'Variance',
+      route: 'variance',
+      category: 'Probability',
+    },
+    {
+      name: 'Chance Events',
+      route: 'chance-events',
+      category: 'Probability',
+    },
+    {
+      name: 'Standard Scaler',
+      route: 'standard-scaler',
+      category: 'Preprocessing',
+    },
+  ],
+  variance: [
+    {
+      name: 'Expectation',
+      route: 'expectation',
+      category: 'Probability',
+    },
+    {
+      name: 'Standard Scaler',
+      route: 'standard-scaler',
+      category: 'Preprocessing',
+    },
+    {
+      name: 'Chance Events',
+      route: 'chance-events',
+      category: 'Probability',
+    },
+  ],
   'linear-regression': [
     {
       name: 'Polynomial Regression',
@@ -185,6 +240,23 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       name: 'Polynomial Regression',
       route: 'polynomial-regression',
       category: 'Regression',
+    },
+  ],
+  regularization: [
+    {
+      name: 'Linear Regression',
+      route: 'linear-regression',
+      category: 'Regression',
+    },
+    {
+      name: 'Logistic Regression',
+      route: 'logistic-regression',
+      category: 'Classification',
+    },
+    {
+      name: 'Gradient Descent',
+      route: 'gradient-descent',
+      category: 'Optimization',
     },
   ],
 }

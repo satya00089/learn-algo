@@ -1,14 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import {
-  FaRedo,
-  FaLightbulb,
-  FaBrain,
-  FaPlay,
-  FaPause,
-  FaStepForward,
-} from 'react-icons/fa'
+import { FaRedo, FaLightbulb, FaBrain, FaPlay, FaPause, FaStepForward } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ThemeToggle } from '@/core/theme'
@@ -16,10 +9,10 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { MinimaxEngine } from '../engines/MinimaxEngine'
 import { useMinimaxPlayground } from '../hooks/useMinimaxPlayground'
 import type { MinimaxNode } from '../types'
-import { 
-  drawBoard, 
-  drawTree, 
-  drawStatistics, 
+import {
+  drawBoard,
+  drawTree,
+  drawStatistics,
   calculateTreeLayout,
   drawSelectedNodeInfo,
 } from '../visualizers/minimaxVisualizer'
@@ -29,17 +22,10 @@ import {
  * Tic-Tac-Toe with AI using Minimax and Alpha-Beta Pruning
  */
 export function MinimaxPlayground() {
-  const {
-    isDebugMode,
-    setIsDebugMode,
-    showTree,
-    setShowTree,
-  } = useMinimaxPlayground()
+  const { isDebugMode, setIsDebugMode, showTree, setShowTree } = useMinimaxPlayground()
 
   const engineRef = useRef<MinimaxEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    MinimaxEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<MinimaxEngine['getState']> | null>(null)
   const [isDark, setIsDark] = useState(false)
   const [isAnimationPlaying, setIsAnimationPlaying] = useState(false)
   const animationIntervalRef = useRef<NodeJS.Timeout>()
@@ -86,20 +72,20 @@ export function MinimaxPlayground() {
 
       if (showTree && engineState.tree.length > 0) {
         // Draw tree visualization
-        const visibleNodes = engineState.isAnimating 
+        const visibleNodes = engineState.isAnimating
           ? engineState.tree.slice(0, engineState.animationStep + 1)
           : engineState.tree
-          
+
         const layout = calculateTreeLayout(visibleNodes, width, height - 150)
         drawTree(
-          ctx, 
-          visibleNodes, 
-          layout, 
-          isDark, 
+          ctx,
+          visibleNodes,
+          layout,
+          isDark,
           engineState.currentNode,
           engineState.selectedNodeId
         )
-        
+
         // Draw statistics
         drawStatistics(
           ctx,
@@ -109,10 +95,10 @@ export function MinimaxPlayground() {
           height - 60,
           isDark
         )
-        
+
         // Draw selected node info if a node is selected
         if (engineState.selectedNodeId) {
-          const selectedNode = engineState.tree.find(n => n.id === engineState.selectedNodeId)
+          const selectedNode = engineState.tree.find((n) => n.id === engineState.selectedNodeId)
           if (selectedNode) {
             drawSelectedNodeInfo(ctx, selectedNode, width - 220, 20, isDark)
           }
@@ -122,15 +108,7 @@ export function MinimaxPlayground() {
         const boardSize = Math.min(width, height) * 0.6
         const boardX = (width - boardSize) / 2
         const boardY = (height - boardSize) / 2
-        drawBoard(
-          ctx,
-          engineState.board,
-          boardX,
-          boardY,
-          boardSize,
-          isDark,
-          engineState.bestMove
-        )
+        drawBoard(ctx, engineState.board, boardX, boardY, boardSize, isDark, engineState.bestMove)
       }
     },
     [engineState, canvasConfig, isDark, showTree]
@@ -164,7 +142,7 @@ export function MinimaxPlayground() {
 
   const handleAIMove = () => {
     if (!engineRef.current || !engineState) return
-    
+
     if (engineState.winner) {
       return
     }
@@ -184,7 +162,7 @@ export function MinimaxPlayground() {
 
   const handleCellClick = (index: number) => {
     if (!engineRef.current || !engineState) return
-    
+
     if (engineState.board[index] !== null || engineState.winner) {
       return
     }
@@ -200,7 +178,7 @@ export function MinimaxPlayground() {
 
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
-    
+
     // Scale coordinates from display size to canvas size
     const scaleX = canvas.width / rect.width
     const scaleY = canvas.height / rect.height
@@ -209,9 +187,13 @@ export function MinimaxPlayground() {
 
     if (showTree && engineState.tree.length > 0) {
       // Handle tree node click
-      const layout = calculateTreeLayout(engineState.tree, canvasConfig.width, canvasConfig.height - 150)
+      const layout = calculateTreeLayout(
+        engineState.tree,
+        canvasConfig.width,
+        canvasConfig.height - 150
+      )
       const clickedNode = findNodeAtPosition(x, y, engineState.tree, layout)
-      
+
       if (clickedNode && engineRef.current) {
         engineRef.current.selectNode(clickedNode.id)
         setEngineState(engineRef.current.getState())
@@ -222,12 +204,7 @@ export function MinimaxPlayground() {
       const boardX = (canvasConfig.width - boardSize) / 2
       const boardY = (canvasConfig.height - boardSize) / 2
 
-      if (
-        x >= boardX &&
-        x <= boardX + boardSize &&
-        y >= boardY &&
-        y <= boardY + boardSize
-      ) {
+      if (x >= boardX && x <= boardX + boardSize && y >= boardY && y <= boardY + boardSize) {
         const cellSize = boardSize / 3
         const col = Math.floor((x - boardX) / cellSize)
         const row = Math.floor((y - boardY) / cellSize)
@@ -279,13 +256,13 @@ export function MinimaxPlayground() {
         engineRef.current.startAnimation()
         setEngineState(engineRef.current.getState())
       }
-      
+
       setIsAnimationPlaying(true)
       animationIntervalRef.current = setInterval(() => {
         if (engineRef.current) {
           const hasMore = engineRef.current.stepAnimation()
           setEngineState(engineRef.current.getState())
-          
+
           if (!hasMore) {
             setIsAnimationPlaying(false)
             if (animationIntervalRef.current) {
@@ -300,24 +277,24 @@ export function MinimaxPlayground() {
 
   const handleStepAnimation = () => {
     if (!engineRef.current || !engineState) return
-    
+
     if (!engineState.isAnimating) {
       engineRef.current.startAnimation()
     }
-    
+
     engineRef.current.stepAnimation()
     setEngineState(engineRef.current.getState())
   }
 
   const handleResetAnimation = () => {
     if (!engineRef.current) return
-    
+
     setIsAnimationPlaying(false)
     if (animationIntervalRef.current) {
       clearInterval(animationIntervalRef.current)
       animationIntervalRef.current = undefined
     }
-    
+
     engineRef.current.stopAnimation()
     setEngineState(engineRef.current.getState())
   }
@@ -396,7 +373,9 @@ export function MinimaxPlayground() {
                   <span className="text-sm text-gray-700 dark:text-gray-300">Algorithm:</span>
                   <select
                     value={engineState?.algorithm || 'minimax'}
-                    onChange={(e) => handleAlgorithmChange(e.target.value as 'minimax' | 'alpha-beta')}
+                    onChange={(e) =>
+                      handleAlgorithmChange(e.target.value as 'minimax' | 'alpha-beta')
+                    }
                     className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="minimax">Minimax</option>
@@ -509,16 +488,22 @@ export function MinimaxPlayground() {
               {engineState && (
                 <div className="mt-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className={`font-semibold ${
-                      engineState.winner === 'X' ? 'text-red-600' :
-                      engineState.winner === 'O' ? 'text-blue-600' :
-                      engineState.winner === 'Draw' ? 'text-gray-600' :
-                      engineState.currentPlayer === 'X' ? 'text-red-600' : 'text-blue-600'
-                    }`}>
-                      {engineState.winner 
+                    <span
+                      className={`font-semibold ${
+                        engineState.winner === 'X'
+                          ? 'text-red-600'
+                          : engineState.winner === 'O'
+                            ? 'text-blue-600'
+                            : engineState.winner === 'Draw'
+                              ? 'text-gray-600'
+                              : engineState.currentPlayer === 'X'
+                                ? 'text-red-600'
+                                : 'text-blue-600'
+                      }`}
+                    >
+                      {engineState.winner
                         ? `Game Over: ${engineState.winner === 'Draw' ? 'Draw!' : `${engineState.winner} Wins!`}`
-                        : `Current Player: ${engineState.currentPlayer}`
-                      }
+                        : `Current Player: ${engineState.currentPlayer}`}
                     </span>
                     {!engineState.winner && engineState.currentPlayer === 'O' && (
                       <span className="text-gray-500 text-xs">(AI)</span>
@@ -532,15 +517,11 @@ export function MinimaxPlayground() {
             </div>
 
             {/* Canvas */}
-            <div 
+            <div
               className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 flex items-center justify-center overflow-auto"
               onClick={handleCanvasClick}
             >
-              <Canvas
-                canvasRef={canvasRef}
-                config={canvasConfig}
-                className="cursor-pointer"
-              />
+              <Canvas canvasRef={canvasRef} config={canvasConfig} className="cursor-pointer" />
             </div>
           </div>
 
@@ -577,8 +558,13 @@ export function MinimaxPlayground() {
                         <span className="text-gray-600 dark:text-gray-400">Efficiency:</span>
                         <span className="font-semibold text-purple-600">
                           {engineState.nodesEvaluated + engineState.nodesPruned > 0
-                            ? ((engineState.nodesPruned / (engineState.nodesEvaluated + engineState.nodesPruned)) * 100).toFixed(1)
-                            : '0'}%
+                            ? (
+                                (engineState.nodesPruned /
+                                  (engineState.nodesEvaluated + engineState.nodesPruned)) *
+                                100
+                              ).toFixed(1)
+                            : '0'}
+                          %
                         </span>
                       </div>
                     </>
@@ -612,9 +598,15 @@ export function MinimaxPlayground() {
                 <li>• Click cells to play as X (human)</li>
                 <li>• Click "AI Think" for AI move (O)</li>
                 <li>• Click "Hint" to see best move</li>
-                <li>• <strong>Switch to Tree View</strong> to see algorithm exploration</li>
-                <li>• <strong>Click tree nodes</strong> to inspect board states</li>
-                <li>• <strong>Use animation controls</strong> to watch tree building</li>
+                <li>
+                  • <strong>Switch to Tree View</strong> to see algorithm exploration
+                </li>
+                <li>
+                  • <strong>Click tree nodes</strong> to inspect board states
+                </li>
+                <li>
+                  • <strong>Use animation controls</strong> to watch tree building
+                </li>
                 <li>• Try Alpha-Beta Pruning for efficiency comparison</li>
               </ul>
             </div>
@@ -625,9 +617,10 @@ export function MinimaxPlayground() {
                 🧠 About Minimax
               </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                Minimax is a decision-making algorithm for adversarial games. It explores all possible moves, 
-                assuming both players play optimally. Alpha-Beta Pruning optimizes by eliminating branches 
-                that won't affect the final decision, significantly reducing computation.
+                Minimax is a decision-making algorithm for adversarial games. It explores all
+                possible moves, assuming both players play optimally. Alpha-Beta Pruning optimizes
+                by eliminating branches that won't affect the final decision, significantly reducing
+                computation.
               </p>
             </div>
 
@@ -638,16 +631,19 @@ export function MinimaxPlayground() {
                   📜 History (Last 10)
                 </h3>
                 <div className="space-y-1 text-xs max-h-60 overflow-y-auto">
-                  {engineState.history.slice(-10).reverse().map((step) => (
-                    <div
-                      key={step.iteration}
-                      className="p-1.5 bg-gray-50 dark:bg-gray-900 rounded"
-                    >
-                      <div className="font-mono text-gray-700 dark:text-gray-300">
-                        #{step.iteration}: {step.description}
+                  {engineState.history
+                    .slice(-10)
+                    .reverse()
+                    .map((step) => (
+                      <div
+                        key={step.iteration}
+                        className="p-1.5 bg-gray-50 dark:bg-gray-900 rounded"
+                      >
+                        <div className="font-mono text-gray-700 dark:text-gray-300">
+                          #{step.iteration}: {step.description}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}

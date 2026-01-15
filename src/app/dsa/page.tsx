@@ -16,6 +16,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(n)',
       comingSoon: false,
+      category: 'String Algorithms',
     },
     {
       title: 'Array Operations',
@@ -27,6 +28,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(1) - O(n)',
       comingSoon: false,
+      category: 'Array Algorithms',
     },
     {
       title: 'Binary Search',
@@ -39,6 +41,7 @@ export default function DSAPage() {
       complexity: 'O(log n)',
       comingSoon: false,
       beta: true,
+      category: 'Search Algorithms',
     },
     {
       title: 'Bit Manipulation',
@@ -50,6 +53,7 @@ export default function DSAPage() {
       difficulty: 'Intermediate',
       complexity: 'O(1)',
       comingSoon: false,
+      category: 'Bit Operations',
     },
     {
       title: 'Recursion',
@@ -62,6 +66,7 @@ export default function DSAPage() {
       complexity: 'O(2^n)',
       comingSoon: false,
       beta: true,
+      category: 'Recursion',
     },
     {
       title: 'Stack (LIFO)',
@@ -73,6 +78,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(1)',
       comingSoon: false,
+      category: 'Data Structures',
     },
     {
       title: 'Queue (FIFO)',
@@ -85,6 +91,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(1)',
       comingSoon: false,
+      category: 'Data Structures',
     },
     {
       title: 'Bubble Sort',
@@ -96,6 +103,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
+      category: 'Sorting Algorithms',
     },
     {
       title: 'Insertion Sort',
@@ -107,6 +115,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
+      category: 'Sorting Algorithms',
     },
     {
       title: 'Selection Sort',
@@ -118,6 +127,7 @@ export default function DSAPage() {
       difficulty: 'Beginner',
       complexity: 'O(n²)',
       comingSoon: false,
+      category: 'Sorting Algorithms',
     },
     {
       title: 'Merge Sort',
@@ -129,6 +139,7 @@ export default function DSAPage() {
       difficulty: 'Intermediate',
       complexity: 'O(n log n)',
       comingSoon: false,
+      category: 'Sorting Algorithms',
     },
     {
       title: 'Quick Sort',
@@ -140,6 +151,7 @@ export default function DSAPage() {
       difficulty: 'Intermediate',
       complexity: 'O(n log n)',
       comingSoon: false,
+      category: 'Sorting Algorithms',
     },
     {
       title: 'Heap Sort',
@@ -151,6 +163,7 @@ export default function DSAPage() {
       difficulty: 'Advanced',
       complexity: 'O(n log n)',
       comingSoon: false,
+      category: 'Sorting Algorithms',
     },
     {
       title: 'Binary Search Tree',
@@ -163,6 +176,7 @@ export default function DSAPage() {
       complexity: 'O(log n)',
       comingSoon: false,
       beta: false,
+      category: 'Tree Structures',
     },
   ]
 
@@ -197,7 +211,7 @@ export default function DSAPage() {
                 className={`group ${algo.comingSoon ? 'pointer-events-none' : ''}`}
               >
                 <div
-                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
+                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 border-l-4 border-purple-500 ${
                     algo.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
@@ -235,11 +249,11 @@ export default function DSAPage() {
                     {algo.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {algo.difficulty}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold">
+                        {algo.category}
                       </span>
-                      <span className="text-xs font-mono text-purple-600 dark:text-purple-400">
+                      <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
                         {algo.complexity}
                       </span>
                     </div>
