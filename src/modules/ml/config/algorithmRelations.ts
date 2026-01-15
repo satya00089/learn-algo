@@ -1,4 +1,5 @@
 export type MLRoute =
+  | 'chance-events'
   | 'linear-regression'
   | 'polynomial-regression'
   | 'logistic-regression'
@@ -9,6 +10,7 @@ export type MLRoute =
   | 'gradient-descent'
   | 'minmax-scaler'
   | 'standard-scaler'
+  | 'regularization'
 
 export interface RelatedAlgorithm {
   name: string
@@ -17,6 +19,23 @@ export interface RelatedAlgorithm {
 }
 
 export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
+  'chance-events': [
+    {
+      name: 'Linear Regression',
+      route: 'linear-regression',
+      category: 'Regression',
+    },
+    {
+      name: 'Logistic Regression',
+      route: 'logistic-regression',
+      category: 'Classification',
+    },
+    {
+      name: 'Decision Tree',
+      route: 'decision-tree',
+      category: 'Classification',
+    },
+  ],
   'linear-regression': [
     {
       name: 'Polynomial Regression',
@@ -185,6 +204,23 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       name: 'Polynomial Regression',
       route: 'polynomial-regression',
       category: 'Regression',
+    },
+  ],
+  regularization: [
+    {
+      name: 'Linear Regression',
+      route: 'linear-regression',
+      category: 'Regression',
+    },
+    {
+      name: 'Logistic Regression',
+      route: 'logistic-regression',
+      category: 'Classification',
+    },
+    {
+      name: 'Gradient Descent',
+      route: 'gradient-descent',
+      category: 'Optimization',
     },
   ],
 }

@@ -15,6 +15,7 @@ export default function AIPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: true,
+      category: 'Search Algorithms',
     },
     {
       title: 'Minimax Algorithm',
@@ -25,6 +26,7 @@ export default function AIPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Advanced',
       comingSoon: true,
+      category: 'Game Theory',
     },
     {
       title: 'Genetic Algorithm',
@@ -36,6 +38,7 @@ export default function AIPage() {
       difficulty: 'Advanced',
       comingSoon: true,
       beta: false,
+      category: 'Optimization',
     },
   ]
 
@@ -70,7 +73,7 @@ export default function AIPage() {
                 className={`group ${algo.comingSoon ? 'pointer-events-none' : ''}`}
               >
                 <div
-                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
+                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 border-l-4 border-green-500 ${
                     algo.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
@@ -108,8 +111,8 @@ export default function AIPage() {
                     {algo.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {algo.difficulty}
+                    <span className="text-xs text-green-600 dark:text-green-400 font-semibold">
+                      {algo.category}
                     </span>
                     {!algo.comingSoon && (
                       <span className="text-green-600 dark:text-green-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">

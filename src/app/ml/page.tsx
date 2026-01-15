@@ -5,6 +5,69 @@ import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 
 export default function MLPage() {
+  const mathFundamentals = [
+    {
+      title: 'Chance Events',
+      description: 'Explore random events, coin flips, and probability basics with interactive visualizations',
+      href: '/ml/chance-events',
+      icon: '/icons/ml/chance-events.png',
+      iconType: 'image' as const,
+      color: 'text-purple-600 dark:text-purple-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Beginner',
+      comingSoon: false,
+      category: 'Basic Probability',
+    },
+    {
+      title: 'Conditional Probability',
+      description: 'Understand Bayes theorem and conditional events through interactive examples',
+      href: '/ml/conditional-probability',
+      icon: '/icons/ml/conditional.png',
+      iconType: 'image' as const,
+      color: 'text-blue-600 dark:text-blue-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Intermediate',
+      comingSoon: true,
+      category: 'Basic Probability',
+    },
+    {
+      title: 'Probability Distributions',
+      description: 'Explore normal, binomial, and uniform distributions with interactive visualizations',
+      href: '/ml/distributions',
+      icon: '/icons/ml/distributions.png',
+      iconType: 'image' as const,
+      color: 'text-green-600 dark:text-green-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Intermediate',
+      comingSoon: true,
+      category: 'Basic Probability',
+    },
+    {
+      title: 'Expectation',
+      description: 'Learn about expected values and probability-weighted outcomes',
+      href: '/ml/expectation',
+      icon: '/icons/ml/expectation.png',
+      iconType: 'image' as const,
+      color: 'text-yellow-600 dark:text-yellow-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Intermediate',
+      comingSoon: true,
+      category: 'Basic Probability',
+    },
+    {
+      title: 'Variance',
+      description: 'Understand variability and standard deviation in probability distributions',
+      href: '/ml/variance',
+      icon: '/icons/ml/variance.png',
+      iconType: 'image' as const,
+      color: 'text-orange-600 dark:text-orange-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Intermediate',
+      comingSoon: true,
+      category: 'Basic Probability',
+    },
+  ]
+
   const algorithms = [
     {
       title: 'Gradient Descent',
@@ -16,6 +79,7 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
+      category: 'Optimization',
     },
     {
       title: 'MinMax Scaler',
@@ -28,6 +92,7 @@ export default function MLPage() {
       difficulty: 'Beginner',
       comingSoon: false,
       width: 128,
+      category: 'Data Preprocessing',
     },
     {
       title: 'Standard Scaler',
@@ -40,6 +105,7 @@ export default function MLPage() {
       difficulty: 'Beginner',
       comingSoon: false,
       width: 178,
+      category: 'Data Preprocessing',
     },
     {
       title: 'Linear Regression',
@@ -51,6 +117,7 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
+      category: 'Supervised Learning',
     },
     {
       title: 'Polynomial Regression',
@@ -62,6 +129,7 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: false,
+      category: 'Supervised Learning',
     },
     {
       title: 'Logistic Regression',
@@ -73,6 +141,7 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: false,
+      category: 'Supervised Learning',
     },
     {
       title: 'Decision Tree',
@@ -85,6 +154,7 @@ export default function MLPage() {
       difficulty: 'Intermediate',
       comingSoon: false,
       beta: true,
+      category: 'Supervised Learning',
     },
     {
       title: 'Ensemble Models',
@@ -97,6 +167,7 @@ export default function MLPage() {
       difficulty: 'Advanced',
       comingSoon: false,
       beta: true,
+      category: 'Supervised Learning',
     },
     {
       title: 'K-Nearest Neighbors',
@@ -108,6 +179,7 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: false,
+      category: 'Supervised Learning',
     },
     {
       title: 'K-Means Clustering',
@@ -119,6 +191,7 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
       comingSoon: false,
+      category: 'Unsupervised Learning',
     },
   ]
 
@@ -145,6 +218,80 @@ export default function MLPage() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
+          {/* Mathematics Fundamentals Section */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
+              📐 Mathematics Fundamentals
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Build a strong mathematical foundation with probability, statistics, and linear algebra
+            </p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mathFundamentals.map((topic) => (
+                <Link
+                  key={topic.href}
+                  href={topic.comingSoon ? '#' : topic.href}
+                  className={`group ${topic.comingSoon ? 'pointer-events-none' : ''}`}
+                >
+                  <div
+                    className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 border-l-4 border-orange-500 ${
+                      topic.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
+                    }`}
+                  >
+                    <div className="mb-3">
+                      {topic.iconType === 'image' ? (
+                        <Image
+                          src={topic.icon}
+                          alt={topic.title}
+                          width={88}
+                          height={64}
+                          className={`object-contain ${topic.darkFilter}`}
+                        />
+                      ) : (
+                        <div className="text-4xl">{topic.icon}</div>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-left mb-2">
+                      <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                        {topic.title}
+                      </h2>
+                      <div className="flex items-center gap-2">
+                        {topic.comingSoon && (
+                          <span className="text-xs bg-yellow-100 text-yellow-800 mx-2 px-2 py-1 rounded">
+                            Soon
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
+                      {topic.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-orange-600 dark:text-orange-400 font-semibold">
+                        {topic.category}
+                      </span>
+                      {!topic.comingSoon && (
+                        <span className="text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
+                          Learn →
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ML Algorithms Section */}
+          <div className="mb-4">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
+              🤖 ML Algorithms
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Explore supervised and unsupervised learning algorithms with real-time visualizations
+            </p>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
             {algorithms.map((algo) => (
               <Link
@@ -153,7 +300,7 @@ export default function MLPage() {
                 className={`group ${algo.comingSoon ? 'pointer-events-none' : ''}`}
               >
                 <div
-                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 ${
+                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 border-l-4 border-blue-500 ${
                     algo.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
                   }`}
                 >
@@ -191,8 +338,8 @@ export default function MLPage() {
                     {algo.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {algo.difficulty}
+                    <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
+                      {algo.category}
                     </span>
                     {!algo.comingSoon && (
                       <span className="text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
