@@ -121,6 +121,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'Machine Learning algorithms - interactive visualizations of ML concepts and techniques',
     },
     {
+      url: '/ml/chance-events',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Chance Events - probability visualization with coin flips and dice rolls demonstrating randomness',
+    },
+    {
+      url: '/ml/expectation',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Expected Value - interactive dice rolling demonstrating E[X] and Law of Large Numbers',
+    },
+    {
+      url: '/ml/variance',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Variance - measure statistical spread with card drawing and convergence visualization',
+    },
+    {
       url: '/ml/decision-tree',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
