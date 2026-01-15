@@ -39,7 +39,8 @@ export function drawConvergenceChart(
   ctx: CanvasRenderingContext2D,
   config: ConvergenceChartConfig
 ): void {
-  const { canvasWidth, canvasHeight, rolls, theoreticalExpectation, showTheoretical, textColor } = config
+  const { canvasWidth, canvasHeight, rolls, theoreticalExpectation, showTheoretical, textColor } =
+    config
 
   if (rolls.length === 0) {
     ctx.fillStyle = textColor
@@ -148,7 +149,7 @@ export function drawConvergenceChart(
   // Draw legend
   ctx.font = '12px sans-serif'
   ctx.textAlign = 'left'
-  
+
   // Running mean (blue line)
   ctx.strokeStyle = '#3b82f6'
   ctx.lineWidth = 2
@@ -157,7 +158,11 @@ export function drawConvergenceChart(
   ctx.lineTo(canvasWidth - 170, 15)
   ctx.stroke()
   ctx.fillStyle = textColor
-  ctx.fillText(`Running Mean: ${runningMeans[runningMeans.length - 1].toFixed(3)}`, canvasWidth - 165, 10)
+  ctx.fillText(
+    `Running Mean: ${runningMeans[runningMeans.length - 1].toFixed(3)}`,
+    canvasWidth - 165,
+    10
+  )
 
   if (showTheoretical) {
     // Theoretical expectation (green dashed line)
@@ -177,10 +182,7 @@ export function drawConvergenceChart(
 /**
  * Draw animated dice
  */
-export function drawDice(
-  ctx: CanvasRenderingContext2D,
-  config: DiceConfig
-): void {
+export function drawDice(ctx: CanvasRenderingContext2D, config: DiceConfig): void {
   const { canvasWidth, canvasHeight, currentValue, isRolling } = config
 
   const diceSize = 80
@@ -285,7 +287,7 @@ export function drawDistributionBars(
       const theoreticalHeight = theoreticalProb * maxBarHeight
       ctx.fillStyle = 'rgba(16, 185, 129, 0.3)' // Green transparent
       ctx.fillRect(x, baseY - theoreticalHeight, barWidth, theoreticalHeight)
-      
+
       ctx.strokeStyle = '#10b981'
       ctx.lineWidth = 2
       ctx.strokeRect(x, baseY - theoreticalHeight, barWidth, theoreticalHeight)
@@ -312,7 +314,11 @@ export function drawDistributionBars(
     }
     if (totalRolls > 0) {
       ctx.fillStyle = '#3b82f6'
-      ctx.fillText(`${(observedProb * 100).toFixed(1)}%`, x + barWidth / 2, baseY + (showTheoretical ? 55 : 40))
+      ctx.fillText(
+        `${(observedProb * 100).toFixed(1)}%`,
+        x + barWidth / 2,
+        baseY + (showTheoretical ? 55 : 40)
+      )
     }
   }
 
@@ -325,14 +331,14 @@ export function drawDistributionBars(
   // Draw legend
   ctx.font = '11px sans-serif'
   ctx.textAlign = 'left'
-  
+
   if (showTheoretical) {
     ctx.fillStyle = '#10b981'
     ctx.fillRect(20, 25, 15, 15)
     ctx.fillStyle = textColor
     ctx.fillText('Theoretical', 40, 35)
   }
-  
+
   if (totalRolls > 0) {
     ctx.fillStyle = '#3b82f6'
     ctx.fillRect(showTheoretical ? 140 : 20, 25, 15, 15)
@@ -393,7 +399,8 @@ function drawConvergenceChartInternal(
   ctx: CanvasRenderingContext2D,
   config: ConvergenceChartConfig & { offsetX?: number }
 ): void {
-  const { canvasWidth, canvasHeight, rolls, theoreticalExpectation, showTheoretical, textColor } = config
+  const { canvasWidth, canvasHeight, rolls, theoreticalExpectation, showTheoretical, textColor } =
+    config
 
   if (rolls.length === 0) {
     ctx.fillStyle = textColor
@@ -489,7 +496,7 @@ function drawConvergenceChartInternal(
   for (let i = 0; i < runningMeans.length; i++) {
     const x = padding.left + (i / Math.max(runningMeans.length - 1, 1)) * chartWidth
     const y = padding.top + ((yMax - runningMeans[i]) / yRange) * chartHeight
-    
+
     if (i === 0) {
       ctx.moveTo(x, y)
     } else {
@@ -508,7 +515,7 @@ function drawConvergenceChartInternal(
   // Draw legend
   ctx.font = '11px sans-serif'
   ctx.textAlign = 'left'
-  
+
   ctx.strokeStyle = '#3b82f6'
   ctx.lineWidth = 2
   ctx.beginPath()
@@ -564,7 +571,7 @@ function drawDistributionBarsInternal(
       const theoreticalHeight = theoreticalProb * maxBarHeight
       ctx.fillStyle = 'rgba(16, 185, 129, 0.3)' // Green transparent
       ctx.fillRect(x, baseY - theoreticalHeight, barWidth, theoreticalHeight)
-      
+
       ctx.strokeStyle = '#10b981'
       ctx.lineWidth = 2
       ctx.strokeRect(x, baseY - theoreticalHeight, barWidth, theoreticalHeight)
@@ -607,7 +614,7 @@ function drawDistributionBarsInternal(
 
   // Draw compact legend
   ctx.font = '9px sans-serif'
-  
+
   if (showTheoretical) {
     ctx.fillStyle = '#10b981'
     ctx.fillRect(canvasWidth / 2 - 40, 28, 10, 10)
@@ -615,7 +622,7 @@ function drawDistributionBarsInternal(
     ctx.textAlign = 'left'
     ctx.fillText('Theo', canvasWidth / 2 - 27, 36)
   }
-  
+
   if (totalRolls > 0) {
     ctx.fillStyle = '#3b82f6'
     const xOffset = showTheoretical ? 10 : -40

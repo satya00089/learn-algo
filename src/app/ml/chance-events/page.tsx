@@ -53,7 +53,13 @@ export default function ChanceEventsPage() {
     description:
       'Interactive coin flip simulation demonstrating chance events and probability concepts including fair and weighted coins, experimental vs theoretical probability, and the Law of Large Numbers.',
     educationalLevel: 'Beginner',
-    teaches: ['Chance Events', 'Probability', 'Random Events', 'Law of Large Numbers', 'Experimental Probability'],
+    teaches: [
+      'Chance Events',
+      'Probability',
+      'Random Events',
+      'Law of Large Numbers',
+      'Experimental Probability',
+    ],
   }
 
   return (

@@ -35,9 +35,9 @@ export function ChanceEventsPlayground() {
   } = useChanceEventsPlayground()
 
   const engineRef = useRef<ChanceEventsEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    ChanceEventsEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<ChanceEventsEngine['getState']> | null>(
+    null
+  )
   const [currentCoin, setCurrentCoin] = useState<'heads' | 'tails' | 'flipping'>('flipping')
   const [coinRotation, setCoinRotation] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -128,17 +128,18 @@ export function ChanceEventsPlayground() {
 
       // Draw animated coin in center-top area
       if (stats.totalFlips > 0) {
-        drawCoin(
-          ctx,
-          width / 2,
-          200,
-          50,
-          currentCoin,
-          isPlaying ? coinRotation : 0
-        )
+        drawCoin(ctx, width / 2, 200, 50, currentCoin, isPlaying ? coinRotation : 0)
       }
     },
-    [canvasConfig, engineState, trueProbability, showTrueProbability, currentCoin, coinRotation, isPlaying]
+    [
+      canvasConfig,
+      engineState,
+      trueProbability,
+      showTrueProbability,
+      currentCoin,
+      coinRotation,
+      isPlaying,
+    ]
   )
 
   const { canvasRef } = useCanvas({ config: canvasConfig, draw, animate: true })
@@ -149,7 +150,7 @@ export function ChanceEventsPlayground() {
       const flip = engineRef.current.flipOnce()
       setEngineState(engineRef.current.getState())
       setCurrentCoin(flip.outcome)
-      
+
       // Update debug metrics
       if (debugMode) {
         setDebugMetrics(engineRef.current.getDebugMetrics())
@@ -168,11 +169,11 @@ export function ChanceEventsPlayground() {
     } else {
       // Play - run selected number of iterations
       if (!engineRef.current) return
-      
+
       setIsPlaying(true)
       setCurrentIteration(0)
       let count = 0
-      
+
       playIntervalRef.current = setInterval(() => {
         if (engineRef.current && count < selectedIterations) {
           const flip = engineRef.current.flipOnce()
@@ -180,7 +181,7 @@ export function ChanceEventsPlayground() {
           setCurrentCoin(flip.outcome)
           count++
           setCurrentIteration(count)
-          
+
           // Update debug metrics in real-time if debug mode is on
           if (debugMode) {
             setDebugMetrics(engineRef.current.getDebugMetrics())
@@ -193,7 +194,7 @@ export function ChanceEventsPlayground() {
           }
           setIsPlaying(false)
           setCurrentIteration(0)
-          
+
           // Final debug metrics update
           if (debugMode && engineRef.current) {
             setDebugMetrics(engineRef.current.getDebugMetrics())
@@ -224,13 +225,13 @@ export function ChanceEventsPlayground() {
         playIntervalRef.current = undefined
       }
     }
-    
+
     setCurrentIteration(0)
     if (engineRef.current) {
       engineRef.current.clearFlips()
       setEngineState(engineRef.current.getState())
       setCurrentCoin('flipping')
-      
+
       // Reset debug metrics
       if (debugMode) {
         setDebugMetrics(engineRef.current.getDebugMetrics())
@@ -248,7 +249,7 @@ export function ChanceEventsPlayground() {
       if (flips.length > 0) {
         setCurrentCoin(flips[flips.length - 1].outcome)
       }
-      
+
       // Update debug metrics
       if (debugMode) {
         setDebugMetrics(engineRef.current.getDebugMetrics())
@@ -256,13 +257,16 @@ export function ChanceEventsPlayground() {
     }
   }, [isPlaying, selectedIterations, debugMode])
 
-  const handleProbabilityChange = useCallback((value: number) => {
-    setTrueProbability(value / 100) // Convert percentage to decimal
-    if (engineRef.current) {
-      engineRef.current.setTrueProbability(value / 100)
-      setEngineState(engineRef.current.getState())
-    }
-  }, [setTrueProbability])
+  const handleProbabilityChange = useCallback(
+    (value: number) => {
+      setTrueProbability(value / 100) // Convert percentage to decimal
+      if (engineRef.current) {
+        engineRef.current.setTrueProbability(value / 100)
+        setEngineState(engineRef.current.getState())
+      }
+    },
+    [setTrueProbability]
+  )
 
   const stats = engineRef.current?.getStats()
 
@@ -310,9 +314,7 @@ export function ChanceEventsPlayground() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
             <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Chance Events
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Chance Events</h1>
           </div>
           <ThemeToggle />
         </div>
@@ -392,9 +394,7 @@ export function ChanceEventsPlayground() {
                 {/* Speed Control */}
                 <div className="flex items-center gap-1.5">
                   <Tooltip text="Flip Speed">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Speed (ms):
-                    </span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Speed (ms):</span>
                   </Tooltip>
                   <input
                     type="number"
@@ -500,8 +500,8 @@ export function ChanceEventsPlayground() {
                     {trueProbability === 0.5
                       ? 'Fair coin: Equal probability for heads and tails'
                       : trueProbability > 0.5
-                      ? 'Weighted coin: More likely to land on heads'
-                      : 'Weighted coin: More likely to land on tails'}
+                        ? 'Weighted coin: More likely to land on heads'
+                        : 'Weighted coin: More likely to land on tails'}
                   </p>
                 </div>
 
@@ -555,7 +555,9 @@ export function ChanceEventsPlayground() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Observed Probability:</span>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Observed Probability:
+                      </span>
                       <span className="font-semibold text-gray-800 dark:text-white">
                         {(stats.observedProbability * 100).toFixed(1)}%
                       </span>
@@ -578,7 +580,7 @@ export function ChanceEventsPlayground() {
               <ControlGroup title="Advanced Debug Mode">
                 <div className="space-y-3">
                   {/* Collapsible sections */}
-                  
+
                   {/* Convergence Analysis */}
                   <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                     <button
@@ -591,19 +593,25 @@ export function ChanceEventsPlayground() {
                     {debugExpanded && (
                       <div className="p-3 space-y-2 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Absolute Deviation:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Absolute Deviation:
+                          </span>
                           <span className="font-mono text-gray-800 dark:text-white">
                             {debugMetrics.absoluteDeviation.toFixed(4)}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Relative Deviation:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Relative Deviation:
+                          </span>
                           <span className="font-mono text-gray-800 dark:text-white">
                             {debugMetrics.relativeDeviation.toFixed(2)}%
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Convergence Rate:</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Convergence Rate:
+                          </span>
                           <span className="font-mono text-gray-800 dark:text-white">
                             {debugMetrics.convergenceRate.toFixed(6)}
                           </span>
@@ -625,13 +633,17 @@ export function ChanceEventsPlayground() {
                       <div className="p-3 space-y-2 text-xs">
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Z-Score:</span>
-                          <span className={`font-mono ${Math.abs(debugMetrics.zScore) > 1.96 ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-white'}`}>
+                          <span
+                            className={`font-mono ${Math.abs(debugMetrics.zScore) > 1.96 ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-white'}`}
+                          >
                             {debugMetrics.zScore.toFixed(4)}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">P-Value:</span>
-                          <span className={`font-mono ${debugMetrics.pValue < 0.05 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                          <span
+                            className={`font-mono ${debugMetrics.pValue < 0.05 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}
+                          >
                             {debugMetrics.pValue.toFixed(4)}
                           </span>
                         </div>
@@ -643,18 +655,24 @@ export function ChanceEventsPlayground() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">χ² P-Value:</span>
-                          <span className={`font-mono ${debugMetrics.chiSquarePValue < 0.05 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                          <span
+                            className={`font-mono ${debugMetrics.chiSquarePValue < 0.05 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}
+                          >
                             {debugMetrics.chiSquarePValue.toFixed(4)}
                           </span>
                         </div>
                         <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded">
                           <div className="flex items-center gap-1">
-                            <span className={`text-xs font-semibold ${debugMetrics.isStatisticallySignificant ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
-                              {debugMetrics.isStatisticallySignificant ? '⚠️ Significant' : '✓ Not Significant'}
+                            <span
+                              className={`text-xs font-semibold ${debugMetrics.isStatisticallySignificant ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}
+                            >
+                              {debugMetrics.isStatisticallySignificant
+                                ? '⚠️ Significant'
+                                : '✓ Not Significant'}
                             </span>
                           </div>
                           <span className="text-xs text-gray-600 dark:text-gray-400">
-                            {debugMetrics.isStatisticallySignificant 
+                            {debugMetrics.isStatisticallySignificant
                               ? 'Results differ significantly from expected (α=0.05)'
                               : 'Results align with expected probability (α=0.05)'}
                           </span>
@@ -681,7 +699,9 @@ export function ChanceEventsPlayground() {
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Std Deviation (σ):</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Std Deviation (σ):
+                          </span>
                           <span className="font-mono text-gray-800 dark:text-white">
                             {debugMetrics.standardDeviation.toFixed(4)}
                           </span>
@@ -697,7 +717,8 @@ export function ChanceEventsPlayground() {
                             95% Confidence Interval:
                           </div>
                           <div className="font-mono text-xs text-blue-700 dark:text-blue-400">
-                            [{(debugMetrics.confidenceInterval95.lower * 100).toFixed(2)}%, {(debugMetrics.confidenceInterval95.upper * 100).toFixed(2)}%]
+                            [{(debugMetrics.confidenceInterval95.lower * 100).toFixed(2)}%,{' '}
+                            {(debugMetrics.confidenceInterval95.upper * 100).toFixed(2)}%]
                           </div>
                         </div>
                       </div>
@@ -717,7 +738,9 @@ export function ChanceEventsPlayground() {
                       <div className="p-3 space-y-2 text-xs">
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Current Streak:</span>
-                          <span className={`font-mono ${debugMetrics.currentStreak.type === 'heads' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
+                          <span
+                            className={`font-mono ${debugMetrics.currentStreak.type === 'heads' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}
+                          >
                             {debugMetrics.currentStreak.count} {debugMetrics.currentStreak.type}
                           </span>
                         </div>
@@ -749,7 +772,9 @@ export function ChanceEventsPlayground() {
                     {debugExpanded && (
                       <div className="p-3 space-y-2 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Required Sample (±5%):</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Required Sample (±5%):
+                          </span>
                           <span className="font-mono text-gray-800 dark:text-white">
                             {debugMetrics.requiredSampleSize.toLocaleString()}
                           </span>
@@ -760,17 +785,21 @@ export function ChanceEventsPlayground() {
                             {engineState?.totalFlips.toLocaleString()}
                           </span>
                         </div>
-                        {engineState && engineState.totalFlips < debugMetrics.requiredSampleSize && (
-                          <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-                            <span className="text-xs text-yellow-800 dark:text-yellow-300">
-                              ℹ️ Need {(debugMetrics.requiredSampleSize - engineState.totalFlips).toLocaleString()} more flips for 95% confidence with ±5% margin
-                            </span>
-                          </div>
-                        )}
+                        {engineState &&
+                          engineState.totalFlips < debugMetrics.requiredSampleSize && (
+                            <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+                              <span className="text-xs text-yellow-800 dark:text-yellow-300">
+                                ℹ️ Need{' '}
+                                {(
+                                  debugMetrics.requiredSampleSize - engineState.totalFlips
+                                ).toLocaleString()}{' '}
+                                more flips for 95% confidence with ±5% margin
+                              </span>
+                            </div>
+                          )}
                       </div>
                     )}
                   </div>
-
                 </div>
               </ControlGroup>
             )}

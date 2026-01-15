@@ -56,16 +56,17 @@ export class ExpectationEngine {
   private calculateTheoreticalExpectation(): number {
     const dist = this.config.distribution
     const total = dist.face1 + dist.face2 + dist.face3 + dist.face4 + dist.face5 + dist.face6
-    
+
     if (total === 0) return 3.5 // Default to fair die
-    
+
     const expectation =
       (1 * dist.face1 +
-       2 * dist.face2 +
-       3 * dist.face3 +
-       4 * dist.face4 +
-       5 * dist.face5 +
-       6 * dist.face6) / total
+        2 * dist.face2 +
+        3 * dist.face3 +
+        4 * dist.face4 +
+        5 * dist.face5 +
+        6 * dist.face6) /
+      total
 
     return expectation
   }
@@ -76,11 +77,11 @@ export class ExpectationEngine {
   private getProbabilities(): Record<number, number> {
     const dist = this.config.distribution
     const total = dist.face1 + dist.face2 + dist.face3 + dist.face4 + dist.face5 + dist.face6
-    
+
     if (total === 0) {
-      return { 1: 1/6, 2: 1/6, 3: 1/6, 4: 1/6, 5: 1/6, 6: 1/6 }
+      return { 1: 1 / 6, 2: 1 / 6, 3: 1 / 6, 4: 1 / 6, 5: 1 / 6, 6: 1 / 6 }
     }
-    
+
     return {
       1: dist.face1 / total,
       2: dist.face2 / total,
@@ -97,10 +98,10 @@ export class ExpectationEngine {
   rollOnce(): DiceRollResult {
     const probabilities = this.getProbabilities()
     const random = Math.random()
-    
+
     let cumulative = 0
     let face = 1
-    
+
     for (let i = 1; i <= 6; i++) {
       cumulative += probabilities[i]
       if (random <= cumulative) {
@@ -117,7 +118,7 @@ export class ExpectationEngine {
     this.state.rolls.push(roll)
     this.state.faceCounts[face]++
     this.state.totalRolls++
-    
+
     // Update running mean
     const sum = this.state.rolls.reduce((acc, r) => acc + r.value, 0)
     this.state.runningMean = sum / this.state.totalRolls
@@ -171,7 +172,7 @@ export class ExpectationEngine {
    */
   getStats() {
     const probabilities = this.getProbabilities()
-    
+
     return {
       totalRolls: this.state.totalRolls,
       runningMean: this.state.runningMean,

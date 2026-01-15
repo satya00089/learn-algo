@@ -9,12 +9,12 @@ export function calculateTreeLayout(
   height: number
 ): Map<string, TreeNodeLayout> {
   const layout = new Map<string, TreeNodeLayout>()
-  
+
   if (nodes.length === 0) return layout
 
   // Group nodes by depth
   const depths = new Map<number, MinimaxNode[]>()
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     if (!depths.has(node.depth)) {
       depths.set(node.depth, [])
     }
@@ -23,11 +23,11 @@ export function calculateTreeLayout(
 
   const maxDepth = Math.max(...Array.from(depths.keys()))
   const verticalSpacing = height / (maxDepth + 2)
-  
+
   // Layout each depth level
   depths.forEach((levelNodes, depth) => {
     const horizontalSpacing = width / (levelNodes.length + 1)
-    
+
     levelNodes.forEach((node, index) => {
       layout.set(node.id, {
         x: horizontalSpacing * (index + 1),
@@ -133,7 +133,7 @@ export function drawTree(
   const lineColor = isDark ? '#6B7280' : '#9CA3AF'
 
   // Draw connections first
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     const nodePos = layout.get(node.id)
     if (!nodePos || !node.parent) return
 
@@ -141,13 +141,18 @@ export function drawTree(
     if (!parentPos) return
 
     // Highlight path to selected node
-    const isSelected = selectedNodeId && (node.id === selectedNodeId || isNodeInPath(node.id, selectedNodeId, nodes))
-    
-    ctx.strokeStyle = node.state === 'pruned' ? '#EF4444' : 
-                       node.state === 'best-path' ? '#10B981' :
-                       isSelected ? '#F59E0B' :
-                       lineColor
-    ctx.lineWidth = (node.state === 'best-path' || isSelected) ? 3 : 1
+    const isSelected =
+      selectedNodeId && (node.id === selectedNodeId || isNodeInPath(node.id, selectedNodeId, nodes))
+
+    ctx.strokeStyle =
+      node.state === 'pruned'
+        ? '#EF4444'
+        : node.state === 'best-path'
+          ? '#10B981'
+          : isSelected
+            ? '#F59E0B'
+            : lineColor
+    ctx.lineWidth = node.state === 'best-path' || isSelected ? 3 : 1
     ctx.beginPath()
     ctx.moveTo(parentPos.x, parentPos.y)
     ctx.lineTo(nodePos.x, nodePos.y)
@@ -155,7 +160,7 @@ export function drawTree(
   })
 
   // Draw nodes
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     const pos = layout.get(node.id)
     if (!pos) return
 
@@ -163,13 +168,21 @@ export function drawTree(
     const isSelectedNode = selectedNodeId === node.id
 
     // Node circle with special highlight for current/selected
-    const nodeColor = isCurrentNode ? '#FBBF24' :
-                      isSelectedNode ? '#F59E0B' :
-                      node.state === 'exploring' ? '#FBBF24' :
-                      node.state === 'evaluated' ? (node.isMax ? '#3B82F6' : '#EF4444') :
-                      node.state === 'pruned' ? '#EF4444' :
-                      node.state === 'best-path' ? '#10B981' :
-                      lineColor
+    const nodeColor = isCurrentNode
+      ? '#FBBF24'
+      : isSelectedNode
+        ? '#F59E0B'
+        : node.state === 'exploring'
+          ? '#FBBF24'
+          : node.state === 'evaluated'
+            ? node.isMax
+              ? '#3B82F6'
+              : '#EF4444'
+            : node.state === 'pruned'
+              ? '#EF4444'
+              : node.state === 'best-path'
+                ? '#10B981'
+                : lineColor
 
     ctx.fillStyle = nodeColor
     ctx.beginPath()
@@ -178,7 +191,7 @@ export function drawTree(
 
     // Node outline (thicker for current/selected)
     ctx.strokeStyle = bgColor
-    ctx.lineWidth = (isCurrentNode || isSelectedNode) ? 4 : 2
+    ctx.lineWidth = isCurrentNode || isSelectedNode ? 4 : 2
     ctx.stroke()
 
     // Pulse effect for current node
@@ -206,7 +219,7 @@ export function drawTree(
       ctx.fillStyle = textColor
       ctx.font = '10px sans-serif'
       ctx.textAlign = 'center'
-      
+
       if (node.alpha !== undefined && node.alpha !== -Infinity) {
         ctx.fillText(`α:${node.alpha}`, pos.x, pos.y + nodeRadius + 12)
       }
@@ -221,10 +234,10 @@ export function drawTree(
  * Helper function to check if a node is in the path to target
  */
 function isNodeInPath(nodeId: string, targetId: string, nodes: MinimaxNode[]): boolean {
-  let current = nodes.find(n => n.id === targetId)
+  let current = nodes.find((n) => n.id === targetId)
   while (current) {
     if (current.id === nodeId) return true
-    current = current.parent ? nodes.find(n => n.id === current!.parent) : undefined
+    current = current.parent ? nodes.find((n) => n.id === current!.parent) : undefined
   }
   return false
 }
@@ -304,13 +317,13 @@ export function drawStatistics(
   isDark: boolean
 ): void {
   const textColor = isDark ? '#F9FAFB' : '#111827'
-  
+
   ctx.fillStyle = textColor
   ctx.font = 'bold 14px sans-serif'
   ctx.textAlign = 'left'
-  
+
   ctx.fillText(`Nodes Evaluated: ${nodesEvaluated}`, x, y)
-  
+
   if (nodesPruned > 0) {
     ctx.fillText(`Nodes Pruned: ${nodesPruned}`, x, y + 20)
     const efficiency = ((nodesPruned / (nodesEvaluated + nodesPruned)) * 100).toFixed(1)
@@ -331,22 +344,22 @@ export function drawSelectedNodeInfo(
   const textColor = isDark ? '#F9FAFB' : '#111827'
   const panelBg = isDark ? '#1F2937' : '#FFFFFF'
   const borderColor = isDark ? '#4B5563' : '#D1D5DB'
-  
+
   // Draw panel background
   ctx.fillStyle = panelBg
   ctx.strokeStyle = borderColor
   ctx.lineWidth = 2
   ctx.fillRect(x, y, 200, 140)
   ctx.strokeRect(x, y, 200, 140)
-  
+
   // Draw mini board
   drawMiniBoard(ctx, node.board, x + 10, y + 10, 60, isDark)
-  
+
   // Draw node info
   ctx.fillStyle = textColor
   ctx.font = 'bold 12px sans-serif'
   ctx.textAlign = 'left'
-  
+
   let infoY = y + 80
   ctx.fillText(`Depth: ${node.depth}`, x + 10, infoY)
   infoY += 15
@@ -354,7 +367,7 @@ export function drawSelectedNodeInfo(
   infoY += 15
   ctx.fillText(`Type: ${node.isMax ? 'MAX' : 'MIN'}`, x + 10, infoY)
   infoY += 15
-  
+
   if (node.alpha !== undefined && node.alpha !== -Infinity) {
     ctx.fillText(`Alpha: ${node.alpha}`, x + 10, infoY)
   }
@@ -362,4 +375,3 @@ export function drawSelectedNodeInfo(
     ctx.fillText(`Beta: ${node.beta}`, x + 110, infoY)
   }
 }
-

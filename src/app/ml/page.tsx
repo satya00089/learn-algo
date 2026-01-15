@@ -8,7 +8,8 @@ export default function MLPage() {
   const mathFundamentals = [
     {
       title: 'Chance Events',
-      description: 'Explore random events, coin flips, and probability basics with interactive visualizations',
+      description:
+        'Explore random events, coin flips, and probability basics with interactive visualizations',
       href: '/ml/chance-events',
       icon: '/icons/ml/chance-events.png',
       iconType: 'image' as const,
@@ -16,30 +17,6 @@ export default function MLPage() {
       darkFilter: 'dark:invert',
       difficulty: 'Beginner',
       comingSoon: false,
-      category: 'Basic Probability',
-    },
-    {
-      title: 'Conditional Probability',
-      description: 'Understand Bayes theorem and conditional events through interactive examples',
-      href: '/ml/conditional-probability',
-      icon: '/icons/ml/conditional.png',
-      iconType: 'image' as const,
-      color: 'text-blue-600 dark:text-blue-400',
-      darkFilter: 'dark:invert',
-      difficulty: 'Intermediate',
-      comingSoon: true,
-      category: 'Basic Probability',
-    },
-    {
-      title: 'Probability Distributions',
-      description: 'Explore normal, binomial, and uniform distributions with interactive visualizations',
-      href: '/ml/distributions',
-      icon: '/icons/ml/distributions.png',
-      iconType: 'image' as const,
-      color: 'text-green-600 dark:text-green-400',
-      darkFilter: 'dark:invert',
-      difficulty: 'Intermediate',
-      comingSoon: true,
       category: 'Basic Probability',
     },
     {
@@ -63,9 +40,34 @@ export default function MLPage() {
       color: 'text-orange-600 dark:text-orange-400',
       darkFilter: 'dark:invert',
       difficulty: 'Intermediate',
-      comingSoon: true,
+      comingSoon: false,
       category: 'Basic Probability',
     },
+    // {
+    //   title: 'Conditional Probability',
+    //   description: 'Understand Bayes theorem and conditional events through interactive examples',
+    //   href: '/ml/conditional-probability',
+    //   icon: '/icons/ml/conditional.png',
+    //   iconType: 'image' as const,
+    //   color: 'text-blue-600 dark:text-blue-400',
+    //   darkFilter: 'dark:invert',
+    //   difficulty: 'Intermediate',
+    //   comingSoon: true,
+    //   category: 'Basic Probability',
+    // },
+    // {
+    //   title: 'Probability Distributions',
+    //   description:
+    //     'Explore normal, binomial, and uniform distributions with interactive visualizations',
+    //   href: '/ml/distributions',
+    //   icon: '/icons/ml/distributions.png',
+    //   iconType: 'image' as const,
+    //   color: 'text-green-600 dark:text-green-400',
+    //   darkFilter: 'dark:invert',
+    //   difficulty: 'Intermediate',
+    //   comingSoon: true,
+    //   category: 'Basic Probability',
+    // },
   ]
 
   const algorithms = [
@@ -220,11 +222,19 @@ export default function MLPage() {
         <div className="flex-1 overflow-y-auto px-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
           {/* Mathematics Fundamentals Section */}
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
-              📐 Mathematics Fundamentals
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+              <Image
+                src={'/icons/ml/trigonometry.png'}
+                alt="Mathematics For Machine Learning"
+                width={48}
+                height={48}
+                className={`object-contain dark:invert`}
+              />
+              Mathematics For Machine Learning
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Build a strong mathematical foundation with probability, statistics, and linear algebra
+              Build a strong mathematical foundation with probability, statistics, and linear
+              algebra
             </p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {mathFundamentals.map((topic) => (
@@ -284,8 +294,15 @@ export default function MLPage() {
 
           {/* ML Algorithms Section */}
           <div className="mb-4">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
-              🤖 ML Algorithms
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+              <Image
+                src={'/icons/ml/machine-learning.png'}
+                alt="Machine Learning Algorithms"
+                width={48}
+                height={48}
+                className={`object-contain dark:invert`}
+              />
+              Machine Learning Algorithms
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Explore supervised and unsupervised learning algorithms with real-time visualizations

@@ -18,10 +18,7 @@ interface BarChartConfig {
 /**
  * Draw bar chart showing heads and tails counts with percentages
  */
-export function drawProbabilityBars(
-  ctx: CanvasRenderingContext2D,
-  config: BarChartConfig
-): void {
+export function drawProbabilityBars(ctx: CanvasRenderingContext2D, config: BarChartConfig): void {
   const {
     canvasWidth,
     canvasHeight,
@@ -124,7 +121,7 @@ export function drawProbabilityBars(
   if (showTrueProbability) {
     ctx.font = '16px sans-serif'
     ctx.textAlign = 'left'
-    
+
     // Observed (solid)
     ctx.fillStyle = '#3b82f6'
     ctx.fillRect(50, 60, 30, 20)
@@ -173,7 +170,7 @@ export function drawCoin(
   ctx.font = `bold ${radius * 0.8}px sans-serif`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  
+
   if (outcome === 'heads') {
     ctx.fillText('H', 0, 0)
   } else if (outcome === 'tails') {

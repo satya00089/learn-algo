@@ -404,13 +404,17 @@ export function ExpectationPlayground() {
               <div className="space-y-4">
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
                   <div className="flex items-start gap-2">
-                    <FaDice className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" size={16} />
+                    <FaDice
+                      className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
+                      size={16}
+                    />
                     <div>
                       <p className="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-1">
                         Adjust Face Weights
                       </p>
                       <p className="text-xs text-gray-700 dark:text-gray-300">
-                        Change weights to create a biased (unfair) die. Higher weight = more likely to roll.
+                        Change weights to create a biased (unfair) die. Higher weight = more likely
+                        to roll.
                       </p>
                     </div>
                   </div>
@@ -418,21 +422,24 @@ export function ExpectationPlayground() {
                 {[1, 2, 3, 4, 5, 6].map((face) => {
                   const DiceIcon = diceIcons[face as keyof typeof diceIcons]
                   const weight = distribution[`face${face}` as keyof DiceDistribution]
-                  const percentage = ((weight / 
-                    (distribution.face1 + distribution.face2 + distribution.face3 + 
-                     distribution.face4 + distribution.face5 + distribution.face6)) * 100)
-                  
+                  const percentage =
+                    (weight /
+                      (distribution.face1 +
+                        distribution.face2 +
+                        distribution.face3 +
+                        distribution.face4 +
+                        distribution.face5 +
+                        distribution.face6)) *
+                    100
+
                   return (
-                    <div 
-                      key={face} 
+                    <div
+                      key={face}
                       className="space-y-2 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                          <DiceIcon 
-                            className="text-gray-700 dark:text-gray-300" 
-                            size={20} 
-                          />
+                          <DiceIcon className="text-gray-700 dark:text-gray-300" size={20} />
                           <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                             Face {face}
                           </label>

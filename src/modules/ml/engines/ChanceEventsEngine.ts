@@ -22,28 +22,28 @@ export interface DebugMetrics {
   absoluteDeviation: number
   relativeDeviation: number
   convergenceRate: number
-  
+
   // Statistical Tests
   zScore: number
   pValue: number
   chiSquare: number
   chiSquarePValue: number
-  
+
   // Variance & Distribution
   variance: number
   standardDeviation: number
   standardError: number
   confidenceInterval95: { lower: number; upper: number }
-  
+
   // Streak Analysis
   currentStreak: { type: 'heads' | 'tails'; count: number }
   longestHeadsStreak: number
   longestTailsStreak: number
-  
+
   // Sample Size
   requiredSampleSize: number
   isStatisticallySignificant: boolean
-  
+
   // Performance
   timestamp: number
 }
@@ -93,7 +93,7 @@ export class ChanceEventsEngine {
   flipOnce(): CoinFlipResult {
     const random = Math.random()
     const outcome = random < this.config.trueProbability ? 'heads' : 'tails'
-    
+
     const flip: CoinFlipResult = {
       outcome,
       flipNumber: this.state.totalFlips + 1,
@@ -101,16 +101,15 @@ export class ChanceEventsEngine {
 
     this.state.flips.push(flip)
     this.state.totalFlips++
-    
+
     if (outcome === 'heads') {
       this.state.headsCount++
     } else {
       this.state.tailsCount++
     }
 
-    this.state.currentProbability = this.state.totalFlips > 0
-      ? this.state.headsCount / this.state.totalFlips
-      : 0
+    this.state.currentProbability =
+      this.state.totalFlips > 0 ? this.state.headsCount / this.state.totalFlips : 0
 
     return flip
   }
@@ -140,7 +139,7 @@ export class ChanceEventsEngine {
     const n = this.state.totalFlips
     const observed = this.state.currentProbability
     const expected = this.state.trueProbability
-    
+
     if (n === 0) {
       return this.getEmptyDebugMetrics()
     }
@@ -156,14 +155,14 @@ export class ChanceEventsEngine {
     const pHat = observed
     const standardError = Math.sqrt((p0 * (1 - p0)) / n)
     const zScore = standardError !== 0 ? (pHat - p0) / standardError : 0
-    
+
     // P-value (two-tailed test)
     const pValue = 2 * (1 - this.normalCDF(Math.abs(zScore)))
 
     // Chi-square goodness of fit test
     const expectedHeads = n * expected
     const expectedTails = n * (1 - expected)
-    const chiSquare = 
+    const chiSquare =
       Math.pow(this.state.headsCount - expectedHeads, 2) / expectedHeads +
       Math.pow(this.state.tailsCount - expectedTails, 2) / expectedTails
     const chiSquarePValue = 1 - this.chiSquareCDF(chiSquare, 1)
@@ -172,13 +171,13 @@ export class ChanceEventsEngine {
     const variance = expected * (1 - expected)
     const standardDeviation = Math.sqrt(variance)
     const se = Math.sqrt(variance / n)
-    
+
     // 95% Confidence Interval for proportion
     const z95 = 1.96
     const marginOfError = z95 * se
     const confidenceInterval95 = {
       lower: Math.max(0, observed - marginOfError),
-      upper: Math.min(1, observed + marginOfError)
+      upper: Math.min(1, observed + marginOfError),
     }
 
     // Streak Analysis
@@ -210,7 +209,7 @@ export class ChanceEventsEngine {
       longestTailsStreak: streaks.longestTails,
       requiredSampleSize,
       isStatisticallySignificant,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 
@@ -240,14 +239,14 @@ export class ChanceEventsEngine {
       const lastOutcome = this.state.flips[this.state.flips.length - 1].outcome
       currentStreak = {
         type: lastOutcome,
-        count: lastOutcome === 'heads' ? tempHeads : tempTails
+        count: lastOutcome === 'heads' ? tempHeads : tempTails,
       }
     }
 
     return {
       current: currentStreak,
       longestHeads,
-      longestTails
+      longestTails,
     }
   }
 
@@ -256,8 +255,9 @@ export class ChanceEventsEngine {
    */
   private normalCDF(x: number): number {
     const t = 1 / (1 + 0.2316419 * Math.abs(x))
-    const d = 0.3989423 * Math.exp(-x * x / 2)
-    const prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
+    const d = 0.3989423 * Math.exp((-x * x) / 2)
+    const prob =
+      d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
     return x > 0 ? 1 - prob : prob
   }
 
@@ -293,7 +293,7 @@ export class ChanceEventsEngine {
       longestTailsStreak: 0,
       requiredSampleSize: 0,
       isStatisticallySignificant: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 
@@ -305,12 +305,10 @@ export class ChanceEventsEngine {
       headsCount: this.state.headsCount,
       tailsCount: this.state.tailsCount,
       totalFlips: this.state.totalFlips,
-      headsPercentage: this.state.totalFlips > 0 
-        ? (this.state.headsCount / this.state.totalFlips) * 100 
-        : 0,
-      tailsPercentage: this.state.totalFlips > 0 
-        ? (this.state.tailsCount / this.state.totalFlips) * 100 
-        : 0,
+      headsPercentage:
+        this.state.totalFlips > 0 ? (this.state.headsCount / this.state.totalFlips) * 100 : 0,
+      tailsPercentage:
+        this.state.totalFlips > 0 ? (this.state.tailsCount / this.state.totalFlips) * 100 : 0,
       observedProbability: this.state.currentProbability,
       trueProbability: this.state.trueProbability,
       deviation: Math.abs(this.state.currentProbability - this.state.trueProbability),

@@ -158,7 +158,7 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Feature standardization (z-score)',
     category: 'Preprocessing',
   },
-  'regularization': {
+  regularization: {
     title: 'Regularization',
     description: 'Prevent overfitting with L1/L2',
     category: 'Optimization',
