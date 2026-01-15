@@ -1,5 +1,6 @@
 export type MLRoute =
   | 'chance-events'
+  | 'expectation'
   | 'linear-regression'
   | 'polynomial-regression'
   | 'logistic-regression'
@@ -21,6 +22,11 @@ export interface RelatedAlgorithm {
 export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
   'chance-events': [
     {
+      name: 'Expectation',
+      route: 'expectation',
+      category: 'Probability',
+    },
+    {
       name: 'Linear Regression',
       route: 'linear-regression',
       category: 'Regression',
@@ -30,10 +36,22 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       route: 'logistic-regression',
       category: 'Classification',
     },
+  ],
+  expectation: [
+    {
+      name: 'Chance Events',
+      route: 'chance-events',
+      category: 'Probability',
+    },
     {
       name: 'Decision Tree',
       route: 'decision-tree',
       category: 'Classification',
+    },
+    {
+      name: 'K-Means Clustering',
+      route: 'k-means',
+      category: 'Clustering',
     },
   ],
   'linear-regression': [
