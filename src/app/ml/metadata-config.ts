@@ -1,4 +1,59 @@
 export const mlMetadata = {
+  'chance-events': {
+    title: 'Chance Events - Probability Visualization',
+    description:
+      'Explore probability fundamentals with interactive coin flips and dice rolls. Visualize how random events converge to theoretical probabilities through the Law of Large Numbers.',
+    keywords: [
+      'chance events',
+      'probability',
+      'random events',
+      'coin flip',
+      'dice roll',
+      'law of large numbers',
+      'probability theory',
+      'statistics',
+      'probability visualization',
+      'machine learning mathematics',
+    ],
+    ogImage: '/og/og-ml-chance-events.png',
+  },
+  expectation: {
+    title: 'Expected Value (E[X]) - Probability Theory',
+    description:
+      'Master expected value through interactive dice rolling. Watch running mean converge to E[X] and explore probability-weighted averages with customizable distributions.',
+    keywords: [
+      'expected value',
+      'expectation',
+      'probability weighted average',
+      'law of large numbers',
+      'running mean',
+      'probability distribution',
+      'statistics',
+      'biased die',
+      'fair die',
+      'convergence',
+      'machine learning mathematics',
+    ],
+    ogImage: '/og/og-ml-expectation.png',
+  },
+  variance: {
+    title: 'Variance - Statistical Spread Measurement',
+    description:
+      'Understand variance through card drawing simulations. Visualize how variance measures distribution spread and watch running variance converge to theoretical values.',
+    keywords: [
+      'variance',
+      'statistical spread',
+      'squared differences',
+      'distribution spread',
+      'law of large numbers',
+      'running variance',
+      'probability theory',
+      'statistics',
+      'standard deviation',
+      'machine learning mathematics',
+    ],
+    ogImage: '/og/og-ml-variance.png',
+  },
   'gradient-descent': {
     title: 'Gradient Descent Optimization',
     description:

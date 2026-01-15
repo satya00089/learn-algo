@@ -1,26 +1,9 @@
 import { ExpectationPlayground } from '@/modules/ml/playground/ExpectationPlayground'
 import { AlgorithmStructuredData } from '@/components/AlgorithmStructuredData'
 import { FAQSchema } from '@/components/FAQSchema'
+import { generateMLMetadata } from '../metadata-config'
 
-export const metadata = {
-  title: 'Expectation - Expected Value',
-  description:
-    'Interactive expected value visualization with dice rolling. Explore probability-weighted averages and watch the running mean converge to the expected value through the Law of Large Numbers.',
-  keywords: [
-    'expectation',
-    'expected value',
-    'dice rolling',
-    'probability',
-    'law of large numbers',
-    'running mean',
-    'probability distribution',
-    'statistics',
-    'biased die',
-    'fair die',
-    'convergence',
-    'machine learning mathematics',
-  ],
-}
+export const metadata = generateMLMetadata('expectation')
 
 export default function ExpectationPage() {
   const faqs = [
