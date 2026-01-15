@@ -108,6 +108,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Expected value and probability-weighted outcomes',
     category: 'Basic Probability',
   },
+  variance: {
+    title: 'Variance',
+    description: 'Measure statistical spread and distribution',
+    category: 'Basic Probability',
+  },
   'linear-regression': {
     title: 'Linear Regression',
     description: 'Fit a line to predict values',
