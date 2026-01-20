@@ -107,6 +107,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon-96x96.png" sizes="96x96" type="image/png" />
         {/* Google tag (gtag.js) - loads after the page is interactive */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-K9C8S5RSSR"
