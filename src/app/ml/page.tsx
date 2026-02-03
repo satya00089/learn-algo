@@ -195,6 +195,30 @@ export default function MLPage() {
       comingSoon: false,
       category: 'Unsupervised Learning',
     },
+    {
+      title: 'Gaussian Mixture Model',
+      description: 'Soft clustering with probabilistic assignments via EM algorithm',
+      href: '/ml/gmm',
+      icon: '/icons/ml/gmm-cluster.png',
+      iconType: 'image' as const,
+      color: 'text-teal-600 dark:text-teal-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Advanced',
+      comingSoon: false,
+      category: 'Unsupervised Learning',
+    },
+    {
+      title: 'DBSCAN Clustering',
+      description: 'Density-based clustering that finds arbitrarily shaped clusters',
+      href: '/ml/dbscan',
+      icon: '/icons/ml/dbscan.png',
+      iconType: 'image' as const,
+      color: 'text-purple-600 dark:text-purple-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Advanced',
+      comingSoon: false,
+      category: 'Unsupervised Learning',
+    },
   ]
 
   return (
@@ -219,9 +243,9 @@ export default function MLPage() {
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
           {/* Mathematics Fundamentals Section */}
-          <div className="mb-6">
+          <div className="mb-6 max-w-full">
             <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
               <Image
                 src={'/icons/ml/trigonometry.png'}
@@ -293,7 +317,7 @@ export default function MLPage() {
           </div>
 
           {/* ML Algorithms Section */}
-          <div className="mb-4">
+          <div className="mb-4 max-w-full">
             <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
               <Image
                 src={'/icons/ml/machine-learning.png'}
