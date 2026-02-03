@@ -14,7 +14,8 @@ export function drawDBSCANClustering(
   yMax: number,
   showNeighborhoods: boolean = false,
   showConnections: boolean = false,
-  textColor: string = '#1e293b'
+  textColor: string = '#1e293b',
+  epsilon: number = 2.5
 ): void {
   const { width, height, padding } = config
   const plotWidth = width - padding.left - padding.right
@@ -31,7 +32,7 @@ export function drawDBSCANClustering(
 
   // Draw neighborhood circles if enabled
   if (showNeighborhoods && state.currentPointIndex < state.points.length) {
-    drawNeighborhoodCircle(ctx, state, xToCanvas, yToCanvas, xMin, xMax)
+    drawNeighborhoodCircle(ctx, state, xToCanvas, yToCanvas, xMin, xMax, epsilon)
   }
 
   // Draw connections between core points and their neighbors if enabled
@@ -113,7 +114,7 @@ function drawGrid(
 }
 
 /**
- * Draw epsilon neighborhood circle around current point
+ * Draw epsilon neighborhood circle around current point - prominent like reference
  */
 function drawNeighborhoodCircle(
   ctx: CanvasRenderingContext2D,
@@ -121,31 +122,73 @@ function drawNeighborhoodCircle(
   xToCanvas: (x: number) => number,
   yToCanvas: (y: number) => number,
   xMin: number,
-  _xMax: number
+  xMax: number,
+  epsilon: number
 ): void {
   if (state.isComplete) return
 
-  const currentPoint = state.points[state.currentPointIndex]
-  if (!currentPoint) return
+  // Show circle around current point or expanding seed
+  let centerPoint = state.points[state.currentPointIndex]
+  
+  // If expanding cluster, show circle around the seed being examined
+  if (state.phase === 'expanding-cluster' && state.currentSeedIndex < state.expandingSeeds.length) {
+    centerPoint = state.points[state.expandingSeeds[state.currentSeedIndex]]
+  }
+  
+  if (!centerPoint) return
 
-  const centerX = xToCanvas(currentPoint.x)
-  const centerY = yToCanvas(currentPoint.y)
+  const centerX = xToCanvas(centerPoint.x)
+  const centerY = yToCanvas(centerPoint.y)
 
-  // Calculate epsilon radius in canvas space (approximate)
-  const epsilonCanvas = Math.abs(xToCanvas(xMin + 0.5) - xToCanvas(xMin))
+  // Calculate epsilon radius in canvas space - USE ACTUAL EPSILON VALUE!
+  const plotWidth = xToCanvas(xMax) - xToCanvas(xMin)
+  const dataWidth = xMax - xMin
+  const epsilonCanvas = (plotWidth / dataWidth) * epsilon
 
-  // Draw circle
+  // Draw multiple layers for prominence
+  
+  // Outer glow layer (widest)
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, epsilonCanvas + 6, 0, 2 * Math.PI)
+  ctx.strokeStyle = 'rgba(59, 130, 246, 0.1)'
+  ctx.lineWidth = 12
+  ctx.stroke()
+
+  // Middle glow
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, epsilonCanvas + 2, 0, 2 * Math.PI)
+  ctx.strokeStyle = 'rgba(59, 130, 246, 0.2)'
+  ctx.lineWidth = 6
+  ctx.stroke()
+
+  // Main circle with dashed line
   ctx.beginPath()
   ctx.arc(centerX, centerY, epsilonCanvas, 0, 2 * Math.PI)
   ctx.strokeStyle = '#3b82f6'
-  ctx.lineWidth = 2
-  ctx.setLineDash([5, 5])
+  ctx.lineWidth = 2.5
+  ctx.setLineDash([10, 5])
   ctx.stroke()
   ctx.setLineDash([])
 
-  // Fill with transparent blue
-  ctx.fillStyle = 'rgba(59, 130, 246, 0.1)'
+  // Fill with very subtle transparent blue
+  ctx.fillStyle = 'rgba(59, 130, 246, 0.05)'
   ctx.fill()
+
+  // Draw epsilon label with background
+  ctx.font = 'bold 12px Inter, system-ui, sans-serif'
+  const labelText = 'ε radius'
+  const labelX = centerX + epsilonCanvas * 0.7
+  const labelY = centerY - epsilonCanvas * 0.7
+  
+  // Label background
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+  ctx.fillRect(labelX - 5, labelY - 14, 55, 18)
+  
+  // Label text
+  ctx.fillStyle = '#3b82f6'
+  ctx.textAlign = 'left'
+  ctx.fillText(labelText, labelX, labelY)
+  ctx.textAlign = 'left'
 }
 
 /**
@@ -192,51 +235,130 @@ function drawPoints(
   xToCanvas: (x: number) => number,
   yToCanvas: (y: number) => number
 ): void {
+  // Check if we're expanding a cluster - show the seed being examined
+  const expandingSeedIndex = state.phase === 'expanding-cluster' && state.currentSeedIndex < state.expandingSeeds.length 
+    ? state.expandingSeeds[state.currentSeedIndex] 
+    : -1
+  
+  // Draw all points
   state.points.forEach((point, index) => {
     const x = xToCanvas(point.x)
     const y = yToCanvas(point.y)
-
-    // Highlight current point being processed
-    const isCurrentPoint = index === state.currentPointIndex && !state.isComplete
-    const radius = isCurrentPoint ? 8 : point.type === 'core' ? 6 : 5
+    
+    // Highlight current point being processed OR the seed being expanded
+    const isCurrentPoint = (index === state.currentPointIndex && state.phase === 'processing' && !state.isComplete) ||
+                          (index === expandingSeedIndex && state.phase === 'expanding-cluster' && !state.isComplete)
+    
+    const pointColor = getPointColor(point, isCurrentPoint, state.clusters, state, index)
+    const pointRadius = getPointRadius(point, isCurrentPoint)
 
     // Draw point
     ctx.beginPath()
-    ctx.arc(x, y, radius, 0, 2 * Math.PI)
-
-    // Color based on cluster or point type
-    if (point.clusterId >= 0) {
-      const cluster = state.clusters.find((c) => c.id === point.clusterId)
-      ctx.fillStyle = cluster ? cluster.color : '#94a3b8'
-    } else if (point.type === 'noise') {
-      ctx.fillStyle = '#6b7280' // Gray for noise
-    } else {
-      ctx.fillStyle = '#94a3b8' // Unvisited
-    }
-
+    ctx.arc(x, y, pointRadius, 0, 2 * Math.PI)
+    ctx.fillStyle = pointColor
     ctx.fill()
 
-    // Draw border
-    if (isCurrentPoint) {
-      ctx.strokeStyle = '#fbbf24' // Yellow for current
-      ctx.lineWidth = 3
-    } else if (point.type === 'core') {
-      ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 2
-    } else {
-      ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 1.5
-    }
-    ctx.stroke()
-
-    // Draw special marker for core points
-    if (point.type === 'core' && !isCurrentPoint) {
-      ctx.beginPath()
-      ctx.arc(x, y, 3, 0, 2 * Math.PI)
-      ctx.fillStyle = '#ffffff'
-      ctx.fill()
-    }
+    // Draw borders and special markers
+    drawPointBorder(ctx, x, y, point, pointRadius, isCurrentPoint, state, index)
   })
+}
+
+/**
+ * Get point color based on state
+ */
+function getPointColor(point: any, isCurrentPoint: boolean, clusters: any[], state: DBSCANState, index: number): string {
+  // Current point being examined - highlighted
+  if (isCurrentPoint) return '#ef4444' // Red for current examination
+  
+  // Assigned to a cluster - use cluster color (takes priority)
+  if (point.clusterId >= 0) {
+    const cluster = clusters.find((c) => c.id === point.clusterId)
+    return cluster ? cluster.color : '#94a3b8'
+  }
+  
+  // Only show final state if the point has been processed
+  const hasBeenProcessed = index < state.currentPointIndex || state.isComplete
+  
+  if (!hasBeenProcessed) {
+    // Unvisited points - Gray
+    return '#9ca3af' // Gray-400
+  }
+  
+  // Noise points - Black/very dark
+  if (point.type === 'noise') return '#1f2937' // Gray-800 (almost black)
+  
+  // Processed but not yet assigned
+  return '#9ca3af' // Gray-400
+}
+
+/**
+ * Get point radius based on state
+ */
+function getPointRadius(point: any, isCurrentPoint: boolean): number {
+  if (isCurrentPoint) return 9 // Larger for current point
+  if (point.type === 'core') return 7
+  return 5
+}
+
+/**
+ * Draw point border and markers
+ */
+function drawPointBorder(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  point: any,
+  radius: number,
+  isCurrentPoint: boolean,
+  state: DBSCANState,
+  index: number
+): void {
+  const hasBeenProcessed = index < state.currentPointIndex || state.isComplete
+  
+  if (isCurrentPoint) {
+    // Current point - highlighted border
+    ctx.strokeStyle = '#dc2626'
+    ctx.lineWidth = 2.5
+    ctx.stroke()
+    
+    // Outer glow
+    ctx.beginPath()
+    ctx.arc(x, y, radius + 3, 0, 2 * Math.PI)
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)'
+    ctx.lineWidth = 3
+    ctx.stroke()
+  } else if (point.type === 'core' && hasBeenProcessed && point.clusterId >= 0) {
+    // Core points in cluster - white border with inner dot
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 2
+    ctx.stroke()
+    
+    // Inner white dot
+    ctx.beginPath()
+    ctx.arc(x, y, 2.5, 0, 2 * Math.PI)
+    ctx.fillStyle = '#ffffff'
+    ctx.fill()
+  } else if (point.type === 'border' && hasBeenProcessed && point.clusterId >= 0) {
+    // Border points - white border, no inner dot
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 1.5
+    ctx.stroke()
+  } else if (point.type === 'noise' && hasBeenProcessed) {
+    // Noise points - dark border
+    ctx.strokeStyle = '#4b5563'
+    ctx.lineWidth = 1
+    ctx.stroke()
+  } else if (hasBeenProcessed) {
+    // Other processed points
+    ctx.strokeStyle = '#6b7280'
+    ctx.lineWidth = 1
+    ctx.stroke()
+  } else {
+    // Unprocessed - subtle border
+    ctx.strokeStyle = '#d1d5db'
+    ctx.lineWidth = 0.5
+    ctx.stroke()
+  }
 }
 
 /**
@@ -251,11 +373,13 @@ function drawLegend(
   const legendX = config.width - 180
   const legendY = 20
 
-  // Calculate legend height
-  const legendHeight = 30 + state.clusters.length * 25 + 70
+  // Calculate legend height dynamically
+  const clusterCount = state.clusters.length
+  const pointStatesCount = 6 // unvisited, examining, neighbor, core, border, noise
+  const legendHeight = 30 + (clusterCount > 0 ? clusterCount * 25 + 10 : 25) + (pointStatesCount * 18) + 25
 
   // Use theme-aware background
-  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(30, 41, 59, 0.9)'
+  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
   const borderColor = textColor === '#1e293b' ? '#cbd5e1' : '#475569'
 
   ctx.fillStyle = backgroundColor
@@ -264,36 +388,76 @@ function drawLegend(
   ctx.lineWidth = 1
   ctx.strokeRect(legendX, legendY, 160, legendHeight)
 
-  ctx.font = '12px Inter, system-ui, sans-serif'
-  ctx.fillStyle = textColor
-  ctx.fillText('Clusters', legendX + 10, legendY + 15)
+  let yOffset = legendY + 15
 
-  // Draw clusters
-  let yOffset = legendY + 35
-  state.clusters.forEach((cluster) => {
-    // Color indicator
-    ctx.fillStyle = cluster.color
-    ctx.fillRect(legendX + 10, yOffset - 8, 20, 12)
-    ctx.strokeStyle = borderColor
-    ctx.lineWidth = 1
-    ctx.strokeRect(legendX + 10, yOffset - 8, 20, 12)
-
-    // Label
-    ctx.fillStyle = textColor
-    ctx.font = '12px Inter, system-ui, sans-serif'
-    ctx.fillText(`C${cluster.id + 1} (${cluster.points.length})`, legendX + 35, yOffset + 2)
-
-    yOffset += 25
+  // Draw clusters section only if clusters exist and have been discovered
+  // Only show clusters that contain at least one point that has been processed
+  const visibleClusters = state.clusters.filter(cluster => {
+    if (state.isComplete) return true
+    // Check if any point in this cluster has been processed
+    return cluster.points.some(pointIndex => pointIndex < state.currentPointIndex)
   })
 
+  if (visibleClusters.length > 0) {
+    ctx.font = 'bold 12px Inter, system-ui, sans-serif'
+    ctx.fillStyle = textColor
+    ctx.fillText('Clusters Discovered', legendX + 10, yOffset)
+    yOffset += 20
+
+    visibleClusters.forEach((cluster) => {
+      // Count only processed points in this cluster
+      const processedPointsCount = state.isComplete 
+        ? cluster.points.length 
+        : cluster.points.filter(idx => idx < state.currentPointIndex).length
+
+      // Color indicator with cluster color
+      ctx.fillStyle = cluster.color
+      ctx.beginPath()
+      ctx.arc(legendX + 20, yOffset - 3, 6, 0, 2 * Math.PI)
+      ctx.fill()
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      ctx.stroke()
+
+      // Label with point count
+      ctx.fillStyle = textColor
+      ctx.font = '12px Inter, system-ui, sans-serif'
+      const label = state.isComplete 
+        ? `Cluster ${cluster.id + 1} (${cluster.points.length} pts)`
+        : `Cluster ${cluster.id + 1} (${processedPointsCount} pts...)`
+      ctx.fillText(label, legendX + 35, yOffset + 2)
+
+      yOffset += 25
+    })
+
+    yOffset += 5
+  } else {
+    ctx.font = '12px Inter, system-ui, sans-serif'
+    ctx.fillStyle = textColor + '99'
+    ctx.fillText('No clusters yet...', legendX + 10, yOffset)
+    yOffset += 25
+  }
+
   // Draw point type indicators
-  yOffset += 10
   ctx.fillStyle = textColor
   ctx.font = 'bold 11px Inter, system-ui, sans-serif'
-  ctx.fillText('Point Types:', legendX + 10, yOffset)
-  yOffset += 20
+  ctx.fillText('Point States:', legendX + 10, yOffset)
+  yOffset += 18
 
-  // Core points
+  // Unvisited (gray)
+  ctx.beginPath()
+  ctx.arc(legendX + 20, yOffset - 3, 5, 0, 2 * Math.PI)
+  ctx.fillStyle = '#9ca3af'
+  ctx.fill()
+  ctx.strokeStyle = '#d1d5db'
+  ctx.lineWidth = 0.5
+  ctx.stroke()
+  ctx.fillStyle = textColor
+  ctx.font = '11px Inter, system-ui, sans-serif'
+  ctx.fillText('Unvisited', legendX + 35, yOffset)
+  yOffset += 18
+
+  // Core points (with white dot)
   ctx.beginPath()
   ctx.arc(legendX + 20, yOffset - 3, 5, 0, 2 * Math.PI)
   ctx.fillStyle = '#94a3b8'
@@ -306,7 +470,6 @@ function drawLegend(
   ctx.fillStyle = '#ffffff'
   ctx.fill()
   ctx.fillStyle = textColor
-  ctx.font = '11px Inter, system-ui, sans-serif'
   ctx.fillText('Core', legendX + 35, yOffset)
   yOffset += 18
 
@@ -322,20 +485,20 @@ function drawLegend(
   ctx.fillText('Border', legendX + 35, yOffset)
   yOffset += 18
 
-  // Noise points
+  // Noise points (black/very dark)
   ctx.beginPath()
   ctx.arc(legendX + 20, yOffset - 3, 5, 0, 2 * Math.PI)
-  ctx.fillStyle = '#6b7280'
+  ctx.fillStyle = '#1f2937'
   ctx.fill()
-  ctx.strokeStyle = '#ffffff'
-  ctx.lineWidth = 1.5
+  ctx.strokeStyle = '#4b5563'
+  ctx.lineWidth = 1
   ctx.stroke()
   ctx.fillStyle = textColor
   ctx.fillText('Noise', legendX + 35, yOffset)
 }
 
 /**
- * Draw phase indicator
+ * Draw phase indicator - detailed status like reference visualization
  */
 function drawPhaseIndicator(
   ctx: CanvasRenderingContext2D,
@@ -343,19 +506,103 @@ function drawPhaseIndicator(
   state: DBSCANState,
   textColor: string = '#1e293b'
 ): void {
-  ctx.font = 'bold 14px Inter, system-ui, sans-serif'
-  ctx.fillStyle = textColor
+  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
+  const borderColor = textColor === '#1e293b' ? '#cbd5e1' : '#475569'
 
   let phaseText = ''
-  if (state.phase === 'finding-neighbors') {
-    phaseText = 'Finding Neighbors'
+  let detailText = ''
+  let statusColor = '#3b82f6'
+
+  if (state.phase === 'processing') {
+    const currentPoint = state.points[state.currentPointIndex]
+    
+    if (currentPoint) {
+      const neighborCount = currentPoint.neighbors.length
+      
+      if (currentPoint.type === 'core') {
+        phaseText = `Point ${state.currentPointIndex + 1} - Core Point`
+        detailText = `${neighborCount} neighbors - Starting cluster`
+        statusColor = '#10b981' // Green
+      } else if (currentPoint.type === 'noise') {
+        phaseText = `Point ${state.currentPointIndex + 1} - Noise`
+        detailText = `Only ${neighborCount} neighbors`
+        statusColor = '#6b7280' // Gray
+      } else {
+        phaseText = `Processing Point ${state.currentPointIndex + 1}`
+        detailText = 'Checking density...'
+        statusColor = '#ef4444' // Red
+      }
+    }
   } else if (state.phase === 'expanding-cluster') {
-    phaseText = 'Expanding Cluster'
+    const seedIndex = state.currentSeedIndex < state.expandingSeeds.length 
+      ? state.expandingSeeds[state.currentSeedIndex] 
+      : -1
+    
+    if (seedIndex >= 0) {
+      const seedPoint = state.points[seedIndex]
+      const neighborCount = seedPoint.neighbors.length
+      
+      phaseText = `Expanding Cluster ${state.currentClusterId + 1} - Point ${seedIndex + 1}`
+      detailText = `Checking point (${neighborCount} neighbors)...`
+      statusColor = '#8b5cf6' // Purple
+    } else {
+      phaseText = 'Expanding Cluster'
+      detailText = `Cluster ${state.clusters.length}`
+      statusColor = '#10b981' // Green
+    }
   } else {
-    phaseText = 'Complete'
+    phaseText = 'Clustering Complete!'
+    const clusterText = state.clusters.length === 1 ? 'cluster' : 'clusters'
+    const noiseText = state.statistics.totalNoise === 1 ? 'point' : 'points'
+    detailText = `Found ${state.clusters.length} ${clusterText} and ${state.statistics.totalNoise} noise ${noiseText}`
+    statusColor = '#10b981' // Green
   }
 
-  ctx.fillText(phaseText, config.padding.left, config.padding.top - 15)
+  // Draw background box
+  const boxWidth = 550
+  const boxHeight = 55
+  const boxX = config.padding.left
+  const boxY = config.padding.top - 60
+
+  ctx.fillStyle = backgroundColor
+  ctx.fillRect(boxX, boxY, boxWidth, boxHeight)
+  ctx.strokeStyle = borderColor
+  ctx.lineWidth = 1.5
+  ctx.strokeRect(boxX, boxY, boxWidth, boxHeight)
+
+  // Status indicator dot with glow
+  ctx.beginPath()
+  ctx.arc(boxX + 18, boxY + 20, 7, 0, 2 * Math.PI)
+  ctx.fillStyle = statusColor
+  ctx.fill()
+  
+  // Glow effect
+  ctx.beginPath()
+  ctx.arc(boxX + 18, boxY + 20, 10, 0, 2 * Math.PI)
+  ctx.strokeStyle = statusColor + '40'
+  ctx.lineWidth = 3
+  ctx.stroke()
+
+  // Phase text
+  ctx.font = 'bold 15px Inter, system-ui, sans-serif'
+  ctx.fillStyle = textColor
+  ctx.fillText(phaseText, boxX + 38, boxY + 22)
+
+  // Detail text
+  ctx.font = '12px Inter, system-ui, sans-serif'
+  ctx.fillStyle = textColor + 'cc'
+  ctx.fillText(detailText, boxX + 38, boxY + 40)
+
+  // Progress indicator
+  if (!state.isComplete) {
+    const progressPercent = Math.round((state.currentPointIndex / state.points.length) * 100)
+    const progressText = `${progressPercent}% (${state.currentPointIndex + 1}/${state.points.length})`
+    ctx.font = 'bold 11px Inter, system-ui, sans-serif'
+    ctx.fillStyle = textColor + '99'
+    ctx.textAlign = 'right'
+    ctx.fillText(progressText, boxX + boxWidth - 15, boxY + 30)
+    ctx.textAlign = 'left'
+  }
 }
 
 /**

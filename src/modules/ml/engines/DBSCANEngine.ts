@@ -13,6 +13,7 @@ export interface DBSCANPoint extends DataPoint {
   clusterId: number // -1 for noise, 0+ for cluster id
   neighbors: number[] // Indices of neighboring points
   isProcessed: boolean
+  isShowingNeighbors?: boolean // New: to show neighbors being found
 }
 
 export interface DBSCANCluster {
@@ -27,9 +28,12 @@ export interface DBSCANState {
   points: DBSCANPoint[]
   clusters: DBSCANCluster[]
   currentPointIndex: number // For step-by-step visualization
-  phase: 'finding-neighbors' | 'expanding-cluster' | 'complete'
+  phase: 'processing' | 'expanding-cluster' | 'complete'
   isComplete: boolean
   noisePoints: number[] // Indices of noise points
+  expandingSeeds: number[] // Points to check for expansion
+  currentSeedIndex: number // Current point being expanded in the cluster
+  currentClusterId: number // Cluster being built
   statistics: {
     totalClusters: number
     totalNoise: number
@@ -78,9 +82,12 @@ export class DBSCANEngine {
       points,
       clusters: [],
       currentPointIndex: 0,
-      phase: 'finding-neighbors',
+      phase: 'processing',
       isComplete: false,
       noisePoints: [],
+      expandingSeeds: [],
+      currentSeedIndex: 0,
+      currentClusterId: -1,
       statistics: {
         totalClusters: 0,
         totalNoise: 0,
@@ -211,47 +218,22 @@ export class DBSCANEngine {
   }
 
   /**
-   * Step through one point
+   * Step through one point - showing recursive cluster expansion
    */
   step(): DBSCANState {
     if (this.state.isComplete) {
       return this.getState()
     }
 
+    // If we're expanding a cluster, continue with expansion steps
+    if (this.state.phase === 'expanding-cluster') {
+      return this.expandClusterStep()
+    }
+
     const point = this.state.points[this.state.currentPointIndex]
 
-    if (this.state.phase === 'finding-neighbors') {
-      // Skip if already processed
-      if (point.type !== 'unvisited') {
-        this.state.currentPointIndex++
-        if (this.state.currentPointIndex >= this.state.points.length) {
-          this.buildClusters()
-          this.updateStatistics()
-          this.state.phase = 'complete'
-          this.state.isComplete = true
-        }
-        return this.getState()
-      }
-
-      // Mark as visited
-      point.type = 'visited'
-      point.isProcessed = true
-
-      // Find neighbors
-      const neighbors = this.findNeighbors(this.state.currentPointIndex)
-      point.neighbors = neighbors
-
-      // Check if core point
-      if (neighbors.length >= this.config.minPts) {
-        const clusterId = this.state.clusters.length
-        this.state.phase = 'expanding-cluster'
-        this.expandCluster(this.state.currentPointIndex, neighbors, clusterId)
-        this.buildClusters()
-        this.state.phase = 'finding-neighbors'
-      } else {
-        point.type = 'noise'
-      }
-
+    // Skip if already processed (already in a cluster or marked as noise)
+    if (point.type !== 'unvisited') {
       this.state.currentPointIndex++
       if (this.state.currentPointIndex >= this.state.points.length) {
         this.buildClusters()
@@ -259,8 +241,120 @@ export class DBSCANEngine {
         this.state.phase = 'complete'
         this.state.isComplete = true
       }
+      return this.getState()
     }
 
+    // Find neighbors
+    const neighbors = this.findNeighbors(this.state.currentPointIndex)
+    point.neighbors = neighbors
+    point.type = 'visited'
+    point.isProcessed = true
+
+    // Check if it's a core point
+    if (point.neighbors.length >= this.config.minPts) {
+      // Core point - start a new cluster and ALL neighbors join immediately
+      const clusterId = this.state.clusters.length
+      this.state.currentClusterId = clusterId
+      
+      // Mark this point as core and assign to cluster
+      point.type = 'core'
+      point.clusterId = clusterId
+      
+      // ALL neighbors immediately join the cluster
+      point.neighbors.forEach((neighborIndex) => {
+        const neighbor = this.state.points[neighborIndex]
+        if (neighbor.clusterId === -1) {
+          neighbor.clusterId = clusterId
+          if (neighbor.type === 'noise') {
+            neighbor.type = 'border' // Was noise, now border
+          }
+        }
+      })
+      
+      // Set up seeds for recursive expansion - check each neighbor
+      this.state.expandingSeeds = [...point.neighbors]
+      this.state.currentSeedIndex = 0
+      this.state.phase = 'expanding-cluster'
+      this.buildClusters()
+      return this.getState()
+    } else {
+      // Noise point (may be added to cluster later if a neighbor is core)
+      point.type = 'noise'
+    }
+
+    // Move to next point
+    this.state.currentPointIndex++
+    if (this.state.currentPointIndex >= this.state.points.length) {
+      this.buildClusters()
+      this.updateStatistics()
+      this.state.phase = 'complete'
+      this.state.isComplete = true
+    }
+    
+    return this.getState()
+  }
+
+  /**
+   * Expand cluster - called during step when in expanding phase
+   */
+  private expandClusterStep(): DBSCANState {
+    // Recursively check each seed point
+    if (this.state.currentSeedIndex < this.state.expandingSeeds.length) {
+      const seedIndex = this.state.expandingSeeds[this.state.currentSeedIndex]
+      const seedPoint = this.state.points[seedIndex]
+      
+      // If this seed hasn't been visited, check if it's also a core point
+      if (seedPoint.type === 'unvisited' || seedPoint.type === 'visited') {
+        seedPoint.type = 'visited'
+        
+        // Find its neighbors
+        const seedNeighbors = this.findNeighbors(seedIndex)
+        seedPoint.neighbors = seedNeighbors
+        
+        // If it's also a core point, add its neighbors to cluster and seeds
+        if (seedNeighbors.length >= this.config.minPts) {
+          seedPoint.type = 'core'
+          
+          // Add all its neighbors to the cluster
+          seedNeighbors.forEach((neighborIndex) => {
+            const neighbor = this.state.points[neighborIndex]
+            if (neighbor.clusterId === -1) {
+              neighbor.clusterId = this.state.currentClusterId
+              if (neighbor.type === 'noise') {
+                neighbor.type = 'border'
+              }
+            }
+            
+            // Add to seeds if not already there
+            if (!this.state.expandingSeeds.includes(neighborIndex)) {
+              this.state.expandingSeeds.push(neighborIndex)
+            }
+          })
+        } else if (seedPoint.clusterId === this.state.currentClusterId) {
+          // It's in the cluster but not a core point - border point
+          seedPoint.type = 'border'
+        }
+      }
+      
+      this.state.currentSeedIndex++
+      this.buildClusters()
+      return this.getState()
+    }
+    
+    // Done expanding this cluster - move to next point
+    this.state.expandingSeeds = []
+    this.state.currentSeedIndex = 0
+    this.state.currentClusterId = -1
+    this.state.currentPointIndex++
+    this.state.phase = 'processing' // Go back to processing mode
+    
+    if (this.state.currentPointIndex >= this.state.points.length) {
+      this.buildClusters()
+      this.updateStatistics()
+      this.state.phase = 'complete'
+      this.state.isComplete = true
+    }
+    
     return this.getState()
   }
 
@@ -350,6 +444,9 @@ export class DBSCANEngine {
       phase: this.state.phase,
       isComplete: this.state.isComplete,
       noisePoints: [...this.state.noisePoints],
+      expandingSeeds: [...this.state.expandingSeeds],
+      currentSeedIndex: this.state.currentSeedIndex,
+      currentClusterId: this.state.currentClusterId,
       statistics: { ...this.state.statistics },
     }
   }

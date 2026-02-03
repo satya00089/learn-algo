@@ -80,7 +80,7 @@ export function DBSCANPlayground() {
     () => ({
       width: 1200,
       height: 550,
-      padding: { top: 40, right: 40, bottom: 40, left: 40 },
+      padding: { top: 75, right: 40, bottom: 40, left: 40 },
     }),
     []
   )
@@ -224,11 +224,12 @@ export function DBSCANPlayground() {
           yMax,
           showNeighborhoods,
           showConnections,
-          textColor
+          textColor,
+          epsilon
         )
       }
     },
-    [engineState, canvasConfig, xMin, xMax, yMin, yMax, showNeighborhoods, showConnections, theme]
+    [engineState, canvasConfig, xMin, xMax, yMin, yMax, showNeighborhoods, showConnections, theme, epsilon]
   )
 
   const { canvasRef: mainCanvasRef } = useCanvas({ config: canvasConfig, draw: drawMain })
@@ -320,8 +321,12 @@ export function DBSCANPlayground() {
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Discover clusters based on density. DBSCAN automatically finds clusters of arbitrary
-          shapes and identifies outliers without needing to specify the number of clusters.
+          <strong>Density-Based Spatial Clustering of Applications with Noise (DBSCAN)</strong> - 
+          Watch the algorithm examine each point, calculate neighbors within epsilon (ε) radius, 
+          classify points as <span className="text-red-600 dark:text-red-400 font-semibold">Core</span>,{' '}
+          <span className="text-yellow-600 dark:text-yellow-400 font-semibold">Border</span>, or{' '}
+          <span className="text-gray-700 dark:text-gray-400 font-semibold">Noise</span>,{' '}
+          and progressively form clusters without needing to specify K.
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -553,27 +558,37 @@ export function DBSCANPlayground() {
             )}
 
             {/* Algorithm Explanation */}
-            <ControlGroup title="Algorithm">
+            <ControlGroup title="How DBSCAN Works">
               <div className="space-y-2 text-xs text-gray-700 dark:text-gray-300">
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white mb-0.5">Parameters</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">1. Parameters</p>
                   <p className="text-gray-600 dark:text-gray-400">
-                    ε (epsilon): neighborhood radius
-                    <br />MinPts: minimum points for dense region
+                    <strong>ε (epsilon)</strong>: Maximum distance for neighbors
+                    <br />
+                    <strong>MinPts</strong>: Minimum points to form dense region
                   </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white mb-0.5">Point Types</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">2. Point Classification</p>
                   <p className="text-gray-600 dark:text-gray-400">
-                    • Core: ≥MinPts neighbors within ε
-                    <br />• Border: &lt;MinPts neighbors, reachable from core
-                    <br />• Noise: not reachable from any core
+                    <strong>Core</strong>: Has ≥MinPts neighbors within ε
+                    <br />
+                    <strong>Border</strong>: &lt;MinPts neighbors, reachable from core
+                    <br />
+                    <strong>Noise</strong>: Not reachable from any core point
                   </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white mb-0.5">Clustering</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">3. Cluster Formation</p>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Connect density-reachable core points and their borders into clusters.
+                    For each unvisited point, find neighbors. If core, expand cluster by connecting
+                    all density-reachable points. Continue until all points processed.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-xs text-gray-500 dark:text-gray-500 italic">
+                    💡 Tip: Toggle "Show ε-Neighborhoods" and "Show Connections" to better
+                    understand how clusters form based on density connectivity.
                   </p>
                 </div>
               </div>
