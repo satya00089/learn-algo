@@ -196,6 +196,18 @@ export default function MLPage() {
       category: 'Unsupervised Learning',
     },
     {
+      title: 'Hierarchical Clustering',
+      description: 'Build cluster hierarchies using agglomerative bottom-up merging',
+      href: '/ml/hierarchical-clustering',
+      icon: '/icons/ml/hierarchical.png',
+      iconType: 'image' as const,
+      color: 'text-rose-600 dark:text-rose-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Advanced',
+      comingSoon: false,
+      category: 'Unsupervised Learning',
+    },
+    {
       title: 'Gaussian Mixture Model',
       description: 'Soft clustering with probabilistic assignments via EM algorithm',
       href: '/ml/gmm',
