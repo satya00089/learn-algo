@@ -216,6 +216,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       description: 'Standard Scaler - Z-score normalization for feature standardization',
     },
     {
+      url: '/ml/dbscan',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'DBSCAN Clustering - Density-based spatial clustering, core/border/noise points, epsilon and minPts parameters, outlier detection',
+    },
+    {
       url: '/ai',
       priority: 0.9,
       changeFrequency: 'weekly' as const,
