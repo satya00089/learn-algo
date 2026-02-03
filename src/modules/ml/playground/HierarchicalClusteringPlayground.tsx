@@ -293,105 +293,117 @@ export function HierarchicalClusteringPlayground() {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-1">
-                  <button
-                    onClick={isPlaying ? handlePause : handlePlay}
-                    disabled={engineState?.isComplete}
-                    className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title={isPlaying ? 'Pause' : 'Play'}
-                  >
-                    {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
-                  </button>
-                  <button
-                    onClick={handleStep}
-                    disabled={isPlaying || engineState?.isComplete}
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title="Step"
-                  >
-                    <FaStepForward size={12} />
-                  </button>
-                  <button
-                    onClick={handleFastForward}
-                    disabled={isPlaying || engineState?.isComplete}
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title="Run to Completion"
-                  >
-                    <FaFastForward size={12} />
-                  </button>
-                  <button
-                    onClick={handleReset}
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                    title="Reset"
-                  >
-                    <FaRedo size={12} />
-                  </button>
+                  <Tooltip text={isPlaying ? 'Pause Animation' : 'Play Animation'}>
+                    <button
+                      onClick={isPlaying ? handlePause : handlePlay}
+                      disabled={engineState?.isComplete}
+                      className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Step Forward One Iteration">
+                    <button
+                      onClick={handleStep}
+                      disabled={isPlaying || engineState?.isComplete}
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FaStepForward size={12} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Run to Completion">
+                    <button
+                      onClick={handleFastForward}
+                      disabled={isPlaying || engineState?.isComplete}
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FaFastForward size={12} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Reset Algorithm">
+                    <button
+                      onClick={handleReset}
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      <FaRedo size={12} />
+                    </button>
+                  </Tooltip>
                 </div>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">Speed:</span>
-                  <input
-                    type="number"
-                    value={animationSpeed}
-                    min={100}
-                    max={2000}
-                    step={100}
-                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 500)}
-                    className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                  />
-                </div>
+                <Tooltip text="Animation Speed (ms)">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Speed:</span>
+                    <input
+                      type="number"
+                      value={animationSpeed}
+                      min={10}
+                      max={2000}
+                      step={50}
+                      onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 500)}
+                      className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    />
+                  </div>
+                </Tooltip>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">Clusters:</span>
-                  <input
-                    type="number"
-                    value={targetClusters}
-                    min={1}
-                    max={8}
-                    onChange={(e) => setTargetClusters(Number.parseInt(e.target.value) || 3)}
-                    disabled={isPlaying}
-                    className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-                  />
-                </div>
+                <Tooltip text="Target Number of Clusters">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Clusters:</span>
+                    <input
+                      type="number"
+                      value={targetClusters}
+                      min={1}
+                      max={8}
+                      onChange={(e) => setTargetClusters(Number.parseInt(e.target.value) || 3)}
+                      disabled={isPlaying}
+                      className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+                    />
+                  </div>
+                </Tooltip>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">Type:</span>
-                  <select
-                    value={clusteringType}
-                    onChange={(e) =>
-                      setClusteringType(e.target.value as 'agglomerative' | 'divisive')
-                    }
-                    disabled={isPlaying}
-                    className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-                    title="Clustering Type"
-                  >
-                    <option value="agglomerative">Agglomerative</option>
-                    <option value="divisive">Divisive</option>
-                  </select>
-                </div>
+                <Tooltip text="Clustering Approach">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Type:</span>
+                    <select
+                      value={clusteringType}
+                      onChange={(e) =>
+                        setClusteringType(e.target.value as 'agglomerative' | 'divisive')
+                      }
+                      disabled={isPlaying}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+                      title="Clustering Type"
+                    >
+                      <option value="agglomerative">Agglomerative</option>
+                      <option value="divisive">Divisive</option>
+                    </select>
+                  </div>
+                </Tooltip>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">Linkage:</span>
-                  <select
-                    value={linkageType}
-                    onChange={(e) =>
-                      setLinkageType(e.target.value as 'single' | 'complete' | 'average')
-                    }
-                    disabled={isPlaying}
-                    className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-                    title="Linkage Type"
-                  >
-                    <option value="single">Single</option>
-                    <option value="complete">Complete</option>
-                    <option value="average">Average</option>
-                  </select>
-                </div>
+                <Tooltip text="Linkage Method for Distance Calculation">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Linkage:</span>
+                    <select
+                      value={linkageType}
+                      onChange={(e) =>
+                        setLinkageType(e.target.value as 'single' | 'complete' | 'average')
+                      }
+                      disabled={isPlaying}
+                      className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+                      title="Linkage Type"
+                    >
+                      <option value="single">Single</option>
+                      <option value="complete">Complete</option>
+                      <option value="average">Average</option>
+                    </select>
+                  </div>
+                </Tooltip>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 

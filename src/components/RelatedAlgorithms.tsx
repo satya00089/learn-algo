@@ -158,6 +158,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Density-based spatial clustering',
     category: 'Clustering',
   },
+  'hierarchical-clustering': {
+    title: 'Hierarchical Clustering',
+    description: 'Tree-based clustering with linkage methods',
+    category: 'Clustering',
+  },
   'gradient-descent': {
     title: 'Gradient Descent',
     description: 'Optimization algorithm',
