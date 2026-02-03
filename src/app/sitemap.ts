@@ -170,6 +170,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'K-Means clustering algorithm - centroid-based clustering with step-by-step visualization',
     },
     {
+      url: '/ml/gmm',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Gaussian Mixture Model - probabilistic soft clustering with EM algorithm and covariance visualization',
+    },
+    {
       url: '/ml/knn',
       priority: 0.8,
       changeFrequency: 'monthly' as const,

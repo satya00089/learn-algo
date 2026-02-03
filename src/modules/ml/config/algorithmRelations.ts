@@ -9,6 +9,7 @@ export type MLRoute =
   | 'ensemble-models'
   | 'knn'
   | 'k-means'
+  | 'gmm'
   | 'gradient-descent'
   | 'minmax-scaler'
   | 'standard-scaler'
@@ -173,8 +174,18 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       route: 'k-means',
       category: 'Clustering',
     },
+    {
+      name: 'GMM',
+      route: 'gmm',
+      category: 'Clustering',
+    },
   ],
   'k-means': [
+    {
+      name: 'GMM',
+      route: 'gmm',
+      category: 'Clustering',
+    },
     {
       name: 'KNN',
       route: 'knn',
@@ -185,9 +196,21 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       route: 'standard-scaler',
       category: 'Preprocessing',
     },
+  ],
+  gmm: [
     {
-      name: 'MinMax Scaler',
-      route: 'minmax-scaler',
+      name: 'K-Means',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'KNN',
+      route: 'knn',
+      category: 'Classification',
+    },
+    {
+      name: 'Standard Scaler',
+      route: 'standard-scaler',
       category: 'Preprocessing',
     },
   ],

@@ -148,6 +148,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Unsupervised clustering',
     category: 'Clustering',
   },
+  gmm: {
+    title: 'Gaussian Mixture Model',
+    description: 'Probabilistic soft clustering',
+    category: 'Clustering',
+  },
   'gradient-descent': {
     title: 'Gradient Descent',
     description: 'Optimization algorithm',

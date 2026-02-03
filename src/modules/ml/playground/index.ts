@@ -1,6 +1,7 @@
 export { LinearRegressionPlayground } from './LinearRegressionPlayground'
 export { LogisticRegressionPlayground } from './LogisticRegressionPlayground'
 export { KMeansClusteringPlayground } from './KMeansClusteringPlayground'
+export { GMMPlayground } from './GMMPlayground'
 export { GradientDescentPlayground } from './GradientDescentPlayground'
 export { PolynomialRegressionPlayground } from './PolynomialRegressionPlayground'
 export { KNNPlayground } from './KNNPlayground'

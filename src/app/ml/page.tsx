@@ -195,6 +195,18 @@ export default function MLPage() {
       comingSoon: false,
       category: 'Unsupervised Learning',
     },
+    {
+      title: 'Gaussian Mixture Model',
+      description: 'Soft clustering with probabilistic assignments via EM algorithm',
+      href: '/ml/gmm',
+      icon: '/icons/ml/cluster.png',
+      iconType: 'image' as const,
+      color: 'text-teal-600 dark:text-teal-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Advanced',
+      comingSoon: false,
+      category: 'Unsupervised Learning',
+    },
   ]
 
   return (
