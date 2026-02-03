@@ -53,7 +53,7 @@ export interface ProbabilityConfig {
 }
 
 export class ChanceEventsEngine {
-  private config: ProbabilityConfig
+  private readonly config: ProbabilityConfig
   private state: ProbabilityState
 
   constructor(config: ProbabilityConfig) {
@@ -146,7 +146,7 @@ export class ChanceEventsEngine {
 
     // Convergence Analysis
     const absoluteDeviation = Math.abs(observed - expected)
-    const relativeDeviation = expected !== 0 ? (absoluteDeviation / expected) * 100 : 0
+    const relativeDeviation = expected === 0 ? 0 : (absoluteDeviation / expected) * 100
     const convergenceRate = n > 1 ? absoluteDeviation / Math.sqrt(n) : absoluteDeviation
 
     // Statistical Tests
@@ -154,7 +154,7 @@ export class ChanceEventsEngine {
     const p0 = expected
     const pHat = observed
     const standardError = Math.sqrt((p0 * (1 - p0)) / n)
-    const zScore = standardError !== 0 ? (pHat - p0) / standardError : 0
+    const zScore = standardError === 0 ? 0 : (pHat - p0) / standardError
 
     // P-value (two-tailed test)
     const pValue = 2 * (1 - this.normalCDF(Math.abs(zScore)))
@@ -236,7 +236,7 @@ export class ChanceEventsEngine {
     }
 
     if (this.state.flips.length > 0) {
-      const lastOutcome = this.state.flips[this.state.flips.length - 1].outcome
+      const lastOutcome = this.state.flips.at(-1)!.outcome
       currentStreak = {
         type: lastOutcome,
         count: lastOutcome === 'heads' ? tempHeads : tempTails,

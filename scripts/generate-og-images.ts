@@ -254,6 +254,14 @@ const mlPages: OGImageConfig[] = [
     filename: 'og-ml-gmm.png',
   },
   {
+    title: 'DBSCAN Clustering',
+    subtitle: 'Density-Based Spatial Clustering',
+    description: 'Discover arbitrary-shaped clusters and detect outliers automatically',
+    category: 'ML • Clustering',
+    categoryColor: '#10B981',
+    filename: 'og-ml-dbscan.png',
+  },
+  {
     title: 'Gradient Descent',
     subtitle: 'Optimization Algorithm',
     description: 'Minimize cost function by iterative descent',

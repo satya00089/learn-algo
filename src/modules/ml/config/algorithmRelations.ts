@@ -10,6 +10,7 @@ export type MLRoute =
   | 'knn'
   | 'k-means'
   | 'gmm'
+  | 'dbscan'
   | 'gradient-descent'
   | 'minmax-scaler'
   | 'standard-scaler'
@@ -187,14 +188,14 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       category: 'Clustering',
     },
     {
+      name: 'DBSCAN',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+    {
       name: 'KNN',
       route: 'knn',
       category: 'Classification',
-    },
-    {
-      name: 'Standard Scaler',
-      route: 'standard-scaler',
-      category: 'Preprocessing',
     },
   ],
   gmm: [
@@ -204,14 +205,31 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       category: 'Clustering',
     },
     {
+      name: 'DBSCAN',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+    {
       name: 'KNN',
       route: 'knn',
       category: 'Classification',
     },
+  ],
+  dbscan: [
     {
-      name: 'Standard Scaler',
-      route: 'standard-scaler',
-      category: 'Preprocessing',
+      name: 'K-Means',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'GMM',
+      route: 'gmm',
+      category: 'Clustering',
+    },
+    {
+      name: 'KNN',
+      route: 'knn',
+      category: 'Classification',
     },
   ],
   'gradient-descent': [

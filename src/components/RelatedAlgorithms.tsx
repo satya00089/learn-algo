@@ -153,6 +153,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Probabilistic soft clustering',
     category: 'Clustering',
   },
+  dbscan: {
+    title: 'DBSCAN Clustering',
+    description: 'Density-based spatial clustering',
+    category: 'Clustering',
+  },
   'gradient-descent': {
     title: 'Gradient Descent',
     description: 'Optimization algorithm',
