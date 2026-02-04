@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import {
   FaPlay,
   FaPause,

@@ -5,7 +5,7 @@ import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-ico
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { TbCircleDotted, TbTopologyRing } from 'react-icons/tb'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup } from '@/core/controls'
+import { ControlGroup, Tooltip } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -36,44 +36,6 @@ export function DBSCANPlayground() {
   const [points, setPoints] = useState<DataPoint[]>([])
   const [epsilon, setEpsilon] = useState(2.5)
   const [minPts, setMinPts] = useState(4)
-
-  // Tooltip component
-  const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
-    const [show, setShow] = useState(false)
-    const tooltipRef = useRef<HTMLDivElement>(null)
-    const buttonRef = useRef<HTMLDivElement>(null)
-
-    return (
-      <div
-        ref={buttonRef}
-        className="relative inline-block"
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
-        {children}
-        {show && (
-          <div
-            ref={tooltipRef}
-            className="fixed px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded whitespace-nowrap pointer-events-none"
-            style={{
-              zIndex: 9999,
-              bottom: 'auto',
-              left: buttonRef.current
-                ? `${buttonRef.current.getBoundingClientRect().left + buttonRef.current.offsetWidth / 2}px`
-                : '0',
-              top: buttonRef.current
-                ? `${buttonRef.current.getBoundingClientRect().top - 8}px`
-                : '0',
-              transform: 'translate(-50%, -100%)',
-            }}
-          >
-            {text}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-          </div>
-        )}
-      </div>
-    )
-  }
 
   // Canvas configuration
   const canvasConfig = useMemo(

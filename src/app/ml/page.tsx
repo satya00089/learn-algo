@@ -231,6 +231,18 @@ export default function MLPage() {
       comingSoon: false,
       category: 'Unsupervised Learning',
     },
+    {
+      title: 'Anomaly Detection',
+      description: 'Detect outliers using Isolation Forest, One-Class SVM, LOF, Z-Score, and IQR methods',
+      href: '/ml/anomaly-detection',
+      icon: '/icons/ml/cluster.png',
+      iconType: 'image' as const,
+      color: 'text-red-600 dark:text-red-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Advanced',
+      comingSoon: false,
+      category: 'Unsupervised Learning',
+    },
   ]
 
   return (

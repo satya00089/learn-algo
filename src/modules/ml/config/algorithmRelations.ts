@@ -5,6 +5,7 @@ export type MLRoute =
   | 'linear-regression'
   | 'polynomial-regression'
   | 'logistic-regression'
+  | 'anomaly-detection'
   | 'decision-tree'
   | 'ensemble-models'
   | 'knn'
@@ -124,6 +125,23 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       name: 'Gradient Descent',
       route: 'gradient-descent',
       category: 'Optimization',
+    },
+  ],
+  'anomaly-detection': [
+    {
+      name: 'K-Means Clustering',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'DBSCAN Clustering',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+    {
+      name: 'Gaussian Mixture Model',
+      route: 'gmm',
+      category: 'Clustering',
     },
   ],
   'decision-tree': [

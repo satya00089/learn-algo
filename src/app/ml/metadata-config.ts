@@ -145,6 +145,28 @@ export const mlMetadata = {
     ],
     ogImage: '/og/og-ml-logistic-regression.png',
   },
+  'anomaly-detection': {
+    title: 'Anomaly Detection Algorithms',
+    description:
+      'Explore anomaly detection methods including Isolation Forest, One-Class SVM, Local Outlier Factor, and statistical approaches. Identify outliers in your data with interactive visualizations.',
+    keywords: [
+      'anomaly detection',
+      'outlier detection',
+      'isolation forest',
+      'one class svm',
+      'local outlier factor',
+      'lof',
+      'z score',
+      'iqr method',
+      'novelty detection',
+      'unsupervised learning',
+      'machine learning',
+      'data mining',
+      'interactive visualization',
+      'algorithm comparison',
+    ],
+    ogImage: '/og/og-ml-anomaly-detection.png',
+  },
   'decision-tree': {
     title: 'Decision Tree Classifier',
     description:

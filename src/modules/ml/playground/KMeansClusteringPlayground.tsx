@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup } from '@/core/controls'
+import { ControlGroup, Tooltip } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -767,37 +767,45 @@ export function KMeansClusteringPlayground() {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-1">
-                  <button
-                    onClick={handlePlayPause}
-                    disabled={engineState?.isConverged || engineState?.phase === 'complete'}
-                    className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
-                  </button>
-                  <button
-                    onClick={handleStep}
-                    disabled={
-                      isPlaying || engineState?.isConverged || engineState?.phase === 'complete'
-                    }
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <FaStepForward size={12} />
-                  </button>
-                  <button
-                    onClick={handleRun}
-                    disabled={
-                      isPlaying || engineState?.isConverged || engineState?.phase === 'complete'
-                    }
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <FaFastForward size={12} />
-                  </button>
-                  <button
-                    onClick={handleReset}
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                  >
-                    <FaRedo size={12} />
-                  </button>
+                  <Tooltip text={isPlaying ? 'Pause' : 'Play'}>
+                    <button
+                      onClick={handlePlayPause}
+                      disabled={engineState?.isConverged || engineState?.phase === 'complete'}
+                      className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Step Forward">
+                    <button
+                      onClick={handleStep}
+                      disabled={
+                        isPlaying || engineState?.isConverged || engineState?.phase === 'complete'
+                      }
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FaStepForward size={12} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Run to Completion">
+                    <button
+                      onClick={handleRun}
+                      disabled={
+                        isPlaying || engineState?.isConverged || engineState?.phase === 'complete'
+                      }
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FaFastForward size={12} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Reset">
+                    <button
+                      onClick={handleReset}
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      <FaRedo size={12} />
+                    </button>
+                  </Tooltip>
                 </div>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>

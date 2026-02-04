@@ -158,6 +158,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Density-based spatial clustering',
     category: 'Clustering',
   },
+  'anomaly-detection': {
+    title: 'Anomaly Detection',
+    description: 'Identify outliers using various algorithms',
+    category: 'Anomaly Detection',
+  },
   'hierarchical-clustering': {
     title: 'Hierarchical Clustering',
     description: 'Tree-based clustering with linkage methods',
