@@ -247,7 +247,7 @@ export default function Home() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>20+ algorithms</span>
+                      <span>30+ algorithms</span>
                     </div>
                   </div>
                 </div>
@@ -518,7 +518,7 @@ export default function Home() {
                       Choose Your Algorithm
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                      Select from 20+ algorithms across DSA, ML, and AI. Generate random datasets,
+                      Select from 30+ algorithms across DSA, ML, and AI. Generate random datasets,
                       adjust parameters, and explore different scenarios interactively.
                     </p>
                   </div>
@@ -715,7 +715,7 @@ export default function Home() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                   <div className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">
-                    20+
+                    30+
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">Algorithms</div>
                 </div>
@@ -848,7 +848,7 @@ export default function Home() {
                         Multiple Algorithms & Domains
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                        Explore 20+ algorithms across Data Structures (sorting, searching, trees),
+                        Explore 30+ algorithms across Data Structures (sorting, searching, trees),
                         Machine Learning (regression, clustering), and AI concepts.
                       </p>
                     </div>
@@ -892,7 +892,7 @@ export default function Home() {
                   <span className="font-semibold text-gray-900 dark:text-white">
                     Free, interactive, and powerful
                   </span>{' '}
-                  — explore 20+ algorithms with full control
+                  — explore 30+ algorithms with full control
                 </p>
                 <Link
                   href="/dsa"
@@ -1180,7 +1180,7 @@ export default function Home() {
                     </svg>
                   </summary>
                   <div className="px-6 pb-4 text-gray-600 dark:text-gray-400">
-                    Yes! We&apos;re constantly expanding our library. Currently, we have 20+
+                    Yes! We&apos;re constantly expanding our library. Currently, we have 30+
                     algorithms across DSA and ML domains, with AI algorithms coming soon. We
                     prioritize adding algorithms based on user requests and educational value.
                   </div>
