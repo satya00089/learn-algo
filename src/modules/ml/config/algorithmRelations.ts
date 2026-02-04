@@ -5,12 +5,14 @@ export type MLRoute =
   | 'linear-regression'
   | 'polynomial-regression'
   | 'logistic-regression'
+  | 'anomaly-detection'
   | 'decision-tree'
   | 'ensemble-models'
   | 'knn'
   | 'k-means'
   | 'gmm'
   | 'dbscan'
+  | 'hierarchical-clustering'
   | 'gradient-descent'
   | 'minmax-scaler'
   | 'standard-scaler'
@@ -125,6 +127,23 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       category: 'Optimization',
     },
   ],
+  'anomaly-detection': [
+    {
+      name: 'K-Means Clustering',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'DBSCAN Clustering',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+    {
+      name: 'Gaussian Mixture Model',
+      route: 'gmm',
+      category: 'Clustering',
+    },
+  ],
   'decision-tree': [
     {
       name: 'Ensemble Models',
@@ -227,9 +246,26 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       category: 'Clustering',
     },
     {
-      name: 'KNN',
-      route: 'knn',
-      category: 'Classification',
+      name: 'Hierarchical Clustering',
+      route: 'hierarchical-clustering',
+      category: 'Clustering',
+    },
+  ],
+  'hierarchical-clustering': [
+    {
+      name: 'K-Means',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'DBSCAN',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+    {
+      name: 'GMM',
+      route: 'gmm',
+      category: 'Clustering',
     },
   ],
   'gradient-descent': [

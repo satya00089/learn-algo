@@ -12,7 +12,7 @@ import {
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { TbRoute } from 'react-icons/tb'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup } from '@/core/controls'
+import { ControlGroup, Tooltip } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -48,44 +48,6 @@ export function GMMPlayground() {
   const [maxIterations, setMaxIterations] = useState(50)
   const [convergenceThreshold] = useState(0.01)
 
-  // Tooltip component
-  const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
-    const [show, setShow] = useState(false)
-    const tooltipRef = useRef<HTMLDivElement>(null)
-    const buttonRef = useRef<HTMLDivElement>(null)
-
-    return (
-      <div
-        ref={buttonRef}
-        className="relative inline-block"
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
-        {children}
-        {show && (
-          <div
-            ref={tooltipRef}
-            className="fixed px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded whitespace-nowrap pointer-events-none"
-            style={{
-              zIndex: 9999,
-              bottom: 'auto',
-              left: buttonRef.current
-                ? `${buttonRef.current.getBoundingClientRect().left + buttonRef.current.offsetWidth / 2}px`
-                : '0',
-              top: buttonRef.current
-                ? `${buttonRef.current.getBoundingClientRect().top - 8}px`
-                : '0',
-              transform: 'translate(-50%, -100%)',
-            }}
-          >
-            {text}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-          </div>
-        )}
-      </div>
-    )
-  }
-
   // Canvas configuration
   const canvasConfig = useMemo(
     () => ({
@@ -105,6 +67,15 @@ export function GMMPlayground() {
     []
   )
 
+  const gaussianConfig = useMemo(
+    () => ({
+      width: 600,
+      height: 200,
+      padding: { top: 20, right: 40, bottom: 40, left: 60 },
+    }),
+    []
+  )
+
   // Data bounds
   const xMin = -28.5
   const xMax = 28.5
@@ -113,7 +84,7 @@ export function GMMPlayground() {
 
   // Generate sample data
   const generateData = useCallback(
-    (type: 'blobs' | 'circles' | 'uniform' | 'elliptical') => {
+    (type: 'blobs' | 'circles' | 'uniform' | 'elliptical' | '1d-gaussians') => {
       const newPoints: DataPoint[] = []
 
       if (type === 'blobs') {
@@ -178,6 +149,19 @@ export function GMMPlayground() {
               x: center.x + rotatedX,
               y: center.y + rotatedY,
             })
+          }
+        })
+      } else if (type === '1d-gaussians') {
+        // Generate several 1D Gaussian distributions with distinct means and variances
+        const configs = [
+          { mean: -15, variance: 2, count: 60 },
+          { mean: 0, variance: 5, count: 80 },
+          { mean: 12, variance: 1, count: 40 },
+        ]
+        configs.forEach(({ mean, variance, count }) => {
+          for (let i = 0; i < count; i++) {
+            const x = mean + gaussianRandom() * Math.sqrt(variance)
+            newPoints.push({ x, y: 0 })
           }
         })
       } else {
@@ -259,6 +243,160 @@ export function GMMPlayground() {
     [engineState, chartConfig, theme]
   )
 
+  const drawGaussianCurves = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      if (engineState && engineState.components.length > 0) {
+        const textColor = theme === 'dark' ? '#f1f5f9' : '#1e293b'
+        const { width, height, padding } = gaussianConfig
+
+        // Clear canvas
+        ctx.fillStyle = theme === 'dark' ? '#1e293b' : '#ffffff'
+        ctx.fillRect(0, 0, width, height)
+
+        // Calculate plot area
+        const plotWidth = width - padding.left - padding.right
+        const plotHeight = height - padding.top - padding.bottom
+
+        // Data range
+        const xMin = -20
+        const xMax = 20
+
+        // Calculate maximum density across all components
+        let maxDensity = 0
+        engineState.components.forEach((component) => {
+          const { mean, covariance, weight } = component
+          const variance = covariance[0][0]
+          const std = Math.sqrt(variance)
+
+          // Sample the PDF at several points to find max
+          for (let i = 0; i <= 100; i++) {
+            const x = xMin + (i / 100) * (xMax - xMin)
+            const pdf =
+              (1 / (std * Math.sqrt(2 * Math.PI))) *
+              Math.exp(-0.5 * Math.pow((x - mean.x) / std, 2)) *
+              weight
+            maxDensity = Math.max(maxDensity, pdf)
+          }
+        })
+
+        const yMax = maxDensity * 1.1 // Add 10% padding
+
+        // Draw axes
+        ctx.strokeStyle = textColor
+        ctx.lineWidth = 1
+
+        // X-axis
+        ctx.beginPath()
+        ctx.moveTo(padding.left, height - padding.bottom)
+        ctx.lineTo(width - padding.right, height - padding.bottom)
+        ctx.stroke()
+
+        // Y-axis
+        ctx.beginPath()
+        ctx.moveTo(padding.left, padding.top)
+        ctx.lineTo(padding.left, height - padding.bottom)
+        ctx.stroke()
+
+        // Draw grid lines
+        ctx.strokeStyle = theme === 'dark' ? '#334155' : '#e2e8f0'
+        ctx.lineWidth = 0.5
+
+        // Vertical grid lines
+        for (let x = xMin; x <= xMax; x += 5) {
+          const screenX = padding.left + ((x - xMin) / (xMax - xMin)) * plotWidth
+          ctx.beginPath()
+          ctx.moveTo(screenX, padding.top)
+          ctx.lineTo(screenX, height - padding.bottom)
+          ctx.stroke()
+        }
+
+        // Horizontal grid lines
+        const gridSteps = 5
+        for (let i = 0; i <= gridSteps; i++) {
+          const y = (i / gridSteps) * yMax
+          const screenY = height - padding.bottom - (y / yMax) * plotHeight
+          ctx.beginPath()
+          ctx.moveTo(padding.left, screenY)
+          ctx.lineTo(width - padding.right, screenY)
+          ctx.stroke()
+        }
+
+        // Draw Gaussian curves for each component
+        const colors = [
+          '#3b82f6',
+          '#ef4444',
+          '#10b981',
+          '#f59e0b',
+          '#8b5cf6',
+          '#ec4899',
+          '#06b6d4',
+          '#84cc16',
+        ]
+
+        engineState.components.forEach((component, index) => {
+          const { mean, covariance, weight } = component
+          const variance = covariance[0][0] // Assuming diagonal covariance for 1D
+          const std = Math.sqrt(variance)
+
+          ctx.strokeStyle = colors[index % colors.length]
+          ctx.lineWidth = 2
+          ctx.beginPath()
+
+          // Draw the PDF curve
+          const steps = 200
+          for (let i = 0; i <= steps; i++) {
+            const x = xMin + (i / steps) * (xMax - xMin)
+            const pdf =
+              (1 / (std * Math.sqrt(2 * Math.PI))) *
+              Math.exp(-0.5 * Math.pow((x - mean.x) / std, 2)) *
+              weight
+
+            const screenX = padding.left + ((x - xMin) / (xMax - xMin)) * plotWidth
+            const screenY = height - padding.bottom - (pdf / yMax) * plotHeight
+
+            if (i === 0) {
+              ctx.moveTo(screenX, screenY)
+            } else {
+              ctx.lineTo(screenX, screenY)
+            }
+          }
+          ctx.stroke()
+
+          // Draw mean line
+          const meanScreenX = padding.left + ((mean.x - xMin) / (xMax - xMin)) * plotWidth
+          ctx.strokeStyle = colors[index % colors.length]
+          ctx.lineWidth = 1
+          ctx.setLineDash([5, 5])
+          ctx.beginPath()
+          ctx.moveTo(meanScreenX, padding.top)
+          ctx.lineTo(meanScreenX, height - padding.bottom)
+          ctx.stroke()
+          ctx.setLineDash([])
+        })
+
+        // Draw axis labels
+        ctx.fillStyle = textColor
+        ctx.font = '12px system-ui'
+        ctx.textAlign = 'center'
+
+        // X-axis label
+        ctx.fillText('Value', width / 2, height - 5)
+
+        // Y-axis label
+        ctx.save()
+        ctx.translate(15, height / 2)
+        ctx.rotate(-Math.PI / 2)
+        ctx.fillText('Density', 0, 0)
+        ctx.restore()
+
+        // Title
+        ctx.font = '14px system-ui'
+        ctx.fillText('Gaussian Components (Theoretical PDFs)', width / 2, 15)
+      }
+    },
+    [engineState, gaussianConfig, theme]
+  )
+
   // Canvas refs
   const { canvasRef: mainCanvasRef, redraw: redrawMain } = useCanvas({
     config: canvasConfig,
@@ -270,11 +408,17 @@ export function GMMPlayground() {
     draw: drawChart,
   })
 
+  const { canvasRef: gaussianCanvasRef, redraw: redrawGaussian } = useCanvas({
+    config: gaussianConfig,
+    draw: drawGaussianCurves,
+  })
+
   // Trigger redraws when state changes
   useEffect(() => {
     redrawMain()
     redrawChart()
-  }, [engineState, redrawMain, redrawChart])
+    redrawGaussian()
+  }, [engineState, redrawMain, redrawChart, redrawGaussian])
 
   // Control handlers
   const handleStep = useCallback(() => {
@@ -516,19 +660,6 @@ export function GMMPlayground() {
 
           {/* Right Sidebar */}
           <div className="flex flex-col space-y-3 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-700 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
-            {/* Convergence Chart */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Convergence Analysis
-              </h3>
-              <canvas
-                ref={chartCanvasRef}
-                width={chartConfig.width}
-                height={chartConfig.height}
-                className="w-full"
-                style={{ maxHeight: '200px', objectFit: 'contain' }}
-              />
-            </div>
 
             {/* Dataset Generation */}
             <ControlGroup title="Dataset">
@@ -563,6 +694,34 @@ export function GMMPlayground() {
                 </button>
               </div>
             </ControlGroup>
+
+            {/* Convergence Chart */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Convergence Analysis
+              </h3>
+              <canvas
+                ref={chartCanvasRef}
+                width={chartConfig.width}
+                height={chartConfig.height}
+                className="w-full"
+                style={{ maxHeight: '200px', objectFit: 'contain' }}
+              />
+            </div>
+
+            {/* Gaussian Components Visualization */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Gaussian Components
+              </h3>
+              <canvas
+                ref={gaussianCanvasRef}
+                width={gaussianConfig.width}
+                height={gaussianConfig.height}
+                className="w-full"
+                style={{ maxHeight: '150px', objectFit: 'contain' }}
+              />
+            </div>
 
             {/* Statistics */}
             <ControlGroup title="Statistics">

@@ -262,6 +262,22 @@ const mlPages: OGImageConfig[] = [
     filename: 'og-ml-dbscan.png',
   },
   {
+    title: 'Hierarchical Clustering',
+    subtitle: 'Build Cluster Hierarchies',
+    description: 'Agglomerative and divisive clustering with linkage methods',
+    category: 'ML • Clustering',
+    categoryColor: '#10B981',
+    filename: 'og-ml-hierarchical-clustering.png',
+  },
+  {
+    title: 'Anomaly Detection',
+    subtitle: 'Identify Outliers & Anomalies',
+    description: 'Isolation Forest, One-Class SVM, LOF, and statistical methods',
+    category: 'ML • Anomaly Detection',
+    categoryColor: '#10B981',
+    filename: 'og-ml-anomaly-detection.png',
+  },
+  {
     title: 'Gradient Descent',
     subtitle: 'Optimization Algorithm',
     description: 'Minimize cost function by iterative descent',

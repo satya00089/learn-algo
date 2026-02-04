@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FaRedo, FaRandom } from 'react-icons/fa'
 import { KNNEngine } from '../engines/KNNEngine'
 import { useKNNPlayground } from '../hooks/useKNNPlayground'
 import { KNNDataPoint } from '../types'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Toggle } from '@/core/controls'
+import { ControlGroup, Tooltip, Toggle } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -338,31 +338,35 @@ export function KNNPlayground() {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-1">
-                  <button
-                    onClick={() => {
-                      const points = generateDataset(selectedDataset)
-                      setCurrentPoints(points)
-                      setTestPoint(null)
-                      setClassificationResult(null)
-                      if (points.length > 0) {
-                        engineRef.current = new KNNEngine({ points, k })
-                      }
-                      redraw()
-                    }}
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                  >
-                    <FaRandom size={12} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTestPoint(null)
-                      setClassificationResult(null)
-                      redraw()
-                    }}
-                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                  >
-                    <FaRedo size={12} />
-                  </button>
+                  <Tooltip text="Generate New Dataset">
+                    <button
+                      onClick={() => {
+                        const points = generateDataset(selectedDataset)
+                        setCurrentPoints(points)
+                        setTestPoint(null)
+                        setClassificationResult(null)
+                        if (points.length > 0) {
+                          engineRef.current = new KNNEngine({ points, k })
+                        }
+                        redraw()
+                      }}
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      <FaRandom size={12} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Reset">
+                    <button
+                      onClick={() => {
+                        setTestPoint(null)
+                        setClassificationResult(null)
+                        redraw()
+                      }}
+                      className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      <FaRedo size={12} />
+                    </button>
+                  </Tooltip>
                 </div>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
