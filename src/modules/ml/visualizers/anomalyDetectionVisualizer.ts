@@ -286,8 +286,8 @@ function drawInfoPanel(
 ) {
   const panelX = padding.left + 10
   const panelY = padding.top + 10
-  const panelWidth = 200
-  const panelHeight = 120
+  const panelWidth = 220
+  const panelHeight = 140
 
   // Semi-transparent background
   ctx.fillStyle = theme === 'dark' ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)'
@@ -317,6 +317,22 @@ function drawInfoPanel(
   ctx.fillText(`Method: ${methodNames[state.method]}`, panelX + 10, yOffset)
   yOffset += 18
 
+  // Step progress
+  ctx.fillStyle = theme === 'dark' ? '#60a5fa' : '#2563eb'
+  ctx.font = 'bold 12px system-ui'
+  ctx.fillText(`Step: ${state.currentStep}/${state.totalSteps}`, panelX + 10, yOffset)
+  yOffset += 16
+
+  // Step description
+  ctx.fillStyle = theme === 'dark' ? '#9ca3af' : '#6b7280'
+  ctx.font = '11px system-ui'
+  ctx.fillText(state.stepDescription, panelX + 10, yOffset)
+  yOffset += 20
+
+  // Reset text style
+  ctx.fillStyle = theme === 'dark' ? '#f9fafb' : '#111827'
+  ctx.font = '12px system-ui'
+
   // Contamination rate
   ctx.fillText(`Contamination: ${(state.contamination * 100).toFixed(1)}%`, panelX + 10, yOffset)
   yOffset += 18
@@ -326,15 +342,8 @@ function drawInfoPanel(
   ctx.fillText(`Anomalies: ${anomalyCount}/${state.points.length}`, panelX + 10, yOffset)
   yOffset += 18
 
-  // Threshold
-  ctx.fillText(`Threshold: ${state.threshold.toFixed(3)}`, panelX + 10, yOffset)
-  yOffset += 18
-
-  // Method-specific info
-  if (state.method === 'isolation-forest' && state.isolationTrees) {
-    ctx.fillText(`Trees: ${state.isolationTrees.length}`, panelX + 10, yOffset)
-  } else if (state.method === 'lof' && state.lofScores) {
-    const avgLOF = state.lofScores.reduce((a, b) => a + b, 0) / state.lofScores.length
-    ctx.fillText(`Avg LOF: ${avgLOF.toFixed(2)}`, panelX + 10, yOffset)
+  // Threshold (only show if computed)
+  if (state.threshold > 0) {
+    ctx.fillText(`Threshold: ${state.threshold.toFixed(3)}`, panelX + 10, yOffset)
   }
 }

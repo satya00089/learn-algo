@@ -232,10 +232,10 @@ export default function MLPage() {
       category: 'Unsupervised Learning',
     },
     {
-      title: 'Anomaly Detection',
+      title: 'Anomaly/Outlier Detection',
       description: 'Detect outliers using Isolation Forest, One-Class SVM, LOF, Z-Score, and IQR methods',
       href: '/ml/anomaly-detection',
-      icon: '/icons/ml/cluster.png',
+      icon: '/icons/ml/outlier.png',
       iconType: 'image' as const,
       color: 'text-red-600 dark:text-red-400',
       darkFilter: 'dark:invert',
