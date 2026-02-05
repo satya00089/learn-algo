@@ -234,6 +234,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       description: 'Hierarchical Clustering - Agglomerative and divisive clustering with dendrogram visualization and linkage methods',
     },
     {
+      url: '/ml/pca',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description: 'Principal Component Analysis - Dimensionality reduction using principal components, eigenvalues, eigenvectors, and variance explained',
+    },
+    {
       url: '/ai',
       priority: 0.9,
       changeFrequency: 'weekly' as const,

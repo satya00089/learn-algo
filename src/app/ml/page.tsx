@@ -243,6 +243,18 @@ export default function MLPage() {
       comingSoon: false,
       category: 'Unsupervised Learning',
     },
+    {
+      title: 'Principal Component Analysis',
+      description: 'Dimensionality reduction using principal components to capture maximum variance',
+      href: '/ml/pca',
+      icon: '/icons/ml/pca.png',
+      iconType: 'image' as const,
+      color: 'text-amber-600 dark:text-amber-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Intermediate',
+      comingSoon: false,
+      category: 'Dimensionality Reduction',
+    },
   ]
 
   return (
