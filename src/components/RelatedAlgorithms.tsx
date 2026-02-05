@@ -188,6 +188,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Prevent overfitting with L1/L2',
     category: 'Optimization',
   },
+  pca: {
+    title: 'Principal Component Analysis',
+    description: 'Dimensionality reduction with principal components',
+    category: 'Dimensionality Reduction',
+  },
 }
 
 export function RelatedAlgorithms({ route, type, compact = false }: RelatedAlgorithmsProps) {

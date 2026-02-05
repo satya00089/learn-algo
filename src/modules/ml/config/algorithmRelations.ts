@@ -17,6 +17,7 @@ export type MLRoute =
   | 'minmax-scaler'
   | 'standard-scaler'
   | 'regularization'
+  | 'pca'
 
 export interface RelatedAlgorithm {
   name: string
@@ -334,6 +335,23 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       name: 'Gradient Descent',
       route: 'gradient-descent',
       category: 'Optimization',
+    },
+  ],
+  pca: [
+    {
+      name: 'K-Means Clustering',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'DBSCAN',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+    {
+      name: 'Anomaly Detection',
+      route: 'anomaly-detection',
+      category: 'Outlier Detection',
     },
   ],
 }
