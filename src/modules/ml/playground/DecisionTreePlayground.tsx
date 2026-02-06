@@ -5,11 +5,13 @@ import { FaPlay, FaPause, FaRedo, FaRandom, FaTree, FaStepForward } from 'react-
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { MdGridOn } from 'react-icons/md'
 import { BiNetworkChart } from 'react-icons/bi'
+import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { DecisionTreeEngine } from '../engines/DecisionTreeEngine'
 import type { DataPoint } from '../algorithms/decisionTree'
 
@@ -19,6 +21,9 @@ import type { DataPoint } from '../algorithms/decisionTree'
  */
 export function DecisionTreePlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
 
   // Engine and state
   const engineRef = useRef<DecisionTreeEngine | null>(null)
@@ -399,7 +404,18 @@ export function DecisionTreePlayground() {
             <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Decision Tree</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -757,6 +773,13 @@ export function DecisionTreePlayground() {
           )}
         </div>
       </div>
+
+      <TheoryModal
+        isOpen={showExplanation}
+        onClose={() => setShowExplanation(false)}
+        theoryFile="/theory/ml/decision-tree.md"
+        title="Understanding Decision Trees"
+      />
     </div>
   )
 }

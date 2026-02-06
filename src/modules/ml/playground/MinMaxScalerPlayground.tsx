@@ -3,17 +3,22 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
+import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { MinMaxScalerEngine } from '../engines/MinMaxScalerEngine'
 import { useMinMaxScalerPlayground } from '../hooks/useMinMaxScalerPlayground'
 import type { DataPoint } from '../types'
 
 export function MinMaxScalerPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
   const {
     animationSpeed,
     setAnimationSpeed,
@@ -281,7 +286,18 @@ export function MinMaxScalerPlayground() {
             <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">MinMax Scaler</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover className="w-4 h-4" />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -564,6 +580,12 @@ export function MinMaxScalerPlayground() {
           )}
         </div>
       </div>
+      <TheoryModal
+        isOpen={showExplanation}
+        onClose={() => setShowExplanation(false)}
+        theoryFile="/theory/ml/minmax-scaler.md"
+        title="Understanding Min-Max Scaler"
+      />
     </div>
   )
 }

@@ -14,11 +14,13 @@ import {
   FaMinus,
 } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
+import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { LinearRegressionEngine } from '../engines/LinearRegressionEngine'
 import { useLinearRegressionPlayground } from '../hooks/useLinearRegressionPlayground'
 import {
@@ -36,6 +38,9 @@ import { closedFormSolution } from '../algorithms/linearRegression'
  */
 export function LinearRegressionPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
   const {
     points,
     generateNewPoints,
@@ -481,7 +486,18 @@ export function LinearRegressionPlayground() {
             <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -996,6 +1012,13 @@ export function LinearRegressionPlayground() {
           </div>
         </div>
       </div>
+
+      <TheoryModal
+        isOpen={showExplanation}
+        onClose={() => setShowExplanation(false)}
+        theoryFile="/theory/ml/linear-regression.md"
+        title="Understanding Linear Regression"
+      />
     </div>
   )
 }

@@ -14,13 +14,24 @@ export function drawPCA(
   theme: 'light' | 'dark',
   showOriginal: boolean = true,
   showTransformed: boolean = true,
-  showComponents: boolean = true
+  showComponents: boolean = true,
+  view3D: boolean = false
 ) {
   // Clear canvas
   ctx.fillStyle = theme === 'dark' ? '#1f2937' : '#ffffff'
   ctx.fillRect(0, 0, width, height)
 
   if (state.points.length === 0) return
+
+  // Use 3D visualization if enabled
+  if (view3D) {
+    // 3D view is handled by PCA3DScene component
+    ctx.fillStyle = theme === 'dark' ? '#ffffff' : '#000000'
+    ctx.font = '16px monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('Switch to 2D view to see canvas visualization', width / 2, height / 2)
+    return
+  }
 
   // Find bounds for both original and transformed data
   let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity

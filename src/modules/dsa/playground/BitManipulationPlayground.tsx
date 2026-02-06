@@ -3,15 +3,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { GiBookCover } from 'react-icons/gi'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { BitManipulationEngine } from '../engines/BitManipulationEngine'
 import { useBitManipulationPlayground } from '../hooks/useBitManipulationPlayground'
 
 export function BitManipulationPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
   const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } =
     useBitManipulationPlayground()
 
@@ -178,7 +183,18 @@ export function BitManipulationPlayground() {
             <Breadcrumbs />
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Bit Manipulation</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -522,6 +538,14 @@ export function BitManipulationPlayground() {
             )}
           </div>
         </div>
+
+        {/* Theory Modal */}
+        <TheoryModal
+          isOpen={showExplanation}
+          onClose={() => setShowExplanation(false)}
+          theoryFile="/theory/dsa/bit-manipulation.md"
+          title="Understanding Bit Manipulation"
+        />
       </div>
     </div>
   )

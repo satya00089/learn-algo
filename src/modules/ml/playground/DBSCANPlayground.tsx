@@ -4,11 +4,13 @@ import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { TbCircleDotted, TbTopologyRing } from 'react-icons/tb'
+import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { DBSCANEngine } from '../engines/DBSCANEngine'
 import { useDBSCANPlayground } from '../hooks/useDBSCANPlayground'
 import { drawDBSCANClustering } from '../visualizers/dbscanVisualizer'
@@ -30,6 +32,9 @@ export function DBSCANPlayground() {
   const engineRef = useRef<DBSCANEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<DBSCANEngine['getState']> | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
   const playIntervalRef = useRef<NodeJS.Timeout>()
 
   // DBSCAN parameters
@@ -279,7 +284,18 @@ export function DBSCANPlayground() {
               DBSCAN: Density-Based Spatial Clustering
             </h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -564,6 +580,13 @@ export function DBSCANPlayground() {
           </div>
         </div>
       </div>
+
+      <TheoryModal
+        isOpen={showExplanation}
+        onClose={() => setShowExplanation(false)}
+        theoryFile="/theory/ml/dbscan.md"
+        title="Understanding DBSCAN"
+      />
     </div>
   )
 }

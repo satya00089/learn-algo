@@ -5,8 +5,13 @@ export interface Point2D {
   y: number
 }
 
+export interface Point3D extends Point2D {
+  z: number
+}
+
 export interface DataPoint extends Point2D {
   label?: number
+  z?: number // Optional third dimension for 3D visualization
 }
 
 export interface LinearRegressionParams {

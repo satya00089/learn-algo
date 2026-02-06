@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { GiBookCover } from 'react-icons/gi'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { StringOperationsEngine } from '../engines/StringOperationsEngine'
 import { useStringOperationsPlayground } from '../hooks/useStringOperationsPlayground'
 
@@ -14,6 +16,9 @@ export function StringOperationsPlayground() {
   const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } =
     useStringOperationsPlayground()
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
 
   const engineRef = useRef<StringOperationsEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<
@@ -167,7 +172,18 @@ export function StringOperationsPlayground() {
             <Breadcrumbs />
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">String Operations</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="secondary"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover className="w-4 h-4" />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -521,6 +537,13 @@ export function StringOperationsPlayground() {
           </div>
         </div>
       </div>
+
+      <TheoryModal
+        isOpen={showExplanation}
+        onClose={() => setShowExplanation(false)}
+        theoryFile="/theory/dsa/strings.md"
+        title="Understanding String Operations"
+      />
     </div>
   )
 }
