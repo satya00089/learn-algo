@@ -7,32 +7,43 @@ Linear Regression is a fundamental supervised machine learning algorithm used fo
 ## Mathematical Foundation
 
 ### Simple Linear Regression
+
 For a single feature, the model is represented as:
+
 ```
 y = mx + b
 ```
+
 Where:
+
 - `y` is the predicted value
 - `x` is the input feature
 - `m` is the slope (coefficient)
 - `b` is the y-intercept
 
 ### Multiple Linear Regression
+
 For multiple features, the model becomes:
+
 ```
 y = b₀ + b₁x₁ + b₂x₂ + ... + bₙxₙ
 ```
+
 Where:
+
 - `b₀` is the intercept
 - `b₁, b₂, ..., bₙ` are the coefficients for each feature
 
 ## Cost Function
 
 The algorithm minimizes the Mean Squared Error (MSE):
+
 ```
 MSE = (1/n) Σ(yᵢ - ŷᵢ)²
 ```
+
 Where:
+
 - `n` is the number of training examples
 - `yᵢ` is the actual value
 - `ŷᵢ` is the predicted value
@@ -40,19 +51,25 @@ Where:
 ## Optimization Methods
 
 ### 1. Closed-Form Solution (Normal Equation)
+
 ```
 β = (XᵀX)⁻¹Xᵀy
 ```
+
 - Computationally expensive for large datasets
 - No need for feature scaling
 - Guaranteed to find optimal solution
 
 ### 2. Gradient Descent
+
 Iteratively updates parameters to minimize cost:
+
 ```
 θ := θ - α ∂J/∂θ
 ```
+
 Where:
+
 - `α` is the learning rate
 - `∂J/∂θ` is the gradient of the cost function
 

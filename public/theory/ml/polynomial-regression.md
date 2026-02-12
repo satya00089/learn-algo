@@ -7,16 +7,22 @@ Polynomial Regression is an extension of linear regression that models the relat
 ## Mathematical Foundation
 
 ### Polynomial Model
+
 Instead of a straight line, polynomial regression fits a curve:
+
 ```
 y = b₀ + b₁x + b₂x² + b₃x³ + ... + bₙxⁿ
 ```
+
 Where:
+
 - `n` is the degree of the polynomial
 - `b₀, b₁, ..., bₙ` are the coefficients
 
 ### Feature Transformation
+
 The algorithm transforms the original feature x into polynomial features:
+
 ```
 [x] → [1, x, x², x³, ..., xⁿ]
 ```
@@ -24,16 +30,19 @@ The algorithm transforms the original feature x into polynomial features:
 ## Choosing the Degree
 
 ### Underfitting vs Overfitting
+
 - **Low degree**: May underfit (high bias)
 - **High degree**: May overfit (high variance)
 - **Optimal degree**: Balances bias-variance tradeoff
 
 ### Cross-Validation
+
 Use techniques like k-fold cross-validation to find the best degree.
 
 ## Cost Function
 
 Same as linear regression - minimizes Mean Squared Error:
+
 ```
 MSE = (1/n) Σ(yᵢ - ŷᵢ)²
 ```
@@ -64,11 +73,13 @@ MSE = (1/n) Σ(yᵢ - ŷᵢ)²
 To prevent overfitting, use regularization techniques:
 
 ### Ridge Regression
+
 ```
 J(θ) = MSE + λ Σ θ_j²
 ```
 
 ### Lasso Regression
+
 ```
 J(θ) = MSE + λ Σ |θ_j|
 ```

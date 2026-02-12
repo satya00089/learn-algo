@@ -7,20 +7,24 @@ Decision Trees are supervised machine learning algorithms that create a tree-lik
 ## How Decision Trees Work
 
 ### 1. Root Node
+
 - Contains the entire dataset
 - Chooses the best feature to split on
 
 ### 2. Internal Nodes
+
 - Represent decisions based on feature values
 - Each split creates branches
 
 ### 3. Leaf Nodes
+
 - Represent final predictions
 - No further splits
 
 ## Splitting Criteria
 
 ### For Classification
+
 - **Gini Impurity**: Measures probability of incorrect classification
   ```
   Gini = 1 - Σ p_i²
@@ -32,6 +36,7 @@ Decision Trees are supervised machine learning algorithms that create a tree-lik
 - **Information Gain**: Reduction in entropy after split
 
 ### For Regression
+
 - **Mean Squared Error (MSE)**
 - **Mean Absolute Error (MAE)**
 - **Friedman MSE**
@@ -54,23 +59,27 @@ Decision Trees are supervised machine learning algorithms that create a tree-lik
 ## Preventing Overfitting
 
 ### Pre-pruning
+
 - Set maximum depth
 - Set minimum samples per leaf
 - Set minimum samples per split
 - Set maximum number of features
 
 ### Post-pruning
+
 - Remove branches that don't improve validation accuracy
 - Cost complexity pruning (uses α parameter)
 
 ## Ensemble Methods
 
 ### Random Forest
+
 - Builds multiple decision trees
 - Each tree trained on random subset of data/features
 - Predictions averaged (regression) or majority voted (classification)
 
 ### Gradient Boosting
+
 - Builds trees sequentially
 - Each tree corrects errors of previous trees
 - Uses gradient descent to minimize loss
@@ -86,11 +95,13 @@ Decision Trees are supervised machine learning algorithms that create a tree-lik
 ## Evaluation Metrics
 
 ### Classification
+
 - Accuracy, Precision, Recall, F1-Score
 - ROC-AUC curve
 - Confusion matrix
 
 ### Regression
+
 - Mean Squared Error (MSE)
 - Mean Absolute Error (MAE)
 - R² Score

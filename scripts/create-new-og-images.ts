@@ -18,14 +18,16 @@ const mainPages: OGImageConfig[] = []
 const dsaPages: OGImageConfig[] = []
 
 // ML algorithm pages
-const mlPages: OGImageConfig[] = [{
-  title: 'Anomaly Detection',
-  subtitle: 'Identify Outliers & Anomalies',
-  description: 'Isolation Forest, One-Class SVM, LOF, and statistical methods',
-  category: 'ML • Anomaly Detection',
-  categoryColor: '#10B981',
-  filename: 'og-ml-anomaly-detection.png',
-}]
+const mlPages: OGImageConfig[] = [
+  {
+    title: 'Anomaly Detection',
+    subtitle: 'Identify Outliers & Anomalies',
+    description: 'Isolation Forest, One-Class SVM, LOF, and statistical methods',
+    category: 'ML • Anomaly Detection',
+    categoryColor: '#10B981',
+    filename: 'og-ml-anomaly-detection.png',
+  },
+]
 
 // Combine all configs
 const allConfigs = [...mainPages, ...dsaPages, ...mlPages]

@@ -233,7 +233,8 @@ export default function MLPage() {
     },
     {
       title: 'Anomaly/Outlier Detection',
-      description: 'Detect outliers using Isolation Forest, One-Class SVM, LOF, Z-Score, and IQR methods',
+      description:
+        'Detect outliers using Isolation Forest, One-Class SVM, LOF, Z-Score, and IQR methods',
       href: '/ml/anomaly-detection',
       icon: '/icons/ml/outlier.png',
       iconType: 'image' as const,
@@ -245,7 +246,8 @@ export default function MLPage() {
     },
     {
       title: 'Principal Component Analysis',
-      description: 'Dimensionality reduction using principal components to capture maximum variance',
+      description:
+        'Dimensionality reduction using principal components to capture maximum variance',
       href: '/ml/pca',
       icon: '/icons/ml/pca.png',
       iconType: 'image' as const,

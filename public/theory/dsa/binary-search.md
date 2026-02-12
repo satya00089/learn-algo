@@ -14,16 +14,19 @@ Binary Search is a **divide-and-conquer algorithm** that finds the position of a
 Let's search for target `23` in the sorted array: `[2, 5, 8, 12, 16, 23, 38, 56, 72, 91]`
 
 **Step 1: Initial bounds**
+
 - Low = 0, High = 9, Mid = 4
 - Array[4] = 16
 - 23 > 16, so search right half
 
 **Step 2: Right half**
+
 - Low = 5, High = 9, Mid = 7
 - Array[7] = 56
 - 23 < 56, so search left half
 
 **Step 3: Left half**
+
 - Low = 5, High = 6, Mid = 5
 - Array[5] = 23
 - 23 == 23, **found at index 5!**
@@ -70,12 +73,14 @@ function binarySearchRecursive(arr, target, low, high)
 ## Key Characteristics
 
 ### Advantages
+
 - **Very efficient** - O(log n) time complexity
 - **Simple to implement** - few lines of code
 - **Memory efficient** - O(1) space for iterative version
 - **Predictable performance** - consistent speed
 
 ### Disadvantages
+
 - **Requires sorted array** - preprocessing needed
 - **Only works on arrays** - not suitable for linked lists
 - **Not adaptive** - doesn't benefit from data patterns
@@ -91,79 +96,94 @@ function binarySearchRecursive(arr, target, low, high)
 ## Edge Cases and Considerations
 
 ### Empty Array
+
 - Return -1 immediately
 
 ### Single Element
+
 - Check if it matches target
 
 ### Target Not Found
+
 - Low > High condition triggers
 
 ### Duplicate Elements
+
 - May return any occurrence
 - Can be modified to return first/last occurrence
 
 ### Integer Overflow
+
 - Use `mid = low + (high - low) / 2` instead of `(low + high) / 2`
 
 ## Variants
 
 ### First Occurrence
+
 Find the leftmost occurrence of target in array with duplicates.
 
 ### Last Occurrence
+
 Find the rightmost occurrence of target in array with duplicates.
 
 ### Count Occurrences
+
 Count how many times target appears in sorted array.
 
 ### Find Insertion Point
+
 Find where target should be inserted to maintain sorted order.
 
 ## Performance Analysis
 
 ### Time Complexity
+
 - **Best Case**: O(1) - target is middle element
 - **Worst Case**: O(log n) - target not found or at end
 - **Average Case**: O(log n)
 
 ### Space Complexity
+
 - **Iterative**: O(1)
 - **Recursive**: O(log n) for call stack
 
 ## Comparison with Other Search Algorithms
 
-| Algorithm | Time Complexity | Space Complexity | Requirements |
-|-----------|----------------|------------------|--------------|
-| Binary Search | O(log n) | O(1) | Sorted array |
-| Linear Search | O(n) | O(1) | None |
-| Interpolation Search | O(log log n) avg | O(1) | Uniform distribution |
-| Exponential Search | O(log n) | O(1) | Sorted array |
-| Jump Search | O(√n) | O(1) | Sorted array |
+| Algorithm            | Time Complexity  | Space Complexity | Requirements         |
+| -------------------- | ---------------- | ---------------- | -------------------- |
+| Binary Search        | O(log n)         | O(1)             | Sorted array         |
+| Linear Search        | O(n)             | O(1)             | None                 |
+| Interpolation Search | O(log log n) avg | O(1)             | Uniform distribution |
+| Exponential Search   | O(log n)         | O(1)             | Sorted array         |
+| Jump Search          | O(√n)            | O(1)             | Sorted array         |
 
 ## Implementation Tips
 
 ### Language-Specific Considerations
 
 **JavaScript/TypeScript:**
+
 ```typescript
 // Handle large arrays to prevent integer overflow
 const mid = Math.floor(low + (high - low) / 2)
 ```
 
 **Python:**
+
 ```python
 # Use integer division
 mid = low + (high - low) // 2
 ```
 
 **Java:**
+
 ```java
 // Use safe calculation
 int mid = low + (high - low) / 2;
 ```
 
 ### Testing Strategy
+
 - Test with empty arrays
 - Test with single element
 - Test with target at beginning, middle, end
@@ -173,12 +193,14 @@ int mid = low + (high - low) / 2;
 ## When to Use Binary Search
 
 ✅ **Use when:**
+
 - Data is sorted and static
 - Fast lookups are critical
 - Memory is limited
 - Predictable performance is needed
 
 ❌ **Avoid when:**
+
 - Data changes frequently (requires resorting)
 - Data is unsorted
 - Small datasets (linear search may be faster)
@@ -194,4 +216,4 @@ int mid = low + (high - low) / 2;
 
 ---
 
-*Binary Search transforms linear search problems into logarithmic ones, making it one of the most important algorithms in computer science.*
+_Binary Search transforms linear search problems into logarithmic ones, making it one of the most important algorithms in computer science._

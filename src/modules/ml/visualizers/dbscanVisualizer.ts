@@ -23,7 +23,8 @@ export function drawDBSCANClustering(
 
   // Transform functions
   const xToCanvas = (x: number) => padding.left + ((x - xMin) / (xMax - xMin)) * plotWidth
-  const yToCanvas = (y: number) => padding.top + plotHeight - ((y - yMin) / (yMax - yMin)) * plotHeight
+  const yToCanvas = (y: number) =>
+    padding.top + plotHeight - ((y - yMin) / (yMax - yMin)) * plotHeight
 
   ctx.clearRect(0, 0, width, height)
 
@@ -129,12 +130,12 @@ function drawNeighborhoodCircle(
 
   // Show circle around current point or expanding seed
   let centerPoint = state.points[state.currentPointIndex]
-  
+
   // If expanding cluster, show circle around the seed being examined
   if (state.phase === 'expanding-cluster' && state.currentSeedIndex < state.expandingSeeds.length) {
     centerPoint = state.points[state.expandingSeeds[state.currentSeedIndex]]
   }
-  
+
   if (!centerPoint) return
 
   const centerX = xToCanvas(centerPoint.x)
@@ -146,7 +147,7 @@ function drawNeighborhoodCircle(
   const epsilonCanvas = (plotWidth / dataWidth) * epsilon
 
   // Draw multiple layers for prominence
-  
+
   // Outer glow layer (widest)
   ctx.beginPath()
   ctx.arc(centerX, centerY, epsilonCanvas + 6, 0, 2 * Math.PI)
@@ -179,11 +180,11 @@ function drawNeighborhoodCircle(
   const labelText = 'ε radius'
   const labelX = centerX + epsilonCanvas * 0.7
   const labelY = centerY - epsilonCanvas * 0.7
-  
+
   // Label background
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
   ctx.fillRect(labelX - 5, labelY - 14, 55, 18)
-  
+
   // Label text
   ctx.fillStyle = '#3b82f6'
   ctx.textAlign = 'left'
@@ -236,19 +237,21 @@ function drawPoints(
   yToCanvas: (y: number) => number
 ): void {
   // Check if we're expanding a cluster - show the seed being examined
-  const expandingSeedIndex = state.phase === 'expanding-cluster' && state.currentSeedIndex < state.expandingSeeds.length 
-    ? state.expandingSeeds[state.currentSeedIndex] 
-    : -1
-  
+  const expandingSeedIndex =
+    state.phase === 'expanding-cluster' && state.currentSeedIndex < state.expandingSeeds.length
+      ? state.expandingSeeds[state.currentSeedIndex]
+      : -1
+
   // Draw all points
   state.points.forEach((point, index) => {
     const x = xToCanvas(point.x)
     const y = yToCanvas(point.y)
-    
+
     // Highlight current point being processed OR the seed being expanded
-    const isCurrentPoint = (index === state.currentPointIndex && state.phase === 'processing' && !state.isComplete) ||
-                          (index === expandingSeedIndex && state.phase === 'expanding-cluster' && !state.isComplete)
-    
+    const isCurrentPoint =
+      (index === state.currentPointIndex && state.phase === 'processing' && !state.isComplete) ||
+      (index === expandingSeedIndex && state.phase === 'expanding-cluster' && !state.isComplete)
+
     const pointColor = getPointColor(point, isCurrentPoint, state.clusters, state, index)
     const pointRadius = getPointRadius(point, isCurrentPoint)
 
@@ -266,27 +269,33 @@ function drawPoints(
 /**
  * Get point color based on state
  */
-function getPointColor(point: any, isCurrentPoint: boolean, clusters: any[], state: DBSCANState, index: number): string {
+function getPointColor(
+  point: any,
+  isCurrentPoint: boolean,
+  clusters: any[],
+  state: DBSCANState,
+  index: number
+): string {
   // Current point being examined - highlighted
   if (isCurrentPoint) return '#ef4444' // Red for current examination
-  
+
   // Assigned to a cluster - use cluster color (takes priority)
   if (point.clusterId >= 0) {
     const cluster = clusters.find((c) => c.id === point.clusterId)
     return cluster ? cluster.color : '#94a3b8'
   }
-  
+
   // Only show final state if the point has been processed
   const hasBeenProcessed = index < state.currentPointIndex || state.isComplete
-  
+
   if (!hasBeenProcessed) {
     // Unvisited points - Gray
     return '#9ca3af' // Gray-400
   }
-  
+
   // Noise points - Black/very dark
   if (point.type === 'noise') return '#1f2937' // Gray-800 (almost black)
-  
+
   // Processed but not yet assigned
   return '#9ca3af' // Gray-400
 }
@@ -314,13 +323,13 @@ function drawPointBorder(
   index: number
 ): void {
   const hasBeenProcessed = index < state.currentPointIndex || state.isComplete
-  
+
   if (isCurrentPoint) {
     // Current point - highlighted border
     ctx.strokeStyle = '#dc2626'
     ctx.lineWidth = 2.5
     ctx.stroke()
-    
+
     // Outer glow
     ctx.beginPath()
     ctx.arc(x, y, radius + 3, 0, 2 * Math.PI)
@@ -332,7 +341,7 @@ function drawPointBorder(
     ctx.strokeStyle = '#ffffff'
     ctx.lineWidth = 2
     ctx.stroke()
-    
+
     // Inner white dot
     ctx.beginPath()
     ctx.arc(x, y, 2.5, 0, 2 * Math.PI)
@@ -376,10 +385,12 @@ function drawLegend(
   // Calculate legend height dynamically
   const clusterCount = state.clusters.length
   const pointStatesCount = 6 // unvisited, examining, neighbor, core, border, noise
-  const legendHeight = 30 + (clusterCount > 0 ? clusterCount * 25 + 10 : 25) + (pointStatesCount * 18) + 25
+  const legendHeight =
+    30 + (clusterCount > 0 ? clusterCount * 25 + 10 : 25) + pointStatesCount * 18 + 25
 
   // Use theme-aware background
-  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
+  const backgroundColor =
+    textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
   const borderColor = textColor === '#1e293b' ? '#cbd5e1' : '#475569'
 
   ctx.fillStyle = backgroundColor
@@ -392,10 +403,10 @@ function drawLegend(
 
   // Draw clusters section only if clusters exist and have been discovered
   // Only show clusters that contain at least one point that has been processed
-  const visibleClusters = state.clusters.filter(cluster => {
+  const visibleClusters = state.clusters.filter((cluster) => {
     if (state.isComplete) return true
     // Check if any point in this cluster has been processed
-    return cluster.points.some(pointIndex => pointIndex < state.currentPointIndex)
+    return cluster.points.some((pointIndex) => pointIndex < state.currentPointIndex)
   })
 
   if (visibleClusters.length > 0) {
@@ -406,9 +417,9 @@ function drawLegend(
 
     visibleClusters.forEach((cluster) => {
       // Count only processed points in this cluster
-      const processedPointsCount = state.isComplete 
-        ? cluster.points.length 
-        : cluster.points.filter(idx => idx < state.currentPointIndex).length
+      const processedPointsCount = state.isComplete
+        ? cluster.points.length
+        : cluster.points.filter((idx) => idx < state.currentPointIndex).length
 
       // Color indicator with cluster color
       ctx.fillStyle = cluster.color
@@ -422,7 +433,7 @@ function drawLegend(
       // Label with point count
       ctx.fillStyle = textColor
       ctx.font = '12px Inter, system-ui, sans-serif'
-      const label = state.isComplete 
+      const label = state.isComplete
         ? `Cluster ${cluster.id + 1} (${cluster.points.length} pts)`
         : `Cluster ${cluster.id + 1} (${processedPointsCount} pts...)`
       ctx.fillText(label, legendX + 35, yOffset + 2)
@@ -506,7 +517,8 @@ function drawPhaseIndicator(
   state: DBSCANState,
   textColor: string = '#1e293b'
 ): void {
-  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
+  const backgroundColor =
+    textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
   const borderColor = textColor === '#1e293b' ? '#cbd5e1' : '#475569'
 
   let phaseText = ''
@@ -515,10 +527,10 @@ function drawPhaseIndicator(
 
   if (state.phase === 'processing') {
     const currentPoint = state.points[state.currentPointIndex]
-    
+
     if (currentPoint) {
       const neighborCount = currentPoint.neighbors.length
-      
+
       if (currentPoint.type === 'core') {
         phaseText = `Point ${state.currentPointIndex + 1} - Core Point`
         detailText = `${neighborCount} neighbors - Starting cluster`
@@ -534,14 +546,15 @@ function drawPhaseIndicator(
       }
     }
   } else if (state.phase === 'expanding-cluster') {
-    const seedIndex = state.currentSeedIndex < state.expandingSeeds.length 
-      ? state.expandingSeeds[state.currentSeedIndex] 
-      : -1
-    
+    const seedIndex =
+      state.currentSeedIndex < state.expandingSeeds.length
+        ? state.expandingSeeds[state.currentSeedIndex]
+        : -1
+
     if (seedIndex >= 0) {
       const seedPoint = state.points[seedIndex]
       const neighborCount = seedPoint.neighbors.length
-      
+
       phaseText = `Expanding Cluster ${state.currentClusterId + 1} - Point ${seedIndex + 1}`
       detailText = `Checking point (${neighborCount} neighbors)...`
       statusColor = '#8b5cf6' // Purple
@@ -575,7 +588,7 @@ function drawPhaseIndicator(
   ctx.arc(boxX + 18, boxY + 20, 7, 0, 2 * Math.PI)
   ctx.fillStyle = statusColor
   ctx.fill()
-  
+
   // Glow effect
   ctx.beginPath()
   ctx.arc(boxX + 18, boxY + 20, 10, 0, 2 * Math.PI)

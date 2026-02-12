@@ -24,7 +24,8 @@ export function drawHierarchicalClustering(
 
   // Transform functions
   const xToCanvas = (x: number) => padding.left + ((x - xMin) / (xMax - xMin)) * plotWidth
-  const yToCanvas = (y: number) => padding.top + plotHeight - ((y - yMin) / (yMax - yMin)) * plotHeight
+  const yToCanvas = (y: number) =>
+    padding.top + plotHeight - ((y - yMin) / (yMax - yMin)) * plotHeight
 
   ctx.clearRect(0, 0, width, height)
 
@@ -219,7 +220,8 @@ function drawInfoPanel(
   const panelWidth = 700
   const panelHeight = 55
 
-  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
+  const backgroundColor =
+    textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.95)'
   const borderColor = textColor === '#1e293b' ? '#cbd5e1' : '#475569'
 
   // Draw panel background

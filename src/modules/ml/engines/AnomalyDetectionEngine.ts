@@ -92,7 +92,7 @@ export class AnomalyDetectionEngine {
 
   private initialize() {
     // Convert DataPoints to AnomalyPoints
-    this.state.points = this.config.points.map(point => ({
+    this.state.points = this.config.points.map((point) => ({
       ...point,
       anomalyScore: 0,
       isAnomaly: false,
@@ -107,35 +107,45 @@ export class AnomalyDetectionEngine {
 
   private setThreshold() {
     // Sort anomaly scores
-    const scores = this.state.points.map(p => p.anomalyScore).sort((a, b) => b - a)
+    const scores = this.state.points.map((p) => p.anomalyScore).sort((a, b) => b - a)
 
     // Set threshold based on contamination rate
     const thresholdIndex = Math.floor(this.state.contamination * scores.length)
     this.state.threshold = scores[thresholdIndex] || 0
 
     // Mark anomalies
-    this.state.points.forEach(point => {
+    this.state.points.forEach((point) => {
       point.isAnomaly = point.anomalyScore >= this.state.threshold
     })
   }
 
   private updateAnomaliesFromScores() {
     // For intermediate visualization, use a dynamic threshold based on current scores
-    const scores = this.state.points.map(p => p.anomalyScore).filter(s => s > 0).sort((a, b) => b - a)
+    const scores = this.state.points
+      .map((p) => p.anomalyScore)
+      .filter((s) => s > 0)
+      .sort((a, b) => b - a)
 
     if (scores.length > 0) {
       // Use contamination rate to determine how many points to mark as anomalies
-      const anomalyCount = Math.max(1, Math.floor(this.state.contamination * this.state.points.length))
+      const anomalyCount = Math.max(
+        1,
+        Math.floor(this.state.contamination * this.state.points.length)
+      )
       const threshold = scores[Math.min(anomalyCount - 1, scores.length - 1)] || 0
 
-      this.state.points.forEach(point => {
+      this.state.points.forEach((point) => {
         point.isAnomaly = point.anomalyScore >= threshold
       })
     }
   }
 
   // Helper methods for Isolation Forest
-  private buildIsolationTree(points: AnomalyPoint[], depth: number, maxDepth: number): IsolationTree | null {
+  private buildIsolationTree(
+    points: AnomalyPoint[],
+    depth: number,
+    maxDepth: number
+  ): IsolationTree | null {
     if (points.length <= 1 || depth >= maxDepth) {
       return { size: points.length }
     }
@@ -147,7 +157,7 @@ export class AnomalyDetectionEngine {
     let minVal = Infinity
     let maxVal = -Infinity
 
-    points.forEach(point => {
+    points.forEach((point) => {
       const val = splitAttribute === 0 ? point.x : point.y
       minVal = Math.min(minVal, val)
       maxVal = Math.max(maxVal, val)
@@ -163,7 +173,7 @@ export class AnomalyDetectionEngine {
     const leftPoints: AnomalyPoint[] = []
     const rightPoints: AnomalyPoint[] = []
 
-    points.forEach(point => {
+    points.forEach((point) => {
       const val = splitAttribute === 0 ? point.x : point.y
       if (val < splitValue) {
         leftPoints.push(point)
@@ -201,7 +211,7 @@ export class AnomalyDetectionEngine {
   private cFactor(n: number): number {
     if (n <= 1) return 0
     if (n === 2) return 1
-    return 2 * (Math.log(n - 1) + 0.5772156649) - 2 * (n - 1) / n
+    return 2 * (Math.log(n - 1) + 0.5772156649) - (2 * (n - 1)) / n
   }
 
   // Helper method for IQR
@@ -277,10 +287,10 @@ export class AnomalyDetectionEngine {
       this.state.stepDescription = `Building isolation tree ${this.state.currentStep}/${numTrees}`
     } else if (this.state.currentStep === numTrees) {
       // Calculate anomaly scores
-      this.state.points.forEach(point => {
+      this.state.points.forEach((point) => {
         let avgPathLength = 0
 
-        this.state.isolationTrees!.forEach(tree => {
+        this.state.isolationTrees!.forEach((tree) => {
           const pathLength = this.getPathLength(tree, point, 0)
           avgPathLength += pathLength
         })
@@ -322,20 +332,20 @@ export class AnomalyDetectionEngine {
     } else if (this.state.currentStep === 1) {
       // Compute radius (distance to farthest point)
       let maxDistance = 0
-      this.state.points.forEach(point => {
+      this.state.points.forEach((point) => {
         const distance = Math.sqrt(
           Math.pow(point.x - (this.state.svmCenter?.x || 0), 2) +
-          Math.pow(point.y - (this.state.svmCenter?.y || 0), 2)
+            Math.pow(point.y - (this.state.svmCenter?.y || 0), 2)
         )
         maxDistance = Math.max(maxDistance, distance)
       })
       this.state.svmRadius = maxDistance * (1 - (this.config.nu || 0.1))
 
       // Calculate anomaly scores
-      this.state.points.forEach(point => {
+      this.state.points.forEach((point) => {
         const distance = Math.sqrt(
           Math.pow(point.x - (this.state.svmCenter?.x || 0), 2) +
-          Math.pow(point.y - (this.state.svmCenter?.y || 0), 2)
+            Math.pow(point.y - (this.state.svmCenter?.y || 0), 2)
         )
         point.anomalyScore = distance / (this.state.svmRadius || 1)
       })
@@ -357,26 +367,27 @@ export class AnomalyDetectionEngine {
     if (this.state.currentStep < this.state.points.length) {
       // Compute LOF for next point
       const point = this.state.points[this.state.currentStep]
-      const distances = this.state.points.map(other => ({
-        point: other,
-        distance: Math.sqrt(
-          Math.pow(point.x - other.x, 2) + Math.pow(point.y - other.y, 2)
-        ),
-      })).sort((a, b) => a.distance - b.distance)
+      const distances = this.state.points
+        .map((other) => ({
+          point: other,
+          distance: Math.sqrt(Math.pow(point.x - other.x, 2) + Math.pow(point.y - other.y, 2)),
+        }))
+        .sort((a, b) => a.distance - b.distance)
 
       // Get k nearest neighbors (excluding self)
       const kNeighbors = distances.slice(1, k + 1)
 
       if (kNeighbors.length >= k) {
         // Compute local reachability density
-        const reachabilityDistances = kNeighbors.map(neighbor => {
-          const neighborDistances = this.state.points.map(other => ({
-            point: other,
-            distance: Math.sqrt(
-              Math.pow(neighbor.point.x - other.x, 2) +
-              Math.pow(neighbor.point.y - other.y, 2)
-            ),
-          })).sort((a, b) => a.distance - b.distance)
+        const reachabilityDistances = kNeighbors.map((neighbor) => {
+          const neighborDistances = this.state.points
+            .map((other) => ({
+              point: other,
+              distance: Math.sqrt(
+                Math.pow(neighbor.point.x - other.x, 2) + Math.pow(neighbor.point.y - other.y, 2)
+              ),
+            }))
+            .sort((a, b) => a.distance - b.distance)
 
           const neighborKNeighbors = neighborDistances.slice(1, k + 1)
           const kDistance = neighborKNeighbors.at(-1)?.distance || 1
@@ -387,17 +398,18 @@ export class AnomalyDetectionEngine {
         const lrd = k / reachabilityDistances.reduce((sum, dist) => sum + dist, 0)
 
         // Compute LOF
-        const neighborLRDs = kNeighbors.map(neighbor => {
-          const neighborDistances = this.state.points.map(other => ({
-            point: other,
-            distance: Math.sqrt(
-              Math.pow(neighbor.point.x - other.x, 2) +
-              Math.pow(neighbor.point.y - other.y, 2)
-            ),
-          })).sort((a, b) => a.distance - b.distance)
+        const neighborLRDs = kNeighbors.map((neighbor) => {
+          const neighborDistances = this.state.points
+            .map((other) => ({
+              point: other,
+              distance: Math.sqrt(
+                Math.pow(neighbor.point.x - other.x, 2) + Math.pow(neighbor.point.y - other.y, 2)
+              ),
+            }))
+            .sort((a, b) => a.distance - b.distance)
 
           const neighborKNeighbors = neighborDistances.slice(1, k + 1)
-          const reachabilityDists = neighborKNeighbors.map(n => {
+          const reachabilityDists = neighborKNeighbors.map((n) => {
             const kDist = neighborKNeighbors.at(-1)?.distance || 1
             return Math.max(kDist, n.distance)
           })
@@ -405,7 +417,10 @@ export class AnomalyDetectionEngine {
           return k / reachabilityDists.reduce((sum, dist) => sum + dist, 0)
         })
 
-        const lof = neighborLRDs.reduce((sum, neighborLRD) => sum + neighborLRD, 0) / neighborLRDs.length / lrd
+        const lof =
+          neighborLRDs.reduce((sum, neighborLRD) => sum + neighborLRD, 0) /
+          neighborLRDs.length /
+          lrd
         point.anomalyScore = lof
       }
 
@@ -414,8 +429,8 @@ export class AnomalyDetectionEngine {
       this.updateAnomaliesFromScores()
     } else if (this.state.currentStep === this.state.points.length) {
       // Normalize scores
-      const maxScore = Math.max(...this.state.points.map(p => p.anomalyScore))
-      this.state.points.forEach(point => {
+      const maxScore = Math.max(...this.state.points.map((p) => p.anomalyScore))
+      this.state.points.forEach((point) => {
         point.anomalyScore = point.anomalyScore / maxScore
       })
       this.state.currentStep++
@@ -459,9 +474,13 @@ export class AnomalyDetectionEngine {
       this.state.stepDescription = 'Computing statistical parameters'
     } else if (this.state.currentStep === 1) {
       // Calculate z-scores
-      this.state.points.forEach(point => {
-        const zX = Math.abs(point.x - (this.state.statisticalParams?.mean.x || 0)) / Math.max(this.state.statisticalParams?.std.x || 1, 0.001)
-        const zY = Math.abs(point.y - (this.state.statisticalParams?.mean.y || 0)) / Math.max(this.state.statisticalParams?.std.y || 1, 0.001)
+      this.state.points.forEach((point) => {
+        const zX =
+          Math.abs(point.x - (this.state.statisticalParams?.mean.x || 0)) /
+          Math.max(this.state.statisticalParams?.std.x || 1, 0.001)
+        const zY =
+          Math.abs(point.y - (this.state.statisticalParams?.mean.y || 0)) /
+          Math.max(this.state.statisticalParams?.std.y || 1, 0.001)
         point.anomalyScore = Math.max(zX, zY)
       })
       this.state.currentStep++
@@ -478,8 +497,8 @@ export class AnomalyDetectionEngine {
   private stepIQR(): void {
     if (this.state.currentStep === 0) {
       // Sort coordinates
-      const xValues = this.state.points.map(p => p.x).sort((a, b) => a - b)
-      const yValues = this.state.points.map(p => p.y).sort((a, b) => a - b)
+      const xValues = this.state.points.map((p) => p.x).sort((a, b) => a - b)
+      const yValues = this.state.points.map((p) => p.y).sort((a, b) => a - b)
 
       // Compute quartiles
       const q1 = {
@@ -504,7 +523,7 @@ export class AnomalyDetectionEngine {
       const q3 = this.state.statisticalParams?.q3!
       const iqr = this.state.statisticalParams?.iqr!
 
-      this.state.points.forEach(point => {
+      this.state.points.forEach((point) => {
         // Calculate bounds using 1.5 * IQR rule
         const lowerBoundX = q1.x - 1.5 * iqr.x
         const upperBoundX = q3.x + 1.5 * iqr.x
@@ -522,7 +541,7 @@ export class AnomalyDetectionEngine {
         } else {
           // Point is within bounds, calculate distance from median
           const median = (q1.x + q3.x) / 2
-          scoreX = Math.abs(point.x - median) / Math.max(iqr.x, 0.001) * 0.5
+          scoreX = (Math.abs(point.x - median) / Math.max(iqr.x, 0.001)) * 0.5
         }
 
         if (point.y < lowerBoundY) {
@@ -532,13 +551,13 @@ export class AnomalyDetectionEngine {
         } else {
           // Point is within bounds, calculate distance from median
           const median = (q1.y + q3.y) / 2
-          scoreY = Math.abs(point.y - median) / Math.max(iqr.y, 0.001) * 0.5
+          scoreY = (Math.abs(point.y - median) / Math.max(iqr.y, 0.001)) * 0.5
         }
 
         // Use the maximum score across dimensions
         point.anomalyScore = Math.max(scoreX, scoreY)
       })
-      
+
       this.state.currentStep++
       this.state.stepDescription = 'Calculating IQR-based scores'
       this.updateAnomaliesFromScores()

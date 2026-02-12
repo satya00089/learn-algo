@@ -219,25 +219,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: '/ml/dbscan',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'DBSCAN Clustering - Density-based spatial clustering, core/border/noise points, epsilon and minPts parameters, outlier detection',
+      description:
+        'DBSCAN Clustering - Density-based spatial clustering, core/border/noise points, epsilon and minPts parameters, outlier detection',
     },
     {
       url: '/ml/anomaly-detection',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Anomaly Detection - Isolation Forest, One-Class SVM, LOF, Z-Score, IQR methods for identifying outliers and anomalies in data',
+      description:
+        'Anomaly Detection - Isolation Forest, One-Class SVM, LOF, Z-Score, IQR methods for identifying outliers and anomalies in data',
     },
     {
       url: '/ml/hierarchical-clustering',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Hierarchical Clustering - Agglomerative and divisive clustering with dendrogram visualization and linkage methods',
+      description:
+        'Hierarchical Clustering - Agglomerative and divisive clustering with dendrogram visualization and linkage methods',
     },
     {
       url: '/ml/pca',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
-      description: 'Principal Component Analysis - Dimensionality reduction using principal components, eigenvalues, eigenvectors, and variance explained',
+      description:
+        'Principal Component Analysis - Dimensionality reduction using principal components, eigenvalues, eigenvectors, and variance explained',
     },
     {
       url: '/ai',

@@ -37,9 +37,7 @@ export function PCAPlayground() {
 
   // Engine state
   const engineRef = useRef<PCAEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    PCAEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<PCAEngine['getState']> | null>(null)
 
   // Animation state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -82,7 +80,7 @@ export function PCAPlayground() {
         // Classic Iris dataset - 150 samples, 4 features (sepal length, sepal width, petal length, petal width)
         // Simulating principal components for visualization
         const classSize = Math.floor(numPoints / 3)
-        
+
         // Setosa (clearly separable)
         for (let i = 0; i < classSize; i++) {
           const point: DataPoint = {
@@ -92,7 +90,7 @@ export function PCAPlayground() {
           if (use3D) point.z = 0.0 + gaussianRandom() * 0.25
           newPoints.push(point)
         }
-        
+
         // Versicolor (some overlap with Virginica)
         for (let i = 0; i < classSize; i++) {
           const point: DataPoint = {
@@ -102,7 +100,7 @@ export function PCAPlayground() {
           if (use3D) point.z = 0.0 + gaussianRandom() * 0.4
           newPoints.push(point)
         }
-        
+
         // Virginica
         for (let i = 0; i < numPoints - 2 * classSize; i++) {
           const point: DataPoint = {
@@ -116,7 +114,7 @@ export function PCAPlayground() {
         // Wine Quality dataset - 13 chemical features (alcohol, acidity, etc.)
         // 3 wine cultivars from Italy
         const classSize = Math.floor(numPoints / 3)
-        
+
         // Class 1 - High alcohol, low acidity, high phenols
         for (let i = 0; i < classSize; i++) {
           const point: DataPoint = {
@@ -126,7 +124,7 @@ export function PCAPlayground() {
           if (use3D) point.z = 1.2 + gaussianRandom() * 0.4
           newPoints.push(point)
         }
-        
+
         // Class 2 - Medium alcohol, medium acidity, medium phenols
         for (let i = 0; i < classSize; i++) {
           const point: DataPoint = {
@@ -136,7 +134,7 @@ export function PCAPlayground() {
           if (use3D) point.z = -0.1 + gaussianRandom() * 0.4
           newPoints.push(point)
         }
-        
+
         // Class 3 - Lower alcohol, higher acidity, lower phenols
         for (let i = 0; i < numPoints - 2 * classSize; i++) {
           const point: DataPoint = {
@@ -150,7 +148,7 @@ export function PCAPlayground() {
         // Breast Cancer Wisconsin dataset - 30 features (cell measurements)
         // 2 classes: malignant and benign
         const malignantSize = Math.floor(numPoints * 0.37) // ~37% malignant
-        
+
         // Malignant tumors - larger, more irregular cells
         for (let i = 0; i < malignantSize; i++) {
           const point: DataPoint = {
@@ -160,7 +158,7 @@ export function PCAPlayground() {
           if (use3D) point.z = 0.8 + gaussianRandom() * 0.6
           newPoints.push(point)
         }
-        
+
         // Benign tumors - smaller, more regular cells
         for (let i = 0; i < numPoints - malignantSize; i++) {
           const point: DataPoint = {
@@ -174,7 +172,7 @@ export function PCAPlayground() {
         // MNIST-like handwritten digits - 784 features (28x28 pixels)
         // Simulating 4 digit classes
         const digitsPerClass = Math.floor(numPoints / 4)
-        
+
         // Digit 0 (circular pattern)
         for (let i = 0; i < digitsPerClass; i++) {
           const angle = Math.random() * Math.PI * 2
@@ -186,7 +184,7 @@ export function PCAPlayground() {
           if (use3D) point.z = gaussianRandom() * 0.5
           newPoints.push(point)
         }
-        
+
         // Digit 1 (vertical line)
         for (let i = 0; i < digitsPerClass; i++) {
           const point: DataPoint = {
@@ -196,7 +194,7 @@ export function PCAPlayground() {
           if (use3D) point.z = 1.0 + gaussianRandom() * 0.4
           newPoints.push(point)
         }
-        
+
         // Digit 4 (angular pattern)
         for (let i = 0; i < digitsPerClass; i++) {
           const point: DataPoint = {
@@ -206,7 +204,7 @@ export function PCAPlayground() {
           if (use3D) point.z = -0.5 + gaussianRandom() * 0.4
           newPoints.push(point)
         }
-        
+
         // Digit 7 (angular pattern, different orientation)
         for (let i = 0; i < numPoints - 3 * digitsPerClass; i++) {
           const point: DataPoint = {
@@ -534,7 +532,6 @@ export function PCAPlayground() {
 
           {/* Right Sidebar */}
           <div className="flex flex-col space-y-3 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-700 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
-
             {/* Dataset Generation */}
             <ControlGroup title="Classic ML Datasets">
               <div className="grid grid-cols-2 gap-2">
@@ -591,16 +588,20 @@ export function PCAPlayground() {
                   </button>
                 </Tooltip>
               </div>
-              
+
               {/* Dataset Info */}
               <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs text-gray-600 dark:text-gray-400">
                 {dataType === 'iris' && (
                   <div>
                     <strong>Iris Dataset (1936)</strong>
                     <p className="mt-1">📊 150 samples × 4 features → 2D projection</p>
-                    <p className="mt-1">Features: sepal length, sepal width, petal length, petal width</p>
+                    <p className="mt-1">
+                      Features: sepal length, sepal width, petal length, petal width
+                    </p>
                     <p className="mt-1">Classes: Setosa, Versicolor, Virginica</p>
-                    <p className="mt-1 text-blue-600 dark:text-blue-400">PCA reduces 4D to 2D while preserving ~95% variance</p>
+                    <p className="mt-1 text-blue-600 dark:text-blue-400">
+                      PCA reduces 4D to 2D while preserving ~95% variance
+                    </p>
                   </div>
                 )}
                 {dataType === 'wine' && (
@@ -609,16 +610,22 @@ export function PCAPlayground() {
                     <p className="mt-1">📊 178 samples × 13 features → 2D projection</p>
                     <p className="mt-1">Features: alcohol, acidity, phenols, flavonoids, etc.</p>
                     <p className="mt-1">Classes: 3 Italian wine cultivars</p>
-                    <p className="mt-1 text-purple-600 dark:text-purple-400">PCA reduces 13D to 2D while preserving key chemical patterns</p>
+                    <p className="mt-1 text-purple-600 dark:text-purple-400">
+                      PCA reduces 13D to 2D while preserving key chemical patterns
+                    </p>
                   </div>
                 )}
                 {dataType === 'breast-cancer' && (
                   <div>
                     <strong>Breast Cancer Wisconsin</strong>
                     <p className="mt-1">📊 569 samples × 30 features → 2D projection</p>
-                    <p className="mt-1">Features: radius, texture, perimeter, area, smoothness, etc.</p>
+                    <p className="mt-1">
+                      Features: radius, texture, perimeter, area, smoothness, etc.
+                    </p>
                     <p className="mt-1">Classes: Malignant vs Benign tumors</p>
-                    <p className="mt-1 text-pink-600 dark:text-pink-400">PCA reduces 30D to 2D for visualization and analysis</p>
+                    <p className="mt-1 text-pink-600 dark:text-pink-400">
+                      PCA reduces 30D to 2D for visualization and analysis
+                    </p>
                   </div>
                 )}
                 {dataType === 'mnist' && (
@@ -627,7 +634,9 @@ export function PCAPlayground() {
                     <p className="mt-1">📊 70,000 samples × 784 features → 2D projection</p>
                     <p className="mt-1">Features: 28×28 pixel intensities (784 dimensions)</p>
                     <p className="mt-1">Classes: 10 digits (0-9). Shown: 0, 1, 4, 7</p>
-                    <p className="mt-1 text-green-600 dark:text-green-400">PCA reduces 784D images to 2D while preserving digit shapes</p>
+                    <p className="mt-1 text-green-600 dark:text-green-400">
+                      PCA reduces 784D images to 2D while preserving digit shapes
+                    </p>
                   </div>
                 )}
               </div>
@@ -640,11 +649,21 @@ export function PCAPlayground() {
                 How PCA Works
               </h3>
               <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Step 1:</strong> Center data by subtracting mean</p>
-                <p><strong>Step 2:</strong> Compute covariance matrix</p>
-                <p><strong>Step 3:</strong> Find eigenvalues/eigenvectors</p>
-                <p><strong>Step 4:</strong> Select principal components</p>
-                <p><strong>Step 5:</strong> Transform data</p>
+                <p>
+                  <strong>Step 1:</strong> Center data by subtracting mean
+                </p>
+                <p>
+                  <strong>Step 2:</strong> Compute covariance matrix
+                </p>
+                <p>
+                  <strong>Step 3:</strong> Find eigenvalues/eigenvectors
+                </p>
+                <p>
+                  <strong>Step 4:</strong> Select principal components
+                </p>
+                <p>
+                  <strong>Step 5:</strong> Transform data
+                </p>
               </div>
             </div>
 

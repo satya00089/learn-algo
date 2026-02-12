@@ -32,9 +32,7 @@ export function Tooltip({ children, text }: TooltipProps) {
             left: buttonRef.current
               ? `${buttonRef.current.getBoundingClientRect().left + buttonRef.current.offsetWidth / 2}px`
               : '0',
-            top: buttonRef.current
-              ? `${buttonRef.current.getBoundingClientRect().top - 8}px`
-              : '0',
+            top: buttonRef.current ? `${buttonRef.current.getBoundingClientRect().top - 8}px` : '0',
             transform: 'translate(-50%, -100%)',
           }}
         >

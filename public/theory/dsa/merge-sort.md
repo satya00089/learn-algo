@@ -5,6 +5,7 @@
 Merge Sort is a **divide-and-conquer algorithm** that divides the input array into two halves, recursively sorts each half, and then merges the two sorted halves. It's one of the most efficient sorting algorithms and forms the basis for many other algorithms.
 
 **Time Complexity:**
+
 - **Best Case**: O(n log n)
 - **Average Case**: O(n log n)
 - **Worst Case**: O(n log n)
@@ -18,6 +19,7 @@ Merge Sort is a **divide-and-conquer algorithm** that divides the input array in
 Let's sort the array: `[38, 27, 43, 3, 9, 82, 10]`
 
 **Step 1: Divide**
+
 ```
 [38, 27, 43, 3, 9, 82, 10]
      ↓
@@ -29,6 +31,7 @@ Let's sort the array: `[38, 27, 43, 3, 9, 82, 10]`
 ```
 
 **Step 2: Conquer (Merge)**
+
 ```
 Merge [27, 43] → [27, 43]
 Merge [38] with [27, 43] → [27, 38, 43]
@@ -84,12 +87,14 @@ procedure merge(arr, left, mid, right)
 ## Key Characteristics
 
 ### Advantages
+
 - **Guaranteed O(n log n)** performance in all cases
 - **Stable sort** - maintains relative order of equal elements
 - **Predictable performance** - no worst-case scenarios
 - **Parallelizable** - can be implemented for multiple processors
 
 ### Disadvantages
+
 - **O(n) extra space** - requires additional memory
 - **Not in-place** - modifies the original array during merging
 - **Overhead** for small arrays
@@ -105,6 +110,7 @@ procedure merge(arr, left, mid, right)
 ## The Merge Process Explained
 
 ### Two-Finger Approach
+
 The merge step uses two indices (one for each subarray) to compare and select the smaller element:
 
 ```
@@ -124,39 +130,45 @@ Take remaining 82 → [3, 9, 10, 27, 38, 43, 82]
 ## Performance Analysis
 
 ### Time Complexity Breakdown
+
 - **Divide**: O(log n) levels of recursion
 - **Merge**: O(n) work per level
 - **Total**: O(n log n)
 
 ### Space Complexity
+
 - **Temporary arrays**: O(n) space
 - **Recursion stack**: O(log n) space
 - **Total**: O(n)
 
 ## Comparison with Other Sorting Algorithms
 
-| Algorithm | Best | Average | Worst | Stable | In-Place | Space |
-|-----------|------|---------|-------|--------|----------|-------|
-| Merge Sort | O(n log n) | O(n log n) | O(n log n) | Yes | No | O(n) |
-| Quick Sort | O(n log n) | O(n log n) | O(n²) | No | Yes | O(log n) |
-| Heap Sort | O(n log n) | O(n log n) | O(n log n) | No | Yes | O(1) |
-| Insertion Sort | O(n) | O(n²) | O(n²) | Yes | Yes | O(1) |
-| Bubble Sort | O(n) | O(n²) | O(n²) | Yes | No | O(1) |
+| Algorithm      | Best       | Average    | Worst      | Stable | In-Place | Space    |
+| -------------- | ---------- | ---------- | ---------- | ------ | -------- | -------- |
+| Merge Sort     | O(n log n) | O(n log n) | O(n log n) | Yes    | No       | O(n)     |
+| Quick Sort     | O(n log n) | O(n log n) | O(n²)      | No     | Yes      | O(log n) |
+| Heap Sort      | O(n log n) | O(n log n) | O(n log n) | No     | Yes      | O(1)     |
+| Insertion Sort | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      | O(1)     |
+| Bubble Sort    | O(n)       | O(n²)      | O(n²)      | Yes    | No       | O(1)     |
 
 ## Variants and Optimizations
 
 ### In-Place Merge Sort
+
 Reduces space complexity but increases time complexity.
 
 ### Natural Merge Sort
+
 Exploits existing order in the data.
 
 ### Bottom-Up Merge Sort
+
 Iterative approach that avoids recursion.
 
 ## When to Use Merge Sort
 
 ✅ **Use when:**
+
 - Stable sorting is required
 - Predictable performance is needed
 - Large datasets need sorting
@@ -164,6 +176,7 @@ Iterative approach that avoids recursion.
 - Parallel processing is available
 
 ❌ **Avoid when:**
+
 - Memory is severely limited
 - In-place sorting is required
 - Data is already nearly sorted
@@ -178,4 +191,4 @@ Iterative approach that avoids recursion.
 
 ---
 
-*Merge Sort's predictable performance and stability make it a cornerstone of efficient sorting algorithms.*
+_Merge Sort's predictable performance and stability make it a cornerstone of efficient sorting algorithms._

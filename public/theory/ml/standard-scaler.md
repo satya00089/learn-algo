@@ -7,10 +7,13 @@ Standard Scaler transforms features by removing the mean and scaling to unit var
 ## Mathematical Foundation
 
 ### Standardization Formula
+
 ```
 x_scaled = (x - μ) / σ
 ```
+
 Where:
+
 - `x` is the original feature value
 - `μ` is the mean of the feature
 - `σ` is the standard deviation of the feature
@@ -25,11 +28,13 @@ Where:
 ## When to Use
 
 ### Recommended for algorithms that assume:
+
 - Gaussian distributed data
 - Features with different scales
 - Algorithms sensitive to feature scales
 
 ### Good for:
+
 - Linear Regression
 - Logistic Regression
 - KNN
@@ -53,16 +58,19 @@ Where:
 ## Comparison with Other Scalers
 
 ### vs Min-Max Scaler
+
 - **Standard Scaler**: Mean=0, Std=1, preserves outliers
 - **Min-Max Scaler**: Range=[0,1], sensitive to outliers
 
 ### vs Robust Scaler
+
 - **Standard Scaler**: Uses mean and std (sensitive to outliers)
 - **Robust Scaler**: Uses median and IQR (robust to outliers)
 
 ## Implementation Details
 
 ### Training Phase
+
 ```python
 # Calculate mean and std from training data
 mean = np.mean(X_train, axis=0)
@@ -70,6 +78,7 @@ std = np.std(X_train, axis=0)
 ```
 
 ### Transform Phase
+
 ```python
 # Apply to both train and test data
 X_train_scaled = (X_train - mean) / std

@@ -660,7 +660,6 @@ export function GMMPlayground() {
 
           {/* Right Sidebar */}
           <div className="flex flex-col space-y-3 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-700 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
-
             {/* Dataset Generation */}
             <ControlGroup title="Dataset">
               <div className="grid grid-cols-2 gap-2">

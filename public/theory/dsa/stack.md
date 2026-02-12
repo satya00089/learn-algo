@@ -5,6 +5,7 @@
 A Stack is a **linear data structure** that follows the Last In, First Out (LIFO) principle. Elements are added and removed from the same end, called the "top" of the stack. Think of it like a stack of plates - you add plates to the top and remove from the top.
 
 **Core Operations:**
+
 - **Push**: Add element to top
 - **Pop**: Remove element from top
 - **Peek/Top**: View top element without removing
@@ -17,6 +18,7 @@ A Stack is a **linear data structure** that follows the Last In, First Out (LIFO
 **Initial Stack:** `[]` (empty)
 
 **Push 10:**
+
 ```
 Stack: [10]
        ↑
@@ -24,6 +26,7 @@ Stack: [10]
 ```
 
 **Push 20:**
+
 ```
 Stack: [10, 20]
           ↑
@@ -31,6 +34,7 @@ Stack: [10, 20]
 ```
 
 **Push 30:**
+
 ```
 Stack: [10, 20, 30]
              ↑
@@ -38,6 +42,7 @@ Stack: [10, 20, 30]
 ```
 
 **Pop (removes 30):**
+
 ```
 Stack: [10, 20]
           ↑
@@ -45,6 +50,7 @@ Stack: [10, 20]
 ```
 
 **Peek (returns 20, stack unchanged):**
+
 ```
 Stack: [10, 20]
           ↑
@@ -57,27 +63,27 @@ Stack: [10, 20]
 
 ```typescript
 class Stack {
-    private items: number[] = []
+  private items: number[] = []
 
-    push(item: number): void {
-        this.items.push(item)
-    }
+  push(item: number): void {
+    this.items.push(item)
+  }
 
-    pop(): number | undefined {
-        return this.items.pop()
-    }
+  pop(): number | undefined {
+    return this.items.pop()
+  }
 
-    peek(): number | undefined {
-        return this.items[this.items.length - 1]
-    }
+  peek(): number | undefined {
+    return this.items[this.items.length - 1]
+  }
 
-    isEmpty(): boolean {
-        return this.items.length === 0
-    }
+  isEmpty(): boolean {
+    return this.items.length === 0
+  }
 
-    size(): number {
-        return this.items.length
-    }
+  size(): number {
+    return this.items.length
+  }
 }
 ```
 
@@ -85,82 +91,87 @@ class Stack {
 
 ```typescript
 class Node {
-    value: number
-    next: Node | null
+  value: number
+  next: Node | null
 
-    constructor(value: number) {
-        this.value = value
-        this.next = null
-    }
+  constructor(value: number) {
+    this.value = value
+    this.next = null
+  }
 }
 
 class Stack {
-    private top: Node | null = null
-    private _size: number = 0
+  private top: Node | null = null
+  private _size: number = 0
 
-    push(value: number): void {
-        const newNode = new Node(value)
-        newNode.next = this.top
-        this.top = newNode
-        this._size++
-    }
+  push(value: number): void {
+    const newNode = new Node(value)
+    newNode.next = this.top
+    this.top = newNode
+    this._size++
+  }
 
-    pop(): number | undefined {
-        if (this.isEmpty()) return undefined
+  pop(): number | undefined {
+    if (this.isEmpty()) return undefined
 
-        const value = this.top!.value
-        this.top = this.top!.next
-        this._size--
-        return value
-    }
+    const value = this.top!.value
+    this.top = this.top!.next
+    this._size--
+    return value
+  }
 
-    peek(): number | undefined {
-        return this.top?.value
-    }
+  peek(): number | undefined {
+    return this.top?.value
+  }
 
-    isEmpty(): boolean {
-        return this.top === null
-    }
+  isEmpty(): boolean {
+    return this.top === null
+  }
 
-    size(): number {
-        return this._size
-    }
+  size(): number {
+    return this._size
+  }
 }
 ```
 
 ## Time Complexity
 
 | Operation | Time Complexity |
-|-----------|----------------|
-| Push | O(1) |
-| Pop | O(1) |
-| Peek | O(1) |
-| isEmpty | O(1) |
-| Size | O(1) |
+| --------- | --------------- |
+| Push      | O(1)            |
+| Pop       | O(1)            |
+| Peek      | O(1)            |
+| isEmpty   | O(1)            |
+| Size      | O(1)            |
 
 ## Real-World Applications
 
 ### Function Call Stack
+
 - **Recursion management** - each function call creates a stack frame
 - **Return address storage** - where to return after function completes
 - **Local variable storage** - function-scoped variables
 
 ### Expression Evaluation
+
 - **Infix to Postfix conversion**
 - **Postfix expression evaluation**
 - **Parentheses matching**
 
 ### Browser History
+
 - **Back button functionality**
 - **Forward button functionality**
 - **Navigation history management**
 
 ### Undo/Redo Operations
+
 - **Text editors** - undo last action
 - **Graphic editors** - undo drawing operations
-- **Database transactions** - rollback operations**
+- **Database transactions** - rollback operations\*\*
 
 ### Memory Management
+
 - **Call stack** in programming languages
 - **Heap memory allocation**
 - **Garbage collection algorithms**
@@ -168,47 +179,59 @@ class Stack {
 ## Classic Stack Problems
 
 ### Balanced Parentheses
+
 Check if parentheses are properly balanced: `"({[]})"` ✅, `"(]"` ❌
 
 ### Infix to Postfix Conversion
+
 Convert: `A + B * C` → `A B C * +`
 
 ### Postfix Evaluation
+
 Evaluate: `2 3 4 * +` → `2 + (3 * 4)` → `14`
 
 ### Next Greater Element
+
 Find next greater element for each array element.
 
 ### Stock Span Problem
+
 Calculate span of stock prices.
 
 ## Stack Variants
 
 ### Min Stack
+
 Stack that supports finding minimum element in O(1) time.
 
 ### Max Stack
+
 Stack that supports finding maximum element in O(1) time.
 
 ### Monotonic Stack
+
 Stack that maintains elements in monotonic order.
 
 ### Two Stacks in One Array
+
 Implement two stacks using single array efficiently.
 
 ## Advanced Applications
 
 ### Tree Traversals
+
 - **Depth-First Search (DFS)** uses stack
 - **Expression tree evaluation**
 - **Syntax tree construction**
 
 ### Graph Algorithms
+
 - **Depth-First Search**
 - **Topological sorting**
 - **Cycle detection**
 
 ### String Processing
+
 - **String reversal**
 - **Palindrome checking**
 - **Bracket matching in code editors**
@@ -216,20 +239,24 @@ Implement two stacks using single array efficiently.
 ## Implementation Considerations
 
 ### Fixed vs Dynamic Size
+
 - **Fixed size**: Array-based, may overflow
 - **Dynamic size**: Linked list or resizable array
 
 ### Error Handling
+
 - **Stack overflow**: Pushing to full stack
 - **Stack underflow**: Popping from empty stack
 
 ### Thread Safety
+
 - **Concurrent access**: Synchronization needed
 - **Lock-free implementations**: For high-performance scenarios
 
 ## When to Use Stacks
 
 ✅ **Use when:**
+
 - LIFO access pattern needed
 - Recursion simulation required
 - Expression evaluation needed
@@ -237,6 +264,7 @@ Implement two stacks using single array efficiently.
 - Function call management needed
 
 ❌ **Avoid when:**
+
 - FIFO access needed (use Queue)
 - Random access required (use Array/List)
 - Priority-based access needed (use Priority Queue)
@@ -251,4 +279,4 @@ Implement two stacks using single array efficiently.
 
 ---
 
-*Stacks are fundamental to computer science, appearing in everything from function calls to complex algorithm implementations.*
+_Stacks are fundamental to computer science, appearing in everything from function calls to complex algorithm implementations._

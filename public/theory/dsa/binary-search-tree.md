@@ -5,6 +5,7 @@
 A Binary Search Tree (BST) is a **hierarchical data structure** where each node has at most two children, and for each node, all elements in its left subtree are less than the node, and all elements in its right subtree are greater than the node.
 
 **Key Properties:**
+
 - **Left subtree**: All values < node value
 - **Right subtree**: All values > node value
 - **No duplicates** (typically)
@@ -13,15 +14,19 @@ A Binary Search Tree (BST) is a **hierarchical data structure** where each node 
 ## Basic Operations
 
 ### Insertion
+
 Add a new node while maintaining BST properties.
 
 ### Deletion
+
 Remove a node while maintaining BST properties.
 
 ### Search
+
 Find if a value exists in the tree.
 
 ### Traversal
+
 Visit all nodes in different orders (in-order, pre-order, post-order).
 
 ## How BST Operations Work
@@ -77,11 +82,13 @@ Insert 80 (80 > 50, 80 > 70, go right):
 ### Search Example
 
 Search for `40` in the above tree:
+
 - Start at root (50): 40 < 50, go left to 30
 - At 30: 40 > 30, go right to 40
 - Found 40! ✅
 
 Search for `25`:
+
 - Start at root (50): 25 < 50, go left to 30
 - At 30: 25 > 20, 25 < 30, but no right child of 20
 - 25 not found ❌
@@ -89,6 +96,7 @@ Search for `25`:
 ## Algorithm Pseudocode
 
 ### Node Structure
+
 ```
 class Node {
     value
@@ -98,6 +106,7 @@ class Node {
 ```
 
 ### Search Operation
+
 ```
 function search(node, target)
     if node is null or node.value == target
@@ -110,6 +119,7 @@ function search(node, target)
 ```
 
 ### Insert Operation
+
 ```
 function insert(node, value)
     if node is null
@@ -124,6 +134,7 @@ function insert(node, value)
 ```
 
 ### Delete Operation
+
 ```
 function delete(node, value)
     if node is null
@@ -151,30 +162,36 @@ function delete(node, value)
 ## Tree Traversals
 
 ### In-Order Traversal (Left → Root → Right)
+
 Produces sorted sequence: `20, 30, 40, 50, 60, 70, 80`
 
 ### Pre-Order Traversal (Root → Left → Right)
+
 Root first: `50, 30, 20, 40, 70, 60, 80`
 
 ### Post-Order Traversal (Left → Right → Root)
+
 Leaves first: `20, 40, 30, 60, 80, 70, 50`
 
 ### Level-Order Traversal
+
 Breadth-first: `50, 30, 70, 20, 40, 60, 80`
 
 ## Time Complexity Analysis
 
 | Operation | Best Case | Average Case | Worst Case |
-|-----------|-----------|--------------|------------|
-| Search | O(log n) | O(log n) | O(n) |
-| Insert | O(log n) | O(log n) | O(n) |
-| Delete | O(log n) | O(log n) | O(n) |
+| --------- | --------- | ------------ | ---------- |
+| Search    | O(log n)  | O(log n)     | O(n)       |
+| Insert    | O(log n)  | O(log n)     | O(n)       |
+| Delete    | O(log n)  | O(log n)     | O(n)       |
 
 ### Best Case: Balanced Tree
+
 - Height = log n
 - All operations: O(log n)
 
 ### Worst Case: Skewed Tree
+
 - Height = n
 - All operations: O(n)
 - Occurs with sorted input: `1, 2, 3, 4, 5...`
@@ -182,12 +199,14 @@ Breadth-first: `50, 30, 70, 20, 40, 60, 80`
 ## Key Characteristics
 
 ### Advantages
+
 - **Dynamic** - can grow and shrink
 - **Ordered** - maintains sorted order
 - **Efficient operations** when balanced
 - **Simple to implement**
 
 ### Disadvantages
+
 - **Can become unbalanced** - leads to poor performance
 - **No random access** - must traverse from root
 - **Extra memory** for node pointers
@@ -203,16 +222,19 @@ Breadth-first: `50, 30, 70, 20, 40, 60, 80`
 ## Self-Balancing BST Variants
 
 ### AVL Trees
+
 - Balance factor: height difference ≤ 1
 - Rotations maintain balance
 - All operations: O(log n)
 
 ### Red-Black Trees
+
 - Color property maintains balance
 - Used in C++ STL, Java TreeMap
 - Slightly less strict balance than AVL
 
 ### B-Trees
+
 - Multi-way trees for disk storage
 - Used in databases and file systems
 - Optimized for disk I/O
@@ -220,16 +242,20 @@ Breadth-first: `50, 30, 70, 20, 40, 60, 80`
 ## Common Problems and Solutions
 
 ### Tree Balance Issues
+
 **Problem:** Sorted input creates skewed tree
 **Solution:** Use self-balancing trees (AVL, Red-Black)
 
 ### Memory Overhead
+
 **Problem:** Each node needs left/right pointers
 **Solution:** Use array-based representation or consider other data structures
 
 ### Duplicate Handling
+
 **Problem:** How to handle duplicate values
 **Solutions:**
+
 - Disallow duplicates
 - Allow duplicates in right subtree
 - Store count with each node
@@ -237,12 +263,14 @@ Breadth-first: `50, 30, 70, 20, 40, 60, 80`
 ## When to Use BSTs
 
 ✅ **Use when:**
+
 - Data needs to be sorted
 - Dynamic insertions/deletions required
 - Range queries needed
 - Ordered iteration required
 
 ❌ **Avoid when:**
+
 - Data is static (use sorted array)
 - Balance is critical (use AVL/Red-Black)
 - Memory is limited (consider arrays)
@@ -258,4 +286,4 @@ Breadth-first: `50, 30, 70, 20, 40, 60, 80`
 
 ---
 
-*Binary Search Trees provide dynamic sorted storage with logarithmic performance when balanced, making them fundamental to many algorithms and data structures.*
+_Binary Search Trees provide dynamic sorted storage with logarithmic performance when balanced, making them fundamental to many algorithms and data structures._

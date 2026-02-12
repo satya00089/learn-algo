@@ -7,16 +7,21 @@ Min-Max Scaler transforms features by scaling each feature to a given range, typ
 ## Mathematical Foundation
 
 ### Scaling Formula
+
 ```
 x_scaled = (x - min) / (max - min)
 ```
+
 Where:
+
 - `x` is the original feature value
 - `min` is the minimum value of the feature
 - `max` is the maximum value of the feature
 
 ### Custom Range
+
 Can scale to any range [a, b]:
+
 ```
 x_scaled = a + (x - min) / (max - min) * (b - a)
 ```
@@ -31,12 +36,14 @@ x_scaled = a + (x - min) / (max - min) * (b - a)
 ## When to Use
 
 ### Recommended for:
+
 - Image processing (pixel values 0-255 → 0-1)
 - Neural networks (activation functions work better with [0,1])
 - Algorithms requiring bounded inputs
 - When you need interpretable feature scales
 
 ### Good for:
+
 - Neural Networks
 - KNN (when using uniform weights)
 - Image processing algorithms
@@ -58,16 +65,19 @@ x_scaled = a + (x - min) / (max - min) * (b - a)
 ## Comparison with Other Scalers
 
 ### vs Standard Scaler
+
 - **Min-Max**: Range=[0,1], sensitive to outliers
 - **Standard**: Mean=0, Std=1, handles outliers better
 
 ### vs Robust Scaler
+
 - **Min-Max**: Uses min/max (very sensitive to outliers)
 - **Robust**: Uses quantiles (robust to outliers)
 
 ## Implementation Details
 
 ### Training Phase
+
 ```python
 # Calculate min and max from training data
 min_val = np.min(X_train, axis=0)
@@ -75,6 +85,7 @@ max_val = np.max(X_train, axis=0)
 ```
 
 ### Transform Phase
+
 ```python
 # Apply to both train and test data
 X_train_scaled = (X_train - min_val) / (max_val - min_val)

@@ -255,11 +255,11 @@ export class DBSCANEngine {
       // Core point - start a new cluster and ALL neighbors join immediately
       const clusterId = this.state.clusters.length
       this.state.currentClusterId = clusterId
-      
+
       // Mark this point as core and assign to cluster
       point.type = 'core'
       point.clusterId = clusterId
-      
+
       // ALL neighbors immediately join the cluster
       point.neighbors.forEach((neighborIndex) => {
         const neighbor = this.state.points[neighborIndex]
@@ -270,7 +270,7 @@ export class DBSCANEngine {
           }
         }
       })
-      
+
       // Set up seeds for recursive expansion - check each neighbor
       this.state.expandingSeeds = [...point.neighbors]
       this.state.currentSeedIndex = 0
@@ -290,7 +290,7 @@ export class DBSCANEngine {
       this.state.phase = 'complete'
       this.state.isComplete = true
     }
-    
+
     return this.getState()
   }
 
@@ -302,19 +302,19 @@ export class DBSCANEngine {
     if (this.state.currentSeedIndex < this.state.expandingSeeds.length) {
       const seedIndex = this.state.expandingSeeds[this.state.currentSeedIndex]
       const seedPoint = this.state.points[seedIndex]
-      
+
       // If this seed hasn't been visited, check if it's also a core point
       if (seedPoint.type === 'unvisited' || seedPoint.type === 'visited') {
         seedPoint.type = 'visited'
-        
+
         // Find its neighbors
         const seedNeighbors = this.findNeighbors(seedIndex)
         seedPoint.neighbors = seedNeighbors
-        
+
         // If it's also a core point, add its neighbors to cluster and seeds
         if (seedNeighbors.length >= this.config.minPts) {
           seedPoint.type = 'core'
-          
+
           // Add all its neighbors to the cluster
           seedNeighbors.forEach((neighborIndex) => {
             const neighbor = this.state.points[neighborIndex]
@@ -324,7 +324,7 @@ export class DBSCANEngine {
                 neighbor.type = 'border'
               }
             }
-            
+
             // Add to seeds if not already there
             if (!this.state.expandingSeeds.includes(neighborIndex)) {
               this.state.expandingSeeds.push(neighborIndex)
@@ -335,26 +335,26 @@ export class DBSCANEngine {
           seedPoint.type = 'border'
         }
       }
-      
+
       this.state.currentSeedIndex++
       this.buildClusters()
       return this.getState()
     }
-    
+
     // Done expanding this cluster - move to next point
     this.state.expandingSeeds = []
     this.state.currentSeedIndex = 0
     this.state.currentClusterId = -1
     this.state.currentPointIndex++
     this.state.phase = 'processing' // Go back to processing mode
-    
+
     if (this.state.currentPointIndex >= this.state.points.length) {
       this.buildClusters()
       this.updateStatistics()
       this.state.phase = 'complete'
       this.state.isComplete = true
     }
-    
+
     return this.getState()
   }
 
@@ -376,12 +376,8 @@ export class DBSCANEngine {
 
     // Create cluster objects
     this.state.clusters = Array.from(clusterMap.entries()).map(([id, pointIndices]) => {
-      const corePoints = pointIndices.filter(
-        (idx) => this.state.points[idx].type === 'core'
-      )
-      const borderPoints = pointIndices.filter(
-        (idx) => this.state.points[idx].type === 'border'
-      )
+      const corePoints = pointIndices.filter((idx) => this.state.points[idx].type === 'core')
+      const borderPoints = pointIndices.filter((idx) => this.state.points[idx].type === 'border')
 
       return {
         id,

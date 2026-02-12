@@ -16,9 +16,7 @@ export function ControlGroup({ title, children, className = '' }: ControlGroupPr
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 space-y-4 ${className}`}>
       {title && (
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white border-b">
-          {title}
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white border-b">{title}</h3>
       )}
       <div className="space-y-3">{children}</div>
     </div>

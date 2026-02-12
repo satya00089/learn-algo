@@ -14,14 +14,14 @@ interface PCA3DSceneProps {
   theme: 'light' | 'dark'
 }
 
-function DataPoints({ 
-  points, 
-  color, 
-  opacity = 1 
-}: { 
-  points: Array<{ x: number; y: number; z?: number }>;
-  color: string;
-  opacity?: number;
+function DataPoints({
+  points,
+  color,
+  opacity = 1,
+}: {
+  points: Array<{ x: number; y: number; z?: number }>
+  color: string
+  opacity?: number
 }) {
   const meshRef = useRef<THREE.InstancedMesh>(null)
 
@@ -46,10 +46,10 @@ function DataPoints({
   )
 }
 
-function ComponentVectors({ 
-  components 
-}: { 
-  components: Array<{ eigenvector: number[]; eigenvalue: number; explainedVariance: number }> 
+function ComponentVectors({
+  components,
+}: {
+  components: Array<{ eigenvector: number[]; eigenvalue: number; explainedVariance: number }>
 }) {
   const colors = ['#10b981', '#f59e0b', '#ef4444']
 
@@ -75,19 +75,13 @@ function ComponentVectors({
         return (
           <group key={`pc-${index}`}>
             {/* Arrow shaft - positioned and rotated */}
-            <mesh 
-              position={[mappedX / 2, mappedY / 2, mappedZ / 2]}
-              quaternion={quaternion}
-            >
+            <mesh position={[mappedX / 2, mappedY / 2, mappedZ / 2]} quaternion={quaternion}>
               <cylinderGeometry args={[0.02, 0.02, length, 8]} />
               <meshStandardMaterial color={colors[index]} />
             </mesh>
-            
+
             {/* Arrow head - positioned and rotated */}
-            <mesh 
-              position={[mappedX, mappedY, mappedZ]}
-              quaternion={quaternion}
-            >
+            <mesh position={[mappedX, mappedY, mappedZ]} quaternion={quaternion}>
               <coneGeometry args={[0.08, 0.15, 8]} />
               <meshStandardMaterial color={colors[index]} />
             </mesh>
@@ -125,7 +119,12 @@ function AxisLabels() {
   )
 }
 
-function Scene({ state, showOriginal, showTransformed, showComponents }: Omit<PCA3DSceneProps, 'theme'>) {
+function Scene({
+  state,
+  showOriginal,
+  showTransformed,
+  showComponents,
+}: Omit<PCA3DSceneProps, 'theme'>) {
   const groupRef = useRef<THREE.Group>(null)
 
   // Auto-rotate the scene slowly
@@ -135,13 +134,18 @@ function Scene({ state, showOriginal, showTransformed, showComponents }: Omit<PC
     }
   })
 
-  const originalPoints = useMemo(() => 
-    state.points.map(p => ({ x: p.original.x, y: p.original.y, z: p.original.z || 0 })),
+  const originalPoints = useMemo(
+    () => state.points.map((p) => ({ x: p.original.x, y: p.original.y, z: p.original.z || 0 })),
     [state.points]
   )
 
-  const transformedPoints = useMemo(() => 
-    state.points.map(p => ({ x: p.transformed.x, y: p.transformed.y, z: p.transformed.z || 0 })),
+  const transformedPoints = useMemo(
+    () =>
+      state.points.map((p) => ({
+        x: p.transformed.x,
+        y: p.transformed.y,
+        z: p.transformed.z || 0,
+      })),
     [state.points]
   )
 
@@ -153,13 +157,13 @@ function Scene({ state, showOriginal, showTransformed, showComponents }: Omit<PC
       <directionalLight position={[-10, -10, -5]} intensity={0.4} />
 
       {/* Grid */}
-      <Grid 
-        args={[10, 10]} 
-        cellSize={0.5} 
-        cellThickness={0.5} 
-        cellColor="#6b7280" 
-        sectionSize={1} 
-        sectionThickness={1} 
+      <Grid
+        args={[10, 10]}
+        cellSize={0.5}
+        cellThickness={0.5}
+        cellColor="#6b7280"
+        sectionSize={1}
+        sectionThickness={1}
         sectionColor="#9ca3af"
         fadeDistance={30}
         fadeStrength={1}
@@ -182,27 +186,25 @@ function Scene({ state, showOriginal, showTransformed, showComponents }: Omit<PC
   )
 }
 
-export function PCA3DScene({ state, showOriginal, showTransformed, showComponents, theme }: PCA3DSceneProps) {
+export function PCA3DScene({
+  state,
+  showOriginal,
+  showTransformed,
+  showComponents,
+  theme,
+}: PCA3DSceneProps) {
   const backgroundColor = theme === 'dark' ? '#1f2937' : '#ffffff'
 
   return (
     <div className="w-full h-full">
-      <Canvas
-        camera={{ position: [3, 3, 3], fov: 50 }}
-        style={{ background: backgroundColor }}
-      >
-        <Scene 
-          state={state} 
-          showOriginal={showOriginal} 
-          showTransformed={showTransformed} 
+      <Canvas camera={{ position: [3, 3, 3], fov: 50 }} style={{ background: backgroundColor }}>
+        <Scene
+          state={state}
+          showOriginal={showOriginal}
+          showTransformed={showTransformed}
           showComponents={showComponents}
         />
-        <OrbitControls 
-          enableDamping 
-          dampingFactor={0.05}
-          minDistance={2}
-          maxDistance={10}
-        />
+        <OrbitControls enableDamping dampingFactor={0.05} minDistance={2} maxDistance={10} />
       </Canvas>
 
       {/* Step info overlay */}

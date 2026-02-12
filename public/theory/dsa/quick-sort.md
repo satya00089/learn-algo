@@ -5,6 +5,7 @@
 Quick Sort is a **highly efficient divide-and-conquer sorting algorithm** that works by selecting a 'pivot' element and partitioning the array around it. It's generally faster than other O(n log n) algorithms in practice, though it has a worst-case time complexity of O(n²).
 
 **Time Complexity:**
+
 - **Best Case**: O(n log n)
 - **Average Case**: O(n log n)
 - **Worst Case**: O(n²) - when pivot is always the smallest/largest element
@@ -18,22 +19,27 @@ Quick Sort is a **highly efficient divide-and-conquer sorting algorithm** that w
 Let's sort the array: `[10, 80, 30, 90, 40, 50, 70]`
 
 **Step 1: Choose pivot and partition**
+
 - Choose pivot = 70
 - Partition around pivot: `[10, 30, 40, 50]` + `[70]` + `[80, 90]`
 
 **Step 2: Recursively sort left subarray `[10, 30, 40, 50]`**
+
 - Choose pivot = 50
 - Partition: `[10, 30, 40]` + `[50]` + `[]`
 
 **Step 3: Recursively sort `[10, 30, 40]`**
+
 - Choose pivot = 40
 - Partition: `[10, 30]` + `[40]` + `[]`
 
 **Step 4: Recursively sort `[10, 30]`**
+
 - Choose pivot = 30
 - Partition: `[10]` + `[30]` + `[]`
 
 **Step 5: Recursively sort right subarray `[80, 90]`**
+
 - Choose pivot = 90
 - Partition: `[80]` + `[90]` + `[]`
 
@@ -100,12 +106,14 @@ procedure partition(arr, low, high)
 ## Key Characteristics
 
 ### Advantages
+
 - **Very fast in practice** - often fastest sorting algorithm
 - **In-place sorting** - uses O(log n) extra space
 - **Cache-friendly** - good locality of reference
 - **Highly optimized** - used in many standard libraries
 
 ### Disadvantages
+
 - **Unstable sort** - doesn't preserve relative order of equal elements
 - **Worst case O(n²)** - can be slow on already sorted data
 - **Not adaptive** - doesn't take advantage of existing order
@@ -113,22 +121,27 @@ procedure partition(arr, low, high)
 ## Pivot Selection Strategies
 
 ### First Element
+
 - Simple but poor for sorted arrays
 - Leads to O(n²) worst case
 
 ### Last Element
+
 - Simple and commonly used
 - Same issue with sorted arrays
 
 ### Middle Element
+
 - Better choice, reduces worst case
 - Still predictable
 
 ### Random Element
+
 - Unpredictable, good average case
 - Adds overhead of random number generation
 
 ### Median-of-Three
+
 - Choose median of first, middle, and last elements
 - Good balance of simplicity and effectiveness
 
@@ -143,49 +156,57 @@ procedure partition(arr, low, high)
 ## Performance Analysis
 
 ### Best Case
+
 - **Balanced partitions** - each partition has roughly n/2 elements
 - **Time**: O(n log n)
 
 ### Worst Case
+
 - **Unbalanced partitions** - one partition has n-1 elements
 - **Time**: O(n²)
 - **Occurs when**: pivot is always smallest/largest element
 
 ### Average Case
+
 - **Random pivot selection**: O(n log n)
 - **Good pivot choice**: close to O(n log n)
 
 ## Comparison with Other Sorting Algorithms
 
-| Algorithm | Best | Average | Worst | Stable | In-Place | Space |
-|-----------|------|---------|-------|--------|----------|-------|
-| Quick Sort | O(n log n) | O(n log n) | O(n²) | No | Yes | O(log n) |
-| Merge Sort | O(n log n) | O(n log n) | O(n log n) | Yes | No | O(n) |
-| Heap Sort | O(n log n) | O(n log n) | O(n log n) | No | Yes | O(1) |
-| Insertion Sort | O(n) | O(n²) | O(n²) | Yes | Yes | O(1) |
-| Bubble Sort | O(n) | O(n²) | O(n²) | Yes | No | O(1) |
+| Algorithm      | Best       | Average    | Worst      | Stable | In-Place | Space    |
+| -------------- | ---------- | ---------- | ---------- | ------ | -------- | -------- |
+| Quick Sort     | O(n log n) | O(n log n) | O(n²)      | No     | Yes      | O(log n) |
+| Merge Sort     | O(n log n) | O(n log n) | O(n log n) | Yes    | No       | O(n)     |
+| Heap Sort      | O(n log n) | O(n log n) | O(n log n) | No     | Yes      | O(1)     |
+| Insertion Sort | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      | O(1)     |
+| Bubble Sort    | O(n)       | O(n²)      | O(n²)      | Yes    | No       | O(1)     |
 
 ## Optimizations and Variants
 
 ### Three-Way Partitioning
+
 Handles duplicate elements efficiently (used in Java).
 
 ### Hybrid Algorithms
+
 - **IntroSort**: QuickSort + HeapSort (fallback for worst case)
 - **TimSort**: MergeSort + InsertionSort (used in Python)
 
 ### Parallel QuickSort
+
 Can be parallelized for multi-core systems.
 
 ## When to Use Quick Sort
 
 ✅ **Use when:**
+
 - Average performance is more important than worst case
 - In-place sorting is required
 - Memory usage needs to be minimized
 - Data is randomly ordered
 
 ❌ **Avoid when:**
+
 - Worst-case performance must be guaranteed
 - Stable sorting is required
 - Data is already nearly sorted
@@ -201,4 +222,4 @@ Can be parallelized for multi-core systems.
 
 ---
 
-*Quick Sort's speed and efficiency make it the go-to choice for most sorting needs, despite its theoretical worst case.*
+_Quick Sort's speed and efficiency make it the go-to choice for most sorting needs, despite its theoretical worst case._

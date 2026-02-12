@@ -34,10 +34,13 @@ export function drawPCA(
   }
 
   // Find bounds for both original and transformed data
-  let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity
+  let xMin = Infinity,
+    xMax = -Infinity,
+    yMin = Infinity,
+    yMax = -Infinity
 
   if (showOriginal) {
-    state.points.forEach(point => {
+    state.points.forEach((point) => {
       xMin = Math.min(xMin, point.original.x)
       xMax = Math.max(xMax, point.original.x)
       yMin = Math.min(yMin, point.original.y)
@@ -46,7 +49,7 @@ export function drawPCA(
   }
 
   if (showTransformed) {
-    state.points.forEach(point => {
+    state.points.forEach((point) => {
       xMin = Math.min(xMin, point.transformed.x)
       xMax = Math.max(xMax, point.transformed.x)
       yMin = Math.min(yMin, point.transformed.y)
@@ -75,11 +78,37 @@ export function drawPCA(
 
   // Draw points
   if (showOriginal) {
-    drawPoints(ctx, state.points, 'original', xMin, xMax, yMin, yMax, width, height, padding, '#3b82f6', 0.6)
+    drawPoints(
+      ctx,
+      state.points,
+      'original',
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+      width,
+      height,
+      padding,
+      '#3b82f6',
+      0.6
+    )
   }
 
   if (showTransformed) {
-    drawPoints(ctx, state.points, 'transformed', xMin, xMax, yMin, yMax, width, height, padding, '#ef4444', 1)
+    drawPoints(
+      ctx,
+      state.points,
+      'transformed',
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+      width,
+      height,
+      padding,
+      '#ef4444',
+      1
+    )
   }
 
   // Draw step information
@@ -90,8 +119,12 @@ function drawPoints(
   ctx: CanvasRenderingContext2D,
   points: PCAPoint[],
   type: 'original' | 'transformed',
-  xMin: number, xMax: number, yMin: number, yMax: number,
-  width: number, height: number,
+  xMin: number,
+  xMax: number,
+  yMin: number,
+  yMax: number,
+  width: number,
+  height: number,
   padding: { top: number; right: number; bottom: number; left: number },
   color: string,
   alpha: number
@@ -104,7 +137,7 @@ function drawPoints(
   ctx.strokeStyle = color
   ctx.lineWidth = 1
 
-  points.forEach(point => {
+  points.forEach((point) => {
     const dataPoint = type === 'original' ? point.original : point.transformed
 
     const x = padding.left + ((dataPoint.x - xMin) / (xMax - xMin)) * plotWidth
@@ -127,8 +160,12 @@ function drawPoints(
 function drawComponentVectors(
   ctx: CanvasRenderingContext2D,
   state: PCAState,
-  xMin: number, xMax: number, yMin: number, yMax: number,
-  width: number, height: number,
+  xMin: number,
+  xMax: number,
+  yMin: number,
+  yMax: number,
+  width: number,
+  height: number,
   padding: { top: number; right: number; bottom: number; left: number },
   theme: 'light' | 'dark'
 ) {
@@ -175,7 +212,11 @@ function drawComponentVectors(
     // Label
     ctx.fillStyle = theme === 'dark' ? '#ffffff' : '#000000'
     ctx.font = '12px monospace'
-    ctx.fillText(`PC${index + 1} (${(component.explainedVariance * 100).toFixed(1)}%)`, endX + 5, endY - 5)
+    ctx.fillText(
+      `PC${index + 1} (${(component.explainedVariance * 100).toFixed(1)}%)`,
+      endX + 5,
+      endY - 5
+    )
   })
 }
 
@@ -188,12 +229,17 @@ function drawStepInfo(
 ) {
   ctx.fillStyle = theme === 'dark' ? '#ffffff' : '#000000'
   ctx.font = '14px monospace'
-  ctx.fillText(`Step ${state.currentStep}/${state.totalSteps}: ${state.stepDescription}`, padding.left, height - padding.bottom + 20)
+  ctx.fillText(
+    `Step ${state.currentStep}/${state.totalSteps}: ${state.stepDescription}`,
+    padding.left,
+    height - padding.bottom + 20
+  )
 }
 
 function drawGrid(
   ctx: CanvasRenderingContext2D,
-  width: number, height: number,
+  width: number,
+  height: number,
   padding: { top: number; right: number; bottom: number; left: number },
   theme: 'light' | 'dark'
 ) {
