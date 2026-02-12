@@ -175,6 +175,19 @@ This demonstrates PCA's power to reveal hidden patterns in real data!
 - **Eigenvectors**: Directions of maximum variance (principal components)
 - **Loadings**: Feature contributions to each component
 
+1. **Standardize Data**: Center data by subtracting mean and scale to unit variance
+2. **Compute Covariance**: Calculate covariance matrix to understand feature relationships
+3. **Find Eigenvectors**: Compute eigenvalues and eigenvectors of covariance matrix
+4. **Select Components**: Choose top k eigenvectors (principal components)
+5. **Transform Data**: Project original data onto new coordinate system
+
+### Key Concepts
+
+- **Variance**: Spread of data points (higher = more information)
+- **Eigenvalues**: Amount of variance explained by each component
+- **Eigenvectors**: Directions of maximum variance (principal components)
+- **Loadings**: Feature contributions to each component
+
 ## Decision Rules for Component Selection
 
 ### The Scree Plot Method
@@ -186,6 +199,51 @@ Use a scree plot to visualize variance explained by each component. Look for the
 - **80% Rule**: Keep components that explain 80% of total variance
 - **Elbow Method**: Stop at the plot's "elbow" point
 - **Kaiser Rule**: Keep components with eigenvalues > 1
+
+## Implementation Examples
+
+```python
+# Tab: From Scratch
+import numpy as np
+
+def pca_from_scratch(X, n_components=2):
+    # Standardize data
+    X_std = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
+
+    # Compute covariance matrix
+    cov_matrix = np.cov(X_std.T)
+
+    # Eigenvalue decomposition
+    eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+
+    # Sort by explained variance
+    idx = np.argsort(eigenvalues)[::-1]
+    eigenvectors = eigenvectors[:, idx][:n_components]
+
+    # Transform data
+    X_pca = X_std @ eigenvectors
+
+    return X_pca, eigenvectors, eigenvalues[idx][:n_components]
+
+# Usage
+X_reduced, components, explained_var = pca_from_scratch(your_data, n_components=2)
+
+# Tab: Using scikit-learn
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Standardize data
+scaler = StandardScaler()
+X_std = scaler.fit_transform(your_data)
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_std)
+
+# Check explained variance
+print(f"Explained variance ratio: {pca.explained_variance_ratio_}")
+print(f"Total variance explained: {sum(pca.explained_variance_ratio_):.2%}")
+```
 
 ## 💡 Pro Tips
 

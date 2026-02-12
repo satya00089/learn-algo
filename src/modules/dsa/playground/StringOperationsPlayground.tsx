@@ -180,7 +180,7 @@ export function StringOperationsPlayground() {
               className="flex items-center gap-2"
             >
               <GiBookCover className="w-4 h-4" />
-              Theory
+              How It Works
             </Button>
             <ThemeToggle />
           </div>
