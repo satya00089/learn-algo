@@ -39,7 +39,7 @@ export function QuickSortPlayground() {
     null
   )
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Canvas configuration
   const canvasConfig = useMemo(

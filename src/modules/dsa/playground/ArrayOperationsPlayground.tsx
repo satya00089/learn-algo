@@ -51,7 +51,7 @@ export function ArrayOperationsPlayground() {
     ArrayOperationsEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Operation inputs
   const [appendValue, setAppendValue] = useState('')

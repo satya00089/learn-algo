@@ -20,7 +20,7 @@ export function RecursionPlayground() {
     null
   )
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const [nInput, setNInput] = useState('5')
   const [baseInput, setBaseInput] = useState('2')
@@ -203,7 +203,7 @@ export function RecursionPlayground() {
       y?: number
     }
 
-    const renderNode = (node: TreeNode, x: number, y: number, width: number): JSX.Element => {
+    const renderNode = (node: TreeNode, x: number, y: number, width: number): React.ReactElement => {
       const nodeSize = 50
       const childY = y + 100
       const childCount = node.children.length

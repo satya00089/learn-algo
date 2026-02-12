@@ -29,7 +29,7 @@ export function MinimaxPlayground() {
   const [engineState, setEngineState] = useState<ReturnType<MinimaxEngine['getState']> | null>(null)
   const [isDark, setIsDark] = useState(false)
   const [isAnimationPlaying, setIsAnimationPlaying] = useState(false)
-  const animationIntervalRef = useRef<NodeJS.Timeout>()
+  const animationIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Canvas configuration
   const canvasConfig = useMemo(

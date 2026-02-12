@@ -49,7 +49,7 @@ export function QueuePlayground() {
   const engineRef = useRef<QueueEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<QueueEngine['getState']> | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Operation inputs
   const [enqueueValue, setEnqueueValue] = useState('')

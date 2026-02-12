@@ -39,7 +39,7 @@ export function GradientDescentPlayground() {
     GradientDescentEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Function definitions
   const functions: Record<string, GradientDescentFunction> = useMemo(

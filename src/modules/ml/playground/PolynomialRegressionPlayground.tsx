@@ -44,7 +44,7 @@ export function PolynomialRegressionPlayground() {
     PolynomialRegressionEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null)
   const [hoveredDegree, setHoveredDegree] = useState<number | null>(null)
   const [compareIteration, setCompareIteration] = useState(0)

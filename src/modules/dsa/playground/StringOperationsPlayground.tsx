@@ -25,7 +25,7 @@ export function StringOperationsPlayground() {
     StringOperationsEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const [str1Input, setStr1Input] = useState('racecar')
   const [str2Input, setStr2Input] = useState('carecar')

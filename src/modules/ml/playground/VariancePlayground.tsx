@@ -27,7 +27,7 @@ export function VariancePlayground() {
   const [currentCardValue, setCurrentCardValue] = useState<number | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Canvas configurations
   const convergenceCanvasConfig = useMemo(

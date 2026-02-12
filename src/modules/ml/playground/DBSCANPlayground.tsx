@@ -35,7 +35,7 @@ export function DBSCANPlayground() {
   const [showExplanation, setShowExplanation] = useState(
     process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
   )
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // DBSCAN parameters
   const [points, setPoints] = useState<DataPoint[]>([])

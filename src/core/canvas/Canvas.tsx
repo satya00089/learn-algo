@@ -4,7 +4,7 @@ import React from 'react'
 import type { CanvasConfig } from './types'
 
 interface CanvasProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>
+  canvasRef: React.RefObject<HTMLCanvasElement | null>
   config: CanvasConfig
   className?: string
 }

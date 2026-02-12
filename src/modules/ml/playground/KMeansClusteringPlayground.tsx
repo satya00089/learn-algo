@@ -26,7 +26,7 @@ export function KMeansClusteringPlayground() {
     KMeansClusteringEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Initialization method
   const [initMethod, setInitMethod] = useState<'random' | 'kmeans++'>('kmeans++')

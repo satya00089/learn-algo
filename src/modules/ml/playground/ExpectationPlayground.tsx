@@ -45,7 +45,7 @@ export function ExpectationPlayground() {
   const [currentDiceValue, setCurrentDiceValue] = useState<number | null>(null)
   const [isRolling, setIsRolling] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Canvas configurations
   const combinedCanvasConfig = useMemo(

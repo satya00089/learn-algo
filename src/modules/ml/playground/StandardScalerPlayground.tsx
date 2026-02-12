@@ -27,7 +27,7 @@ export function StandardScalerPlayground() {
     StandardScalerEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Data management
   const [points, setPoints] = useState<DataPoint[]>([])

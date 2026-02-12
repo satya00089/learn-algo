@@ -14,7 +14,7 @@ interface UseCanvasOptions {
 export function useCanvas({ config, draw, animate = false }: UseCanvasOptions) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frameCountRef = useRef(0)
-  const animationFrameIdRef = useRef<number>()
+  const animationFrameIdRef = useRef<number | undefined>(undefined)
 
   const renderFrame = useCallback(() => {
     const canvas = canvasRef.current

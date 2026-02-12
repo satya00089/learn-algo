@@ -37,7 +37,7 @@ export function GMMPlayground() {
   const engineRef = useRef<GMMEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<GMMEngine['getState']> | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Initialization method
   const [initMethod, setInitMethod] = useState<'kmeans' | 'random'>('kmeans')

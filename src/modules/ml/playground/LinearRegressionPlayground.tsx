@@ -61,7 +61,7 @@ export function LinearRegressionPlayground() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showBestFit, setShowBestFit] = useState(true)
   const [outliers, setOutliers] = useState<Array<{ x: number; y: number }>>([])
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Combine regular points with outliers (memoized to prevent re-renders)
   const allPoints = useMemo(() => [...points, ...outliers], [points, outliers])

@@ -42,7 +42,7 @@ export function BubbleSortPlayground() {
     null
   )
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const previousSwapCountRef = useRef(0)
 
   // Canvas configuration

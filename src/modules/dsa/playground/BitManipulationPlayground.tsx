@@ -25,7 +25,7 @@ export function BitManipulationPlayground() {
     BitManipulationEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const [num1Input, setNum1Input] = useState('15')
   const [num2Input, setNum2Input] = useState('10')
