@@ -266,7 +266,9 @@ export class PCAEngine {
     deflationCount: number
   ): { eigenvalue: number; eigenvector: number[] } {
     const dim = matrix.length
-    let v = Array.from({ length: dim }, () => Math.random())
+
+    // Create a deep copy of the matrix to avoid mutating the original
+    const deflatedMatrix = matrix.map(row => [...row])
 
     // Deflate for previously found eigenvectors
     for (let i = 0; i < deflationCount && i < this.state.eigenvectors.length; i++) {
@@ -276,18 +278,20 @@ export class PCAEngine {
       // Deflation: A' = A - λ * v * v^T
       for (let row = 0; row < dim; row++) {
         for (let col = 0; col < dim; col++) {
-          matrix[row][col] -= prevEigval * prevEigvec[row] * prevEigvec[col]
+          deflatedMatrix[row][col] -= prevEigval * prevEigvec[row] * prevEigvec[col]
         }
       }
     }
 
+    let v = Array.from({ length: dim }, () => Math.random())
+
     // Power iteration
     for (let iter = 0; iter < 100; iter++) {
       // Multiply matrix by vector
-      const newV = Array(dim).fill(0)
+      const newV = new Array(dim).fill(0)
       for (let i = 0; i < dim; i++) {
         for (let j = 0; j < dim; j++) {
-          newV[i] += matrix[i][j] * v[j]
+          newV[i] += deflatedMatrix[i][j] * v[j]
         }
       }
 
@@ -299,10 +303,10 @@ export class PCAEngine {
     }
 
     // Calculate eigenvalue (Rayleigh quotient)
-    const Av = Array(dim).fill(0)
+    const Av = new Array(dim).fill(0)
     for (let i = 0; i < dim; i++) {
       for (let j = 0; j < dim; j++) {
-        Av[i] += matrix[i][j] * v[j]
+        Av[i] += deflatedMatrix[i][j] * v[j]
       }
     }
     const eigenvalue = v.reduce((sum, val, i) => sum + val * Av[i], 0)

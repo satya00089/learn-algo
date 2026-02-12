@@ -175,7 +175,7 @@ export function StringOperationsPlayground() {
           <div className="flex items-center gap-2">
             <Button
               onClick={() => setShowExplanation(true)}
-              variant="secondary"
+              variant="outline"
               size="sm"
               className="flex items-center gap-2"
             >

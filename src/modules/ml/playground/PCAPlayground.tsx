@@ -12,6 +12,7 @@ import {
   FaExchangeAlt,
   FaVectorSquare,
 } from 'react-icons/fa'
+import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip } from '@/core/controls'
@@ -56,6 +57,7 @@ export function PCAPlayground() {
   const [showOriginal, setShowOriginal] = useState(true)
   const [showTransformed, setShowTransformed] = useState(true)
   const [showComponents, setShowComponents] = useState(true)
+  const [autoRotate, setAutoRotate] = useState(true)
   const [showExplanation, setShowExplanation] = useState(
     process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
   )
@@ -71,14 +73,16 @@ export function PCAPlayground() {
   )
 
   // Generate sample data
+  // NOTE: This generates simulated 2D/3D projections that represent typical PCA results
+  // from the original high-dimensional datasets, not actual dimensionality reduction
   const generateData = useCallback(
     (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist') => {
       const newPoints: DataPoint[] = []
       const use3D = view3D || numComponents >= 3
 
       if (type === 'iris') {
-        // Classic Iris dataset - 150 samples, 4 features (sepal length, sepal width, petal length, petal width)
-        // Simulating principal components for visualization
+        // Classic Iris dataset - Original: 150 samples × 4 features
+        // Simulating what 2D/3D PCA projections would look like
         const classSize = Math.floor(numPoints / 3)
 
         // Setosa (clearly separable)
@@ -111,8 +115,8 @@ export function PCAPlayground() {
           newPoints.push(point)
         }
       } else if (type === 'wine') {
-        // Wine Quality dataset - 13 chemical features (alcohol, acidity, etc.)
-        // 3 wine cultivars from Italy
+        // Wine Quality dataset - Original: 178 samples × 13 chemical features
+        // Simulating what 2D/3D PCA projections would look like
         const classSize = Math.floor(numPoints / 3)
 
         // Class 1 - High alcohol, low acidity, high phenols
@@ -145,8 +149,8 @@ export function PCAPlayground() {
           newPoints.push(point)
         }
       } else if (type === 'breast-cancer') {
-        // Breast Cancer Wisconsin dataset - 30 features (cell measurements)
-        // 2 classes: malignant and benign
+        // Breast Cancer Wisconsin dataset - Original: 569 samples × 30 features
+        // Simulating what 2D/3D PCA projections would look like
         const malignantSize = Math.floor(numPoints * 0.37) // ~37% malignant
 
         // Malignant tumors - larger, more irregular cells
@@ -169,8 +173,8 @@ export function PCAPlayground() {
           newPoints.push(point)
         }
       } else if (type === 'mnist') {
-        // MNIST-like handwritten digits - 784 features (28x28 pixels)
-        // Simulating 4 digit classes
+        // MNIST handwritten digits - Original: 70,000 samples × 784 features (28×28 pixels)
+        // Simulating what 2D/3D PCA projections would look like
         const digitsPerClass = Math.floor(numPoints / 4)
 
         // Digit 0 (circular pattern)
@@ -235,6 +239,13 @@ export function PCAPlayground() {
   useEffect(() => {
     initializeEngine()
   }, [initializeEngine])
+
+  // Regenerate data when switching between 2D/3D view modes
+  useEffect(() => {
+    if (engineRef.current) {
+      initializeEngine()
+    }
+  }, [view3D, initializeEngine])
 
   // Animation functions
   const stopAnimation = useCallback(() => {
@@ -352,7 +363,8 @@ export function PCAPlayground() {
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Dimensionality reduction using principal components to capture maximum variance
+          Interactive visualization of PCA dimensionality reduction with simulated projections from
+          classic ML datasets
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -443,15 +455,17 @@ export function PCAPlayground() {
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
                 <div className="flex items-center gap-1.5">
-                  <Tooltip text="Toggle 3D Isometric View">
+                  <Tooltip text="Toggle 3D Isometric View (regenerates data with appropriate dimensions)">
                     <button
                       onClick={() => {
+                        stopAnimation()
                         const newView3D = !view3D
                         setView3D(newView3D)
                         // When switching to 3D view, ensure we have at least 3 components
                         if (newView3D && numComponents < 3) {
                           setNumComponents(3)
                         }
+                        // Data will regenerate via useEffect watching view3D
                       }}
                       disabled={isPlaying}
                       className={`px-3 py-1 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -504,6 +518,20 @@ export function PCAPlayground() {
                       <FaVectorSquare size={14} />
                     </button>
                   </Tooltip>
+                  {view3D && (
+                    <Tooltip text="Auto-rotate 3D view">
+                      <button
+                        onClick={() => setAutoRotate(!autoRotate)}
+                        className={`w-8 h-8 flex items-center justify-center rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                          autoRotate
+                            ? 'bg-purple-600 border-purple-600 text-white'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <TbRotate360 size={14} />
+                      </button>
+                    </Tooltip>
+                  )}
                 </div>
               </div>
             </div>
@@ -517,6 +545,7 @@ export function PCAPlayground() {
                   showTransformed={showTransformed}
                   showComponents={showComponents}
                   theme={theme}
+                  autoRotate={autoRotate}
                 />
               ) : (
                 <canvas
@@ -533,9 +562,9 @@ export function PCAPlayground() {
           {/* Right Sidebar */}
           <div className="flex flex-col space-y-3 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-700 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
             {/* Dataset Generation */}
-            <ControlGroup title="Classic ML Datasets">
+            <ControlGroup title="Datasets">
               <div className="grid grid-cols-2 gap-2">
-                <Tooltip text="4D → 2D: Sepal & petal measurements reduced to 2 principal components">
+                <Tooltip text="Simulated PCA projection representing typical results from 4D iris measurements">
                   <button
                     onClick={() => setDataType('iris')}
                     disabled={isPlaying}
@@ -548,7 +577,7 @@ export function PCAPlayground() {
                     Iris
                   </button>
                 </Tooltip>
-                <Tooltip text="13D → 2D: Chemical properties reduced to 2 principal components">
+                <Tooltip text="Simulated PCA projection representing typical results from 13D wine chemistry features">
                   <button
                     onClick={() => setDataType('wine')}
                     disabled={isPlaying}
@@ -561,7 +590,7 @@ export function PCAPlayground() {
                     Wine
                   </button>
                 </Tooltip>
-                <Tooltip text="30D → 2D: Cell measurements reduced to 2 principal components">
+                <Tooltip text="Simulated PCA projection representing typical results from 30D cell measurements">
                   <button
                     onClick={() => setDataType('breast-cancer')}
                     disabled={isPlaying}
@@ -574,7 +603,7 @@ export function PCAPlayground() {
                     Cancer
                   </button>
                 </Tooltip>
-                <Tooltip text="784D → 2D: Pixel features reduced to 2 principal components">
+                <Tooltip text="Simulated PCA projection representing typical results from 784D pixel features">
                   <button
                     onClick={() => setDataType('mnist')}
                     disabled={isPlaying}
@@ -594,48 +623,52 @@ export function PCAPlayground() {
                 {dataType === 'iris' && (
                   <div>
                     <strong>Iris Dataset (1936)</strong>
-                    <p className="mt-1">📊 150 samples × 4 features → 2D projection</p>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 4D iris measurements</p>
                     <p className="mt-1">
-                      Features: sepal length, sepal width, petal length, petal width
+                      Original features: sepal length, sepal width, petal length, petal width
                     </p>
                     <p className="mt-1">Classes: Setosa, Versicolor, Virginica</p>
                     <p className="mt-1 text-blue-600 dark:text-blue-400">
-                      PCA reduces 4D to 2D while preserving ~95% variance
+                      Real PCA typically preserves ~95% variance in 2 components
                     </p>
                   </div>
                 )}
                 {dataType === 'wine' && (
                   <div>
                     <strong>Wine Dataset</strong>
-                    <p className="mt-1">📊 178 samples × 13 features → 2D projection</p>
-                    <p className="mt-1">Features: alcohol, acidity, phenols, flavonoids, etc.</p>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 13D wine chemistry data</p>
+                    <p className="mt-1">
+                      Original features: alcohol, acidity, phenols, flavonoids, etc.
+                    </p>
                     <p className="mt-1">Classes: 3 Italian wine cultivars</p>
                     <p className="mt-1 text-purple-600 dark:text-purple-400">
-                      PCA reduces 13D to 2D while preserving key chemical patterns
+                      Real PCA captures key chemical patterns in lower dimensions
                     </p>
                   </div>
                 )}
                 {dataType === 'breast-cancer' && (
                   <div>
                     <strong>Breast Cancer Wisconsin</strong>
-                    <p className="mt-1">📊 569 samples × 30 features → 2D projection</p>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 30D cell measurements</p>
                     <p className="mt-1">
-                      Features: radius, texture, perimeter, area, smoothness, etc.
+                      Original features: radius, texture, perimeter, area, smoothness, etc.
                     </p>
                     <p className="mt-1">Classes: Malignant vs Benign tumors</p>
                     <p className="mt-1 text-pink-600 dark:text-pink-400">
-                      PCA reduces 30D to 2D for visualization and analysis
+                      Real PCA enables visualization and analysis of high-D medical data
                     </p>
                   </div>
                 )}
                 {dataType === 'mnist' && (
                   <div>
                     <strong>MNIST Handwritten Digits</strong>
-                    <p className="mt-1">📊 70,000 samples × 784 features → 2D projection</p>
-                    <p className="mt-1">Features: 28×28 pixel intensities (784 dimensions)</p>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 784D image data</p>
+                    <p className="mt-1">
+                      Original features: 28×28 pixel intensities (784 dimensions)
+                    </p>
                     <p className="mt-1">Classes: 10 digits (0-9). Shown: 0, 1, 4, 7</p>
                     <p className="mt-1 text-green-600 dark:text-green-400">
-                      PCA reduces 784D images to 2D while preserving digit shapes
+                      Real PCA captures digit shapes in much lower dimensions
                     </p>
                   </div>
                 )}

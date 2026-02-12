@@ -7,11 +7,12 @@ import * as THREE from 'three'
 import type { PCAState } from '../engines/PCAEngine'
 
 interface PCA3DSceneProps {
-  state: PCAState
-  showOriginal: boolean
-  showTransformed: boolean
-  showComponents: boolean
-  theme: 'light' | 'dark'
+  readonly state: PCAState
+  readonly showOriginal: boolean
+  readonly showTransformed: boolean
+  readonly showComponents: boolean
+  readonly theme: 'light' | 'dark'
+  readonly autoRotate?: boolean
 }
 
 function DataPoints({
@@ -19,9 +20,9 @@ function DataPoints({
   color,
   opacity = 1,
 }: {
-  points: Array<{ x: number; y: number; z?: number }>
-  color: string
-  opacity?: number
+  readonly points: Array<{ x: number; y: number; z?: number }>
+  readonly color: string
+  readonly opacity?: number
 }) {
   const meshRef = useRef<THREE.InstancedMesh>(null)
 
@@ -30,7 +31,11 @@ function DataPoints({
 
     const tempObject = new THREE.Object3D()
     points.forEach((point, i) => {
-      // Map data coordinates to 3D space: x -> x, y -> -z, z -> y (for proper 3D visualization)
+      // Coordinate transformation for intuitive 3D visualization:
+      // Data x → Three.js x (horizontal axis)
+      // Data y → Three.js -z (depth axis, negated for proper orientation)
+      // Data z → Three.js y (vertical axis)
+      // This ensures PC1/PC2/PC3 align naturally with x/y/z axes for better understanding
       tempObject.position.set(point.x, point.z || 0, -point.y)
       tempObject.updateMatrix()
       meshRef.current!.setMatrixAt(i, tempObject.matrix)
@@ -49,7 +54,7 @@ function DataPoints({
 function ComponentVectors({
   components,
 }: {
-  components: Array<{ eigenvector: number[]; eigenvalue: number; explainedVariance: number }>
+  readonly components: Array<{ eigenvector: number[]; eigenvalue: number; explainedVariance: number }>
 }) {
   const colors = ['#10b981', '#f59e0b', '#ef4444']
 
@@ -59,7 +64,8 @@ function ComponentVectors({
         const [vx, vy, vz = 0] = component.eigenvector
         const length = Math.sqrt(component.eigenvalue) * 2
 
-        // Apply same coordinate mapping as data points: x -> x, y -> -z, z -> y
+        // Apply same coordinate transformation as data points for consistent visualization
+        // Data eigenvector x → Three.js x, y → -z, z → y
         const mappedX = vx * length
         const mappedY = vz * length
         const mappedZ = -vy * length
@@ -124,12 +130,13 @@ function Scene({
   showOriginal,
   showTransformed,
   showComponents,
+  autoRotate = false,
 }: Omit<PCA3DSceneProps, 'theme'>) {
   const groupRef = useRef<THREE.Group>(null)
 
-  // Auto-rotate the scene slowly
+  // Auto-rotate the scene slowly (only if enabled)
   useFrame(() => {
-    if (groupRef.current) {
+    if (autoRotate && groupRef.current) {
       groupRef.current.rotation.y += 0.001
     }
   })
@@ -192,6 +199,7 @@ export function PCA3DScene({
   showTransformed,
   showComponents,
   theme,
+  autoRotate = false,
 }: PCA3DSceneProps) {
   const backgroundColor = theme === 'dark' ? '#1f2937' : '#ffffff'
 
@@ -203,6 +211,7 @@ export function PCA3DScene({
           showOriginal={showOriginal}
           showTransformed={showTransformed}
           showComponents={showComponents}
+          autoRotate={autoRotate}
         />
         <OrbitControls enableDamping dampingFactor={0.05} minDistance={2} maxDistance={10} />
       </Canvas>
