@@ -27,7 +27,7 @@ export function drawAnomalyDetection(
   let yMin = Infinity
   let yMax = -Infinity
 
-  state.points.forEach(point => {
+  state.points.forEach((point) => {
     xMin = Math.min(xMin, point.x)
     xMax = Math.max(xMax, point.x)
     yMin = Math.min(yMin, point.y)
@@ -53,7 +53,19 @@ export function drawAnomalyDetection(
     switch (state.method) {
       case 'one-class-svm':
         if (state.svmCenter && state.svmRadius) {
-          drawSVMDoundary(ctx, state.svmCenter, state.svmRadius, xMin, xMax, yMin, yMax, width, height, padding, theme)
+          drawSVMDoundary(
+            ctx,
+            state.svmCenter,
+            state.svmRadius,
+            xMin,
+            xMax,
+            yMin,
+            yMax,
+            width,
+            height,
+            padding,
+            theme
+          )
         }
         break
       case 'z-score':
@@ -66,7 +78,19 @@ export function drawAnomalyDetection(
   }
 
   // Draw data points
-  drawDataPoints(ctx, state.points, xMin, xMax, yMin, yMax, width, height, padding, theme, showScores)
+  drawDataPoints(
+    ctx,
+    state.points,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    width,
+    height,
+    padding,
+    theme,
+    showScores
+  )
 
   // Draw info panel
   drawInfoPanel(ctx, state, padding, theme)
@@ -216,8 +240,10 @@ function drawStatisticalBoundary(
     // Draw IQR boundaries as rectangles
     const leftX = padding.left + ((q1.x - 1.5 * iqr.x - xMin) / (xMax - xMin)) * plotWidth
     const rightX = padding.left + ((q3.x + 1.5 * iqr.x - xMin) / (xMax - xMin)) * plotWidth
-    const bottomY = height - padding.bottom - ((q1.y - 1.5 * iqr.y - yMin) / (yMax - yMin)) * plotHeight
-    const topY = height - padding.bottom - ((q3.y + 1.5 * iqr.y - yMin) / (yMax - yMin)) * plotHeight
+    const bottomY =
+      height - padding.bottom - ((q1.y - 1.5 * iqr.y - yMin) / (yMax - yMin)) * plotHeight
+    const topY =
+      height - padding.bottom - ((q3.y + 1.5 * iqr.y - yMin) / (yMax - yMin)) * plotHeight
 
     ctx.strokeRect(leftX, topY, rightX - leftX, bottomY - topY)
   }
@@ -241,7 +267,7 @@ function drawDataPoints(
   const plotWidth = width - padding.left - padding.right
   const plotHeight = height - padding.top - padding.bottom
 
-  points.forEach(point => {
+  points.forEach((point) => {
     const screenX = padding.left + ((point.x - xMin) / (xMax - xMin)) * plotWidth
     const screenY = height - padding.bottom - ((point.y - yMin) / (yMax - yMin)) * plotHeight
 
@@ -309,9 +335,9 @@ function drawInfoPanel(
   const methodNames = {
     'isolation-forest': 'Isolation Forest',
     'one-class-svm': 'One-Class SVM',
-    'lof': 'Local Outlier Factor',
+    lof: 'Local Outlier Factor',
     'z-score': 'Z-Score',
-    'iqr': 'IQR Method',
+    iqr: 'IQR Method',
   }
 
   ctx.fillText(`Method: ${methodNames[state.method]}`, panelX + 10, yOffset)
@@ -338,7 +364,7 @@ function drawInfoPanel(
   yOffset += 18
 
   // Number of anomalies
-  const anomalyCount = state.points.filter(p => p.isAnomaly).length
+  const anomalyCount = state.points.filter((p) => p.isAnomaly).length
   ctx.fillText(`Anomalies: ${anomalyCount}/${state.points.length}`, panelX + 10, yOffset)
   yOffset += 18
 

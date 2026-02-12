@@ -19,14 +19,16 @@ export function HierarchicalClusteringPlayground() {
     HierarchicalClusteringEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const [animationSpeed, setAnimationSpeed] = useState(500)
 
   // Data management
   const [points, setPoints] = useState<DataPoint[]>([])
   const [targetClusters, setTargetClusters] = useState(3)
   const [linkageType, setLinkageType] = useState<'single' | 'complete' | 'average'>('average')
-  const [clusteringType, setClusteringType] = useState<'agglomerative' | 'divisive'>('agglomerative')
+  const [clusteringType, setClusteringType] = useState<'agglomerative' | 'divisive'>(
+    'agglomerative'
+  )
   const [showConnections, setShowConnections] = useState(true)
 
   // Canvas configuration
@@ -246,7 +248,8 @@ export function HierarchicalClusteringPlayground() {
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Build a hierarchy of clusters using agglomerative (bottom-up) approach. Watch points merge step by step based on linkage criteria.
+          Build a hierarchy of clusters using agglomerative (bottom-up) approach. Watch points merge
+          step by step based on linkage criteria.
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -496,15 +499,17 @@ export function HierarchicalClusteringPlayground() {
                 <p>
                   <strong>Hierarchical Clustering</strong> creates a hierarchy of clusters:
                 </p>
-                
+
                 <div className="mt-3">
                   <p className="font-semibold mb-1">Clustering Types:</p>
                   <ul className="space-y-1 ml-2">
                     <li>
-                      <strong>Agglomerative (Bottom-up):</strong> Start with each point as a cluster, merge closest pairs
+                      <strong>Agglomerative (Bottom-up):</strong> Start with each point as a
+                      cluster, merge closest pairs
                     </li>
                     <li>
-                      <strong>Divisive (Top-down):</strong> Start with one cluster, recursively split into smaller ones
+                      <strong>Divisive (Top-down):</strong> Start with one cluster, recursively
+                      split into smaller ones
                     </li>
                   </ul>
                 </div>

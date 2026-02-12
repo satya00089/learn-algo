@@ -55,7 +55,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-variance.png',
   },
   'gradient-descent': {
-    title: 'Gradient Descent Optimization Algorithm - Learning Rate & Momentum | Interactive 3D Visualization',
+    title:
+      'Gradient Descent Optimization Algorithm - Learning Rate & Momentum | Interactive 3D Visualization',
     description:
       'Master gradient descent optimization with interactive 3D visualization. Explore learning rate impact, momentum acceleration, and convergence behavior. Watch the optimizer navigate loss landscapes, find global minima, and understand batch vs stochastic gradient descent with step-by-step parameter updates.',
     keywords: [
@@ -161,7 +162,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-standard-scaler.png',
   },
   'linear-regression': {
-    title: 'Linear Regression with Gradient Descent - Least Squares Method | Interactive Visualization',
+    title:
+      'Linear Regression with Gradient Descent - Least Squares Method | Interactive Visualization',
     description:
       'Master linear regression with gradient descent optimization through interactive 2D visualization. Watch loss function decrease, observe weight and bias updates, and see prediction line fit to data in real-time. Explore ordinary least squares (OLS), cost function minimization, and step-by-step gradient descent iterations for supervised learning.',
     keywords: [
@@ -198,7 +200,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-linear-regression.png',
   },
   'polynomial-regression': {
-    title: 'Polynomial Regression - Non-Linear Curve Fitting with Gradient Descent | Interactive Visualization',
+    title:
+      'Polynomial Regression - Non-Linear Curve Fitting with Gradient Descent | Interactive Visualization',
     description:
       'Master polynomial regression for non-linear curve fitting with interactive visualization. Explore polynomial features, adjust degree (quadratic, cubic), and watch gradient descent optimize coefficients. Understand overfitting vs underfitting, feature transformation, and when to use polynomial regression for complex data patterns.',
     keywords: [
@@ -232,7 +235,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-polynomial-regression.png',
   },
   'logistic-regression': {
-    title: 'Logistic Regression - Binary Classification with Sigmoid Function | Interactive Visualization',
+    title:
+      'Logistic Regression - Binary Classification with Sigmoid Function | Interactive Visualization',
     description:
       'Master logistic regression for binary classification with interactive visualization. Explore sigmoid activation function, decision boundary formation, and gradient descent optimization. Watch probability predictions, understand log-loss function, and see real-time classification with step-by-step training iterations for supervised learning.',
     keywords: [
@@ -287,7 +291,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-anomaly-detection.png',
   },
   'decision-tree': {
-    title: 'Decision Tree Classifier - CART Algorithm with Gini Impurity | Interactive Visualization',
+    title:
+      'Decision Tree Classifier - CART Algorithm with Gini Impurity | Interactive Visualization',
     description:
       'Master decision tree classification with interactive CART (Classification and Regression Trees) visualization. Explore Gini impurity, information gain, and entropy measures. Watch recursive binary splitting build decision boundaries, understand pruning techniques, and see step-by-step tree construction for multi-class classification problems.',
     keywords: [
@@ -446,8 +451,7 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-dbscan.png',
   },
   'hierarchical-clustering': {
-    title:
-      'Hierarchical Clustering - Agglomerative Clustering | Interactive Visualization',
+    title: 'Hierarchical Clustering - Agglomerative Clustering | Interactive Visualization',
     description:
       'Master Hierarchical Clustering with step-by-step visualization. Explore agglomerative (bottom-up) clustering, linkage methods (single, complete, average), and dendrogram construction. Interactive playground with dynamic cluster merging, distance matrix visualization, and target cluster selection.',
     keywords: [

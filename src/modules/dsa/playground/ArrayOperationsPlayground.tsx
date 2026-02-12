@@ -16,11 +16,13 @@ import {
   FaBroom,
 } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
+import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { ArrayOperationsEngine } from '../engines/ArrayOperationsEngine'
 import { useArrayOperationsPlayground } from '../hooks/useArrayOperationsPlayground'
 import { drawArray } from '../visualizers/sortingVisualizer'
@@ -31,6 +33,9 @@ import { drawArray } from '../visualizers/sortingVisualizer'
  */
 export function ArrayOperationsPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
   const {
     arraySize,
     setArraySize,
@@ -46,7 +51,7 @@ export function ArrayOperationsPlayground() {
     ArrayOperationsEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Operation inputs
   const [appendValue, setAppendValue] = useState('')
@@ -293,7 +298,18 @@ export function ArrayOperationsPlayground() {
             <Breadcrumbs />
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Array Operations</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -778,6 +794,14 @@ export function ArrayOperationsPlayground() {
             )}
           </div>
         </div>
+
+        {/* Theory Modal */}
+        <TheoryModal
+          isOpen={showExplanation}
+          onClose={() => setShowExplanation(false)}
+          theoryFile="/theory/dsa/array-operations.md"
+          title="Understanding Array Operations"
+        />
       </div>
     </div>
   )

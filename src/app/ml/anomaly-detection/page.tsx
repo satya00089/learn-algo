@@ -3,7 +3,8 @@ import { AnomalyDetectionPlayground } from '@/modules/ml/playground/AnomalyDetec
 
 export const metadata: Metadata = {
   title: 'Anomaly Detection - Interactive ML Algorithms',
-  description: 'Explore anomaly detection algorithms including Isolation Forest, One-Class SVM, Local Outlier Factor, and statistical methods. Identify outliers in your data with interactive visualizations.',
+  description:
+    'Explore anomaly detection algorithms including Isolation Forest, One-Class SVM, Local Outlier Factor, and statistical methods. Identify outliers in your data with interactive visualizations.',
   keywords: [
     'anomaly detection',
     'outlier detection',
@@ -22,7 +23,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Anomaly Detection - Interactive ML Algorithms',
-    description: 'Explore anomaly detection algorithms including Isolation Forest, One-Class SVM, Local Outlier Factor, and statistical methods.',
+    description:
+      'Explore anomaly detection algorithms including Isolation Forest, One-Class SVM, Local Outlier Factor, and statistical methods.',
     images: [
       {
         url: '/og/og-ml-anomaly-detection.png',

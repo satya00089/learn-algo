@@ -4,11 +4,13 @@ import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { MdVibration } from 'react-icons/md'
+import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup } from '@/core/controls'
+import { ControlGroup, Button } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { SelectionSortEngine } from '../engines/SelectionSortEngine'
 import { useSelectionSortPlayground } from '../hooks/useSelectionSortPlayground'
 import { drawArray } from '../visualizers/sortingVisualizer'
@@ -21,6 +23,9 @@ import { initializeAudioContext, playSwapHaptic } from '../utils/hapticFeedback'
 export function SelectionSortPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
   const [isVibrationEnabled, setIsVibrationEnabled] = useState(true)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
   const {
     arraySize,
     setArraySize,
@@ -36,7 +41,7 @@ export function SelectionSortPlayground() {
     SelectionSortEngine['getState']
   > | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const previousSwapCountRef = useRef(0)
 
   // Canvas configuration
@@ -250,7 +255,18 @@ export function SelectionSortPlayground() {
             <Breadcrumbs />
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Selection Sort</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
@@ -588,6 +604,14 @@ export function SelectionSortPlayground() {
             )}
           </div>
         </div>
+
+        {/* Theory Modal */}
+        <TheoryModal
+          isOpen={showExplanation}
+          onClose={() => setShowExplanation(false)}
+          theoryFile="/theory/dsa/selection-sort.md"
+          title="Understanding Selection Sort"
+        />
       </div>
     </div>
   )

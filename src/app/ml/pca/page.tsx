@@ -3,7 +3,8 @@ import { PCAPlayground } from '@/modules/ml/playground/PCAPlayground'
 
 export const metadata: Metadata = {
   title: 'Principal Component Analysis (PCA) - Dimensionality Reduction',
-  description: 'Explore Principal Component Analysis for dimensionality reduction. See how PCA finds principal components that capture maximum variance in your data, with interactive step-by-step visualization.',
+  description:
+    'Explore Principal Component Analysis for dimensionality reduction. See how PCA finds principal components that capture maximum variance in your data, with interactive step-by-step visualization.',
   keywords: [
     'principal component analysis',
     'pca',
@@ -22,7 +23,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'PCA - Principal Component Analysis Visualization',
-    description: 'Interactive visualization of Principal Component Analysis for dimensionality reduction. Learn how PCA transforms high-dimensional data.',
+    description:
+      'Interactive visualization of Principal Component Analysis for dimensionality reduction. Learn how PCA transforms high-dimensional data.',
     images: [
       {
         url: '/og/og-ml-pca.png',
@@ -33,6 +35,8 @@ export const metadata: Metadata = {
     ],
   },
 }
+
+export const dynamic = 'force-dynamic'
 
 export default function PCAPage() {
   return <PCAPlayground />

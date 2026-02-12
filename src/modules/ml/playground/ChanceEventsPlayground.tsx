@@ -46,8 +46,8 @@ export function ChanceEventsPlayground() {
   const [debugMode, setDebugMode] = useState(false)
   const [debugMetrics, setDebugMetrics] = useState<DebugMetrics | null>(null)
   const [debugExpanded, setDebugExpanded] = useState(true)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
-  const animationFrameRef = useRef<number>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const animationFrameRef = useRef<number | undefined>(undefined)
 
   // Canvas configuration
   const canvasConfig = useMemo(

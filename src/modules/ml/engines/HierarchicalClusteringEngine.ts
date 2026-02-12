@@ -82,7 +82,7 @@ export class HierarchicalClusteringEngine {
     }))
 
     let clusters: HierarchicalCluster[]
-    
+
     if (clusteringType === 'agglomerative') {
       // Agglomerative: Start with each point as its own cluster
       clusters = points.map((p, idx) => ({
@@ -108,16 +108,18 @@ export class HierarchicalClusteringEngine {
         x: sumX / points.length,
         y: sumY / points.length,
       }
-      
-      clusters = [{
-        id: 0,
-        points: allPointIndices,
-        centroid,
-        color: this.clusterColors[0],
-        children: [],
-        mergeDistance: 0,
-        size: points.length,
-      }]
+
+      clusters = [
+        {
+          id: 0,
+          points: allPointIndices,
+          centroid,
+          color: this.clusterColors[0],
+          children: [],
+          mergeDistance: 0,
+          size: points.length,
+        },
+      ]
     }
 
     // Calculate initial distance matrix
@@ -298,10 +300,7 @@ export class HierarchicalClusteringEngine {
     this.state.clusters = remainingClusters
 
     // Recalculate distance matrix
-    this.state.distanceMatrix = this.calculateDistanceMatrix(
-      this.state.clusters,
-      this.state.points
-    )
+    this.state.distanceMatrix = this.calculateDistanceMatrix(this.state.clusters, this.state.points)
   }
 
   /**
@@ -375,7 +374,7 @@ export class HierarchicalClusteringEngine {
       this.state.isComplete = true
       return this.getState()
     }
-    
+
     const cluster = this.state.clusters[clusterToSplit.index]
     if (cluster.points.length < 2) {
       this.state.phase = 'complete'
@@ -425,31 +424,31 @@ export class HierarchicalClusteringEngine {
    */
   private splitCluster(clusterIdx: number): void {
     const cluster = this.state.clusters[clusterIdx]
-    const points = cluster.points.map(idx => this.state.points[idx])
-    
+    const points = cluster.points.map((idx) => this.state.points[idx])
+
     // Simple k-means with k=2 to split the cluster
     // Initialize two centroids at extreme points
     let centroid1: DataPoint = points[0]
     let centroid2: DataPoint = points.at(-1) || points[0]
-    
+
     // Run a few iterations of k-means
     for (let iter = 0; iter < 5; iter++) {
       const group1: number[] = []
       const group2: number[] = []
-      
+
       // Assign points to nearest centroid
       for (const pidx of cluster.points) {
         const p = this.state.points[pidx]
         const dist1 = this.distance(p, centroid1)
         const dist2 = this.distance(p, centroid2)
-        
+
         if (dist1 < dist2) {
           group1.push(pidx)
         } else {
           group2.push(pidx)
         }
       }
-      
+
       // Update centroids
       if (group1.length > 0) {
         centroid1 = this.calculateCentroid(group1)
@@ -457,12 +456,12 @@ export class HierarchicalClusteringEngine {
       if (group2.length > 0) {
         centroid2 = this.calculateCentroid(group2)
       }
-      
+
       // Store final groups
       if (iter === 4) {
         const newId1 = this.state.clusters.length
         const newId2 = newId1 + 1
-        
+
         const newCluster1: HierarchicalCluster = {
           id: newId1,
           points: group1,
@@ -472,7 +471,7 @@ export class HierarchicalClusteringEngine {
           mergeDistance: 0,
           size: group1.length,
         }
-        
+
         const newCluster2: HierarchicalCluster = {
           id: newId2,
           points: group2,
@@ -482,7 +481,7 @@ export class HierarchicalClusteringEngine {
           mergeDistance: 0,
           size: group2.length,
         }
-        
+
         // Update point cluster IDs
         for (const pidx of group1) {
           this.state.points[pidx].clusterId = newId1
@@ -490,11 +489,11 @@ export class HierarchicalClusteringEngine {
         for (const pidx of group2) {
           this.state.points[pidx].clusterId = newId2
         }
-        
+
         // Remove old cluster and add two new ones
         this.state.clusters = this.state.clusters.filter((_, i) => i !== clusterIdx)
         this.state.clusters.push(newCluster1, newCluster2)
-        
+
         // Recalculate distance matrix
         this.state.distanceMatrix = this.calculateDistanceMatrix(
           this.state.clusters,

@@ -22,7 +22,8 @@ export function drawGMMClustering(
 
   // Transform functions
   const xToCanvas = (x: number) => padding.left + ((x - xMin) / (xMax - xMin)) * plotWidth
-  const yToCanvas = (y: number) => padding.top + plotHeight - ((y - yMin) / (yMax - yMin)) * plotHeight
+  const yToCanvas = (y: number) =>
+    padding.top + plotHeight - ((y - yMin) / (yMax - yMin)) * plotHeight
 
   ctx.clearRect(0, 0, width, height)
 
@@ -337,9 +338,10 @@ function drawLegend(
   const legendY = 20
 
   // Use theme-aware background: light in light mode, dark in dark mode
-  const backgroundColor = textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(30, 41, 59, 0.9)'
+  const backgroundColor =
+    textColor === '#1e293b' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(30, 41, 59, 0.9)'
   const borderColor = textColor === '#1e293b' ? '#cbd5e1' : '#475569'
-  
+
   ctx.fillStyle = backgroundColor
   ctx.fillRect(legendX, legendY, 130, components.length * 25 + 20)
   ctx.strokeStyle = borderColor
@@ -415,7 +417,11 @@ export function drawLogLikelihoodChart(
       ctx.font = '12px Inter, system-ui, sans-serif'
       ctx.fillStyle = textColor
       ctx.textAlign = 'center'
-      ctx.fillText(`Initial Log-Likelihood: ${state.logLikelihood.toFixed(2)}`, width / 2, height / 2 - 10)
+      ctx.fillText(
+        `Initial Log-Likelihood: ${state.logLikelihood.toFixed(2)}`,
+        width / 2,
+        height / 2 - 10
+      )
       ctx.fillStyle = textColor + '99' // 60% opacity
       ctx.fillText('Run iterations to see convergence chart', width / 2, height / 2 + 10)
     } else {

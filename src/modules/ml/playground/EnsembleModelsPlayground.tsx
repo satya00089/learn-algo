@@ -38,7 +38,7 @@ export function EnsembleModelsPlayground() {
   const [showDecisionBoundary, setShowDecisionBoundary] = useState(true)
   const [isDebugMode, setIsDebugMode] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Canvas configuration
   const canvasConfig = useMemo(

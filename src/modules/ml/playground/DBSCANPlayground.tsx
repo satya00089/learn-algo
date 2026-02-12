@@ -4,11 +4,13 @@ import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { TbCircleDotted, TbTopologyRing } from 'react-icons/tb'
+import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, Button } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import { TheoryModal } from '@/components/TheoryModal'
 import { DBSCANEngine } from '../engines/DBSCANEngine'
 import { useDBSCANPlayground } from '../hooks/useDBSCANPlayground'
 import { drawDBSCANClustering } from '../visualizers/dbscanVisualizer'
@@ -30,7 +32,10 @@ export function DBSCANPlayground() {
   const engineRef = useRef<DBSCANEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<DBSCANEngine['getState']> | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const playIntervalRef = useRef<NodeJS.Timeout>()
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
+  const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // DBSCAN parameters
   const [points, setPoints] = useState<DataPoint[]>([])
@@ -63,13 +68,13 @@ export function DBSCANPlayground() {
       for (let i = 0; i < pointsPerMoon; i++) {
         const angle = (i / pointsPerMoon) * Math.PI
         const noise = (Math.random() - 0.5) * 1.5
-        
+
         // Upper moon
         newPoints.push({
           x: Math.cos(angle) * 10 - 5,
           y: Math.sin(angle) * 5 + noise + 2,
         })
-        
+
         // Lower moon
         newPoints.push({
           x: Math.cos(angle) * 10 + 5,
@@ -191,7 +196,18 @@ export function DBSCANPlayground() {
         )
       }
     },
-    [engineState, canvasConfig, xMin, xMax, yMin, yMax, showNeighborhoods, showConnections, theme, epsilon]
+    [
+      engineState,
+      canvasConfig,
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+      showNeighborhoods,
+      showConnections,
+      theme,
+      epsilon,
+    ]
   )
 
   const { canvasRef: mainCanvasRef } = useCanvas({ config: canvasConfig, draw: drawMain })
@@ -279,16 +295,28 @@ export function DBSCANPlayground() {
               DBSCAN: Density-Based Spatial Clustering
             </h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          <strong>Density-Based Spatial Clustering of Applications with Noise (DBSCAN)</strong> - 
-          Watch the algorithm examine each point, calculate neighbors within epsilon (ε) radius, 
-          classify points as <span className="text-red-600 dark:text-red-400 font-semibold">Core</span>,{' '}
+          <strong>Density-Based Spatial Clustering of Applications with Noise (DBSCAN)</strong> -
+          Watch the algorithm examine each point, calculate neighbors within epsilon (ε) radius,
+          classify points as{' '}
+          <span className="text-red-600 dark:text-red-400 font-semibold">Core</span>,{' '}
           <span className="text-yellow-600 dark:text-yellow-400 font-semibold">Border</span>, or{' '}
-          <span className="text-gray-700 dark:text-gray-400 font-semibold">Noise</span>,{' '}
-          and progressively form clusters without needing to specify K.
+          <span className="text-gray-700 dark:text-gray-400 font-semibold">Noise</span>, and
+          progressively form clusters without needing to specify K.
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -296,133 +324,133 @@ export function DBSCANPlayground() {
             {/* Controls Bar */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
               <div className="flex flex-wrap items-center gap-3">
-              {/* Playback Controls */}
-              <div className="flex gap-1">
-                <button
-                  onClick={isPlaying ? handlePause : handlePlay}
-                  disabled={engineState?.isComplete}
-                  className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title={isPlaying ? 'Pause' : 'Play'}
-                >
-                  {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
-                </button>
-                <button
-                  onClick={handleStep}
-                  disabled={isPlaying || engineState?.isComplete}
-                  className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Step"
-                >
-                  <FaStepForward size={12} />
-                </button>
-                <button
-                  onClick={handleFastForward}
-                  disabled={isPlaying || engineState?.isComplete}
-                  className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Run to Completion"
-                >
-                  <FaFastForward size={12} />
-                </button>
-                <button
-                  onClick={handleReset}
-                  className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                  title="Reset"
-                >
-                  <FaRedo size={12} />
-                </button>
-              </div>
-
-              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-
-              {/* Speed Control */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-600 dark:text-gray-400">Speed:</span>
-                <input
-                  type="number"
-                  value={animationSpeed}
-                  min={10}
-                  max={2000}
-                  step={50}
-                  onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 100)}
-                  className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                />
-              </div>
-
-              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-
-              {/* Epsilon Control */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-600 dark:text-gray-400">ε:</span>
-                <input
-                  type="number"
-                  value={epsilon}
-                  onChange={(e) => setEpsilon(Number.parseFloat(e.target.value) || 2.5)}
-                  disabled={isPlaying}
-                  min={0.5}
-                  max={10}
-                  step={0.5}
-                  className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-                  title="Epsilon - Neighborhood Radius"
-                />
-              </div>
-
-              {/* MinPts Control */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-600 dark:text-gray-400">MinPts:</span>
-                <input
-                  type="number"
-                  value={minPts}
-                  onChange={(e) => setMinPts(Number.parseInt(e.target.value) || 4)}
-                  disabled={isPlaying}
-                  min={1}
-                  max={20}
-                  step={1}
-                  className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
-                  title="Minimum Points for Dense Region"
-                />
-              </div>
-
-              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-
-              {/* Visualization Controls */}
-              <div className="flex items-center gap-2">
-                <Tooltip text="Show ε-Neighborhoods">
+                {/* Playback Controls */}
+                <div className="flex gap-1">
                   <button
-                    onClick={() => setShowNeighborhoods(!showNeighborhoods)}
-                    className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
-                      showNeighborhoods
-                        ? 'bg-purple-600 border-purple-600 text-white'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
+                    onClick={isPlaying ? handlePause : handlePlay}
+                    disabled={engineState?.isComplete}
+                    className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title={isPlaying ? 'Pause' : 'Play'}
                   >
-                    <TbCircleDotted size={16} />
+                    {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
                   </button>
-                </Tooltip>
-                <Tooltip text="Show Density Connections">
                   <button
-                    onClick={() => setShowConnections(!showConnections)}
-                    className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
-                      showConnections
-                        ? 'bg-teal-600 border-teal-600 text-white'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
+                    onClick={handleStep}
+                    disabled={isPlaying || engineState?.isComplete}
+                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Step"
                   >
-                    <TbTopologyRing size={16} />
+                    <FaStepForward size={12} />
                   </button>
-                </Tooltip>
-                <Tooltip text="Debug Mode - Show Iteration History">
                   <button
-                    onClick={() => setIsDebugMode(!isDebugMode)}
-                    className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
-                      isDebugMode
-                        ? 'bg-indigo-600 border-indigo-600 text-white'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
+                    onClick={handleFastForward}
+                    disabled={isPlaying || engineState?.isComplete}
+                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Run to Completion"
                   >
-                    <VscDebugAltSmall size={16} />
+                    <FaFastForward size={12} />
                   </button>
-                </Tooltip>
+                  <button
+                    onClick={handleReset}
+                    className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                    title="Reset"
+                  >
+                    <FaRedo size={12} />
+                  </button>
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                {/* Speed Control */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">Speed:</span>
+                  <input
+                    type="number"
+                    value={animationSpeed}
+                    min={10}
+                    max={2000}
+                    step={50}
+                    onChange={(e) => setAnimationSpeed(Number.parseInt(e.target.value) || 100)}
+                    className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                {/* Epsilon Control */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">ε:</span>
+                  <input
+                    type="number"
+                    value={epsilon}
+                    onChange={(e) => setEpsilon(Number.parseFloat(e.target.value) || 2.5)}
+                    disabled={isPlaying}
+                    min={0.5}
+                    max={10}
+                    step={0.5}
+                    className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+                    title="Epsilon - Neighborhood Radius"
+                  />
+                </div>
+
+                {/* MinPts Control */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">MinPts:</span>
+                  <input
+                    type="number"
+                    value={minPts}
+                    onChange={(e) => setMinPts(Number.parseInt(e.target.value) || 4)}
+                    disabled={isPlaying}
+                    min={1}
+                    max={20}
+                    step={1}
+                    className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+                    title="Minimum Points for Dense Region"
+                  />
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                {/* Visualization Controls */}
+                <div className="flex items-center gap-2">
+                  <Tooltip text="Show ε-Neighborhoods">
+                    <button
+                      onClick={() => setShowNeighborhoods(!showNeighborhoods)}
+                      className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
+                        showNeighborhoods
+                          ? 'bg-purple-600 border-purple-600 text-white'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <TbCircleDotted size={16} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Show Density Connections">
+                    <button
+                      onClick={() => setShowConnections(!showConnections)}
+                      className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
+                        showConnections
+                          ? 'bg-teal-600 border-teal-600 text-white'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <TbTopologyRing size={16} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Debug Mode - Show Iteration History">
+                    <button
+                      onClick={() => setIsDebugMode(!isDebugMode)}
+                      className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
+                        isDebugMode
+                          ? 'bg-indigo-600 border-indigo-600 text-white'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <VscDebugAltSmall size={16} />
+                    </button>
+                  </Tooltip>
+                </div>
               </div>
-            </div>
             </div>
 
             {/* Main Canvas */}
@@ -479,23 +507,33 @@ export function DBSCANPlayground() {
                 <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Clusters:</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{engineState.statistics.totalClusters}</span>
+                    <span className="font-mono text-gray-900 dark:text-white">
+                      {engineState.statistics.totalClusters}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Core Points:</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{engineState.statistics.totalCore}</span>
+                    <span className="font-mono text-gray-900 dark:text-white">
+                      {engineState.statistics.totalCore}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Border Points:</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{engineState.statistics.totalBorder}</span>
+                    <span className="font-mono text-gray-900 dark:text-white">
+                      {engineState.statistics.totalBorder}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Noise Points:</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{engineState.statistics.totalNoise}</span>
+                    <span className="font-mono text-gray-900 dark:text-white">
+                      {engineState.statistics.totalNoise}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Total Points:</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{engineState.points.length}</span>
+                    <span className="font-mono text-gray-900 dark:text-white">
+                      {engineState.points.length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Status:</span>
@@ -531,7 +569,9 @@ export function DBSCANPlayground() {
                   </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white mb-1">2. Point Classification</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                    2. Point Classification
+                  </p>
                   <p className="text-gray-600 dark:text-gray-400">
                     <strong>Core</strong>: Has ≥MinPts neighbors within ε
                     <br />
@@ -541,7 +581,9 @@ export function DBSCANPlayground() {
                   </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white mb-1">3. Cluster Formation</p>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                    3. Cluster Formation
+                  </p>
                   <p className="text-gray-600 dark:text-gray-400">
                     For each unvisited point, find neighbors. If core, expand cluster by connecting
                     all density-reachable points. Continue until all points processed.
@@ -564,6 +606,13 @@ export function DBSCANPlayground() {
           </div>
         </div>
       </div>
+
+      <TheoryModal
+        isOpen={showExplanation}
+        onClose={() => setShowExplanation(false)}
+        theoryFile="/theory/ml/dbscan.md"
+        title="Understanding DBSCAN"
+      />
     </div>
   )
 }

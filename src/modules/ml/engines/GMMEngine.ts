@@ -92,7 +92,7 @@ export class GMMEngine {
 
     // Perform initial E-step to compute proper responsibilities
     this.performEStep(state)
-    
+
     // Calculate initial log-likelihood
     state.logLikelihood = this.calculateLogLikelihoodFromState(state)
 
@@ -246,7 +246,7 @@ export class GMMEngine {
 
     const n = points.length
     const minVar = 0.1 // Minimum variance for stability
-    
+
     return [
       [Math.max(sumXX / n, minVar), sumXY / n],
       [sumXY / n, Math.max(sumYY / n, minVar)],
@@ -321,7 +321,7 @@ export class GMMEngine {
     // Calculate PDF
     const normalization = 1 / (2 * Math.PI * Math.sqrt(Math.abs(det)))
     const pdf = normalization * Math.exp(-0.5 * mahalanobis)
-    
+
     // Return a minimum probability to avoid zeros
     return Math.max(pdf, this.epsilon)
   }
@@ -451,7 +451,7 @@ export class GMMEngine {
         covYY += resp * dy * dy
         covXY += resp * dx * dy
       }
-      
+
       // Add regularization to prevent singular matrices
       const newCovariance = [
         [Math.max(covXX / nk, minCovariance), covXY / nk],
@@ -510,15 +510,15 @@ export class GMMEngine {
     if (!isFinite(oldLogLikelihood) || oldLogLikelihood === -Infinity) {
       return false
     }
-    
+
     const threshold = this.config.convergenceThreshold
     const change = Math.abs(newLogLikelihood - oldLogLikelihood)
-    
+
     // Also check if log-likelihood is decreasing significantly (shouldn't happen but can indicate numerical issues)
     if (newLogLikelihood < oldLogLikelihood - threshold) {
       console.warn('Log-likelihood decreased, possible numerical instability')
     }
-    
+
     return change < threshold
   }
 
@@ -608,17 +608,14 @@ export class GMMEngine {
    */
   getState(): GMMState {
     return {
-      components: this.state.components.map((c) => ({ 
+      components: this.state.components.map((c) => ({
         ...c,
         mean: { ...c.mean },
-        covariance: [
-          [...c.covariance[0]],
-          [...c.covariance[1]]
-        ]
+        covariance: [[...c.covariance[0]], [...c.covariance[1]]],
       })),
-      points: this.state.points.map((p) => ({ 
-        ...p, 
-        responsibilities: [...p.responsibilities] 
+      points: this.state.points.map((p) => ({
+        ...p,
+        responsibilities: [...p.responsibilities],
       })),
       iteration: this.state.iteration,
       isConverged: this.state.isConverged,
@@ -628,12 +625,12 @@ export class GMMEngine {
       previousLogLikelihood: this.state.previousLogLikelihood,
       history: this.state.history.map((h) => ({
         ...h,
-        components: h.components.map((c) => ({ ...c }))
+        components: h.components.map((c) => ({ ...c })),
       })),
       componentTrajectories: new Map(
         Array.from(this.state.componentTrajectories.entries()).map(([id, trajectory]) => [
           id,
-          trajectory.map((p) => ({ ...p }))
+          trajectory.map((p) => ({ ...p })),
         ])
       ),
     }

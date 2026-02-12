@@ -73,7 +73,7 @@ export function AnomalyDetectionPlayground() {
   const generateData = useCallback(
     (type: 'blobs' | 'circles' | 'uniform' | 'anomalous') => {
       const newPoints: DataPoint[] = []
-      
+
       // Calculate number of anomalies based on contamination
       const numAnomalies = Math.max(1, Math.floor(numPoints * contamination))
       const numNormal = numPoints - numAnomalies
@@ -132,9 +132,10 @@ export function AnomalyDetectionPlayground() {
         for (let i = 0; i < numAnomalies; i++) {
           // Random positions between circles or far outside
           const angle = Math.random() * 2 * Math.PI
-          const radius = Math.random() > 0.5 
-            ? Math.random() * 2 + 1 // Between inner circles
-            : Math.random() * 3 + 12 // Far outside
+          const radius =
+            Math.random() > 0.5
+              ? Math.random() * 2 + 1 // Between inner circles
+              : Math.random() * 3 + 12 // Far outside
           newPoints.push({
             x: radius * Math.cos(angle),
             y: radius * Math.sin(angle),

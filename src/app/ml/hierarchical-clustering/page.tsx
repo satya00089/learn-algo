@@ -57,7 +57,7 @@ const faqItems = [
   {
     question: 'What are the different linkage methods?',
     answer:
-      'The main linkage methods are: Single Linkage (minimum distance between any two points in different clusters, tends to create elongated clusters), Complete Linkage (maximum distance between any two points, creates compact clusters), and Average Linkage (average distance between all pairs of points, balances between single and complete). Other methods include Ward\'s linkage and centroid linkage.',
+      "The main linkage methods are: Single Linkage (minimum distance between any two points in different clusters, tends to create elongated clusters), Complete Linkage (maximum distance between any two points, creates compact clusters), and Average Linkage (average distance between all pairs of points, balances between single and complete). Other methods include Ward's linkage and centroid linkage.",
   },
   {
     question: 'How is hierarchical clustering different from K-Means?',
@@ -72,7 +72,7 @@ const faqItems = [
   {
     question: 'What are the advantages of hierarchical clustering?',
     answer:
-      'Advantages include: no need to specify the number of clusters beforehand, produces a dendrogram showing relationships at all levels, works with any distance metric, can reveal hierarchical structure in data, and doesn\'t require initialization. However, it has O(n²log n) time complexity making it slower for large datasets, and merge decisions are permanent.',
+      "Advantages include: no need to specify the number of clusters beforehand, produces a dendrogram showing relationships at all levels, works with any distance metric, can reveal hierarchical structure in data, and doesn't require initialization. However, it has O(n²log n) time complexity making it slower for large datasets, and merge decisions are permanent.",
   },
 ]
 

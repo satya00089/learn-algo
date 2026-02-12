@@ -12,13 +12,18 @@ import {
   FaExchangeAlt,
   FaVectorSquare,
 } from 'react-icons/fa'
+import { TbRotate360 } from 'react-icons/tb'
+import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip } from '@/core/controls'
+import { Button } from '@/core/controls/Button'
 import { ThemeToggle, useTheme } from '@/core/theme'
+import { TheoryModal } from '@/components/TheoryModal'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { PCAEngine } from '../engines/PCAEngine'
 import { drawPCA } from '../visualizers/pcaVisualizer'
+import { PCA3DScene } from '../visualizers/PCA3DScene'
 import type { DataPoint } from '../types'
 
 // Gaussian random number generator
@@ -33,9 +38,7 @@ export function PCAPlayground() {
 
   // Engine state
   const engineRef = useRef<PCAEngine | null>(null)
-  const [engineState, setEngineState] = useState<ReturnType<
-    PCAEngine['getState']
-  > | null>(null)
+  const [engineState, setEngineState] = useState<ReturnType<PCAEngine['getState']> | null>(null)
 
   // Animation state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -43,16 +46,21 @@ export function PCAPlayground() {
   const animationRef = useRef<NodeJS.Timeout | null>(null)
 
   // Data generation
-  const [dataType, setDataType] = useState<'iris' | 'swiss-roll' | 'random' | 'correlated'>('iris')
-  const [numPoints, setNumPoints] = useState(100)
+  const [dataType, setDataType] = useState<'iris' | 'wine' | 'breast-cancer' | 'mnist'>('iris')
+  const [numPoints, setNumPoints] = useState(150)
 
   // Algorithm parameters
   const [numComponents, setNumComponents] = useState(2)
+  const [view3D, setView3D] = useState(false)
 
   // Visualization options
   const [showOriginal, setShowOriginal] = useState(true)
   const [showTransformed, setShowTransformed] = useState(true)
   const [showComponents, setShowComponents] = useState(true)
+  const [autoRotate, setAutoRotate] = useState(true)
+  const [showExplanation, setShowExplanation] = useState(
+    process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
+  )
 
   // Canvas configuration
   const canvasConfig = useMemo(
@@ -65,60 +73,156 @@ export function PCAPlayground() {
   )
 
   // Generate sample data
+  // NOTE: This generates simulated 2D/3D projections that represent typical PCA results
+  // from the original high-dimensional datasets, not actual dimensionality reduction
   const generateData = useCallback(
-    (type: 'iris' | 'swiss-roll' | 'random' | 'correlated') => {
+    (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist') => {
       const newPoints: DataPoint[] = []
+      const use3D = view3D || numComponents >= 3
 
       if (type === 'iris') {
-        // Simplified Iris dataset (first 2 features, 3 classes)
-        const irisData = [
-          // Setosa
-          ...Array.from({ length: Math.floor(numPoints / 3) }, () => ({
-            x: 5.1 + gaussianRandom() * 0.3,
-            y: 3.5 + gaussianRandom() * 0.3,
-          })),
-          // Versicolor
-          ...Array.from({ length: Math.floor(numPoints / 3) }, () => ({
-            x: 5.9 + gaussianRandom() * 0.4,
-            y: 2.8 + gaussianRandom() * 0.3,
-          })),
-          // Virginica
-          ...Array.from({ length: Math.floor(numPoints / 3) }, () => ({
-            x: 6.3 + gaussianRandom() * 0.5,
-            y: 3.0 + gaussianRandom() * 0.4,
-          })),
-        ]
-        newPoints.push(...irisData.slice(0, numPoints))
-      } else if (type === 'swiss-roll') {
-        // Swiss roll manifold
-        for (let i = 0; i < numPoints; i++) {
-          const t = (i / numPoints) * 3 + gaussianRandom() * 0.1
-          const x = t * Math.cos(t)
-          const y = t * Math.sin(t)
-          newPoints.push({ x, y })
+        // Classic Iris dataset - Original: 150 samples × 4 features
+        // Simulating what 2D/3D PCA projections would look like
+        const classSize = Math.floor(numPoints / 3)
+
+        // Setosa (clearly separable)
+        for (let i = 0; i < classSize; i++) {
+          const point: DataPoint = {
+            x: -2.0 + gaussianRandom() * 0.35,
+            y: 0.0 + gaussianRandom() * 0.35,
+          }
+          if (use3D) point.z = 0.0 + gaussianRandom() * 0.25
+          newPoints.push(point)
         }
-      } else if (type === 'correlated') {
-        // Highly correlated data
-        for (let i = 0; i < numPoints; i++) {
-          const base = gaussianRandom() * 3
-          newPoints.push({
-            x: base + gaussianRandom() * 0.5,
-            y: base * 0.8 + gaussianRandom() * 0.5,
-          })
+
+        // Versicolor (some overlap with Virginica)
+        for (let i = 0; i < classSize; i++) {
+          const point: DataPoint = {
+            x: 0.5 + gaussianRandom() * 0.5,
+            y: -0.5 + gaussianRandom() * 0.4,
+          }
+          if (use3D) point.z = 0.0 + gaussianRandom() * 0.4
+          newPoints.push(point)
         }
-      } else {
-        // Random data
-        for (let i = 0; i < numPoints; i++) {
-          newPoints.push({
-            x: gaussianRandom() * 6,
-            y: gaussianRandom() * 6,
-          })
+
+        // Virginica
+        for (let i = 0; i < numPoints - 2 * classSize; i++) {
+          const point: DataPoint = {
+            x: 1.5 + gaussianRandom() * 0.6,
+            y: 0.2 + gaussianRandom() * 0.5,
+          }
+          if (use3D) point.z = 0.4 + gaussianRandom() * 0.3
+          newPoints.push(point)
+        }
+      } else if (type === 'wine') {
+        // Wine Quality dataset - Original: 178 samples × 13 chemical features
+        // Simulating what 2D/3D PCA projections would look like
+        const classSize = Math.floor(numPoints / 3)
+
+        // Class 1 - High alcohol, low acidity, high phenols
+        for (let i = 0; i < classSize; i++) {
+          const point: DataPoint = {
+            x: 3.0 + gaussianRandom() * 0.6,
+            y: 0.5 + gaussianRandom() * 0.4,
+          }
+          if (use3D) point.z = 1.2 + gaussianRandom() * 0.4
+          newPoints.push(point)
+        }
+
+        // Class 2 - Medium alcohol, medium acidity, medium phenols
+        for (let i = 0; i < classSize; i++) {
+          const point: DataPoint = {
+            x: 0.0 + gaussianRandom() * 0.5,
+            y: -0.2 + gaussianRandom() * 0.5,
+          }
+          if (use3D) point.z = -0.1 + gaussianRandom() * 0.4
+          newPoints.push(point)
+        }
+
+        // Class 3 - Lower alcohol, higher acidity, lower phenols
+        for (let i = 0; i < numPoints - 2 * classSize; i++) {
+          const point: DataPoint = {
+            x: -2.5 + gaussianRandom() * 0.7,
+            y: 0.0 + gaussianRandom() * 0.6,
+          }
+          if (use3D) point.z = -1.0 + gaussianRandom() * 0.5
+          newPoints.push(point)
+        }
+      } else if (type === 'breast-cancer') {
+        // Breast Cancer Wisconsin dataset - Original: 569 samples × 30 features
+        // Simulating what 2D/3D PCA projections would look like
+        const malignantSize = Math.floor(numPoints * 0.37) // ~37% malignant
+
+        // Malignant tumors - larger, more irregular cells
+        for (let i = 0; i < malignantSize; i++) {
+          const point: DataPoint = {
+            x: 2.0 + gaussianRandom() * 0.8,
+            y: 0.3 + gaussianRandom() * 0.7,
+          }
+          if (use3D) point.z = 0.8 + gaussianRandom() * 0.6
+          newPoints.push(point)
+        }
+
+        // Benign tumors - smaller, more regular cells
+        for (let i = 0; i < numPoints - malignantSize; i++) {
+          const point: DataPoint = {
+            x: -1.5 + gaussianRandom() * 0.6,
+            y: -0.2 + gaussianRandom() * 0.5,
+          }
+          if (use3D) point.z = -0.8 + gaussianRandom() * 0.5
+          newPoints.push(point)
+        }
+      } else if (type === 'mnist') {
+        // MNIST handwritten digits - Original: 70,000 samples × 784 features (28×28 pixels)
+        // Simulating what 2D/3D PCA projections would look like
+        const digitsPerClass = Math.floor(numPoints / 4)
+
+        // Digit 0 (circular pattern)
+        for (let i = 0; i < digitsPerClass; i++) {
+          const angle = Math.random() * Math.PI * 2
+          const radius = 1.5 + gaussianRandom() * 0.3
+          const point: DataPoint = {
+            x: Math.cos(angle) * radius - 2,
+            y: Math.sin(angle) * radius + 2,
+          }
+          if (use3D) point.z = gaussianRandom() * 0.5
+          newPoints.push(point)
+        }
+
+        // Digit 1 (vertical line)
+        for (let i = 0; i < digitsPerClass; i++) {
+          const point: DataPoint = {
+            x: 2.0 + gaussianRandom() * 0.3,
+            y: 2.0 + gaussianRandom() * 0.5,
+          }
+          if (use3D) point.z = 1.0 + gaussianRandom() * 0.4
+          newPoints.push(point)
+        }
+
+        // Digit 4 (angular pattern)
+        for (let i = 0; i < digitsPerClass; i++) {
+          const point: DataPoint = {
+            x: -2.5 + gaussianRandom() * 0.4,
+            y: -2.0 + gaussianRandom() * 0.4,
+          }
+          if (use3D) point.z = -0.5 + gaussianRandom() * 0.4
+          newPoints.push(point)
+        }
+
+        // Digit 7 (angular pattern, different orientation)
+        for (let i = 0; i < numPoints - 3 * digitsPerClass; i++) {
+          const point: DataPoint = {
+            x: 2.5 + gaussianRandom() * 0.4,
+            y: -2.0 + gaussianRandom() * 0.4,
+          }
+          if (use3D) point.z = -1.5 + gaussianRandom() * 0.5
+          newPoints.push(point)
         }
       }
 
       return newPoints
     },
-    [numPoints]
+    [numPoints, view3D, numComponents]
   )
 
   // Initialize engine
@@ -135,6 +239,13 @@ export function PCAPlayground() {
   useEffect(() => {
     initializeEngine()
   }, [initializeEngine])
+
+  // Regenerate data when switching between 2D/3D view modes
+  useEffect(() => {
+    if (engineRef.current) {
+      initializeEngine()
+    }
+  }, [view3D, initializeEngine])
 
   // Animation functions
   const stopAnimation = useCallback(() => {
@@ -220,7 +331,8 @@ export function PCAPlayground() {
           theme,
           showOriginal,
           showTransformed,
-          showComponents
+          showComponents,
+          view3D
         )
       }
     },
@@ -236,11 +348,23 @@ export function PCAPlayground() {
               Principal Component Analysis
             </h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => setShowExplanation(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <GiBookCover size={14} />
+              Theory
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Dimensionality reduction using principal components to capture maximum variance
+          Interactive visualization of PCA dimensionality reduction with simulated projections from
+          classic ML datasets
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -300,13 +424,13 @@ export function PCAPlayground() {
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">Points:</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">Samples:</span>
                   <input
                     type="number"
                     value={numPoints}
-                    min={50}
+                    min={100}
                     max={500}
-                    step={25}
+                    step={50}
                     onChange={(e) => setNumPoints(Number(e.target.value))}
                     disabled={isPlaying}
                     className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
@@ -321,11 +445,38 @@ export function PCAPlayground() {
                     type="number"
                     value={numComponents}
                     min={1}
-                    max={2}
+                    max={view3D ? 3 : 2}
                     onChange={(e) => setNumComponents(Number(e.target.value))}
                     disabled={isPlaying}
                     className="w-12 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:opacity-50"
                   />
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                <div className="flex items-center gap-1.5">
+                  <Tooltip text="Toggle 3D Isometric View (regenerates data with appropriate dimensions)">
+                    <button
+                      onClick={() => {
+                        stopAnimation()
+                        const newView3D = !view3D
+                        setView3D(newView3D)
+                        // When switching to 3D view, ensure we have at least 3 components
+                        if (newView3D && numComponents < 3) {
+                          setNumComponents(3)
+                        }
+                        // Data will regenerate via useEffect watching view3D
+                      }}
+                      disabled={isPlaying}
+                      className={`px-3 py-1 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        view3D
+                          ? 'bg-indigo-700 text-white'
+                          : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                      }`}
+                    >
+                      {view3D ? '3D View' : '2D View'}
+                    </button>
+                  </Tooltip>
                 </div>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
@@ -367,56 +518,160 @@ export function PCAPlayground() {
                       <FaVectorSquare size={14} />
                     </button>
                   </Tooltip>
+                  {view3D && (
+                    <Tooltip text="Auto-rotate 3D view">
+                      <button
+                        onClick={() => setAutoRotate(!autoRotate)}
+                        className={`w-8 h-8 flex items-center justify-center rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                          autoRotate
+                            ? 'bg-purple-600 border-purple-600 text-white'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <TbRotate360 size={14} />
+                      </button>
+                    </Tooltip>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Main Canvas */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden">
-              <canvas
-                ref={canvasRef}
-                width={canvasConfig.width}
-                height={canvasConfig.height}
-                className="w-full h-full"
-                style={{ maxHeight: '100%', objectFit: 'contain' }}
-              />
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden relative">
+              {view3D && engineState ? (
+                <PCA3DScene
+                  state={engineState}
+                  showOriginal={showOriginal}
+                  showTransformed={showTransformed}
+                  showComponents={showComponents}
+                  theme={theme}
+                  autoRotate={autoRotate}
+                />
+              ) : (
+                <canvas
+                  ref={canvasRef}
+                  width={canvasConfig.width}
+                  height={canvasConfig.height}
+                  className="w-full h-full"
+                  style={{ maxHeight: '100%', objectFit: 'contain' }}
+                />
+              )}
             </div>
           </div>
 
           {/* Right Sidebar */}
           <div className="flex flex-col space-y-3 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-700 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
-
             {/* Dataset Generation */}
-            <ControlGroup title="Dataset">
+            <ControlGroup title="Datasets">
               <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setDataType('iris')}
-                  disabled={isPlaying}
-                  className="px-3 py-1.5 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Iris
-                </button>
-                <button
-                  onClick={() => setDataType('swiss-roll')}
-                  disabled={isPlaying}
-                  className="px-3 py-1.5 text-xs rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Swiss Roll
-                </button>
-                <button
-                  onClick={() => setDataType('correlated')}
-                  disabled={isPlaying}
-                  className="px-3 py-1.5 text-xs rounded bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Correlated
-                </button>
-                <button
-                  onClick={() => setDataType('random')}
-                  disabled={isPlaying}
-                  className="px-3 py-1.5 text-xs rounded bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Random
-                </button>
+                <Tooltip text="Simulated PCA projection representing typical results from 4D iris measurements">
+                  <button
+                    onClick={() => setDataType('iris')}
+                    disabled={isPlaying}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      dataType === 'iris'
+                        ? 'bg-blue-700 text-white'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    Iris
+                  </button>
+                </Tooltip>
+                <Tooltip text="Simulated PCA projection representing typical results from 13D wine chemistry features">
+                  <button
+                    onClick={() => setDataType('wine')}
+                    disabled={isPlaying}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      dataType === 'wine'
+                        ? 'bg-purple-700 text-white'
+                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    }`}
+                  >
+                    Wine
+                  </button>
+                </Tooltip>
+                <Tooltip text="Simulated PCA projection representing typical results from 30D cell measurements">
+                  <button
+                    onClick={() => setDataType('breast-cancer')}
+                    disabled={isPlaying}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      dataType === 'breast-cancer'
+                        ? 'bg-pink-700 text-white'
+                        : 'bg-pink-600 hover:bg-pink-700 text-white'
+                    }`}
+                  >
+                    Cancer
+                  </button>
+                </Tooltip>
+                <Tooltip text="Simulated PCA projection representing typical results from 784D pixel features">
+                  <button
+                    onClick={() => setDataType('mnist')}
+                    disabled={isPlaying}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      dataType === 'mnist'
+                        ? 'bg-green-700 text-white'
+                        : 'bg-green-600 hover:bg-green-700 text-white'
+                    }`}
+                  >
+                    MNIST
+                  </button>
+                </Tooltip>
+              </div>
+
+              {/* Dataset Info */}
+              <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs text-gray-600 dark:text-gray-400">
+                {dataType === 'iris' && (
+                  <div>
+                    <strong>Iris Dataset (1936)</strong>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 4D iris measurements</p>
+                    <p className="mt-1">
+                      Original features: sepal length, sepal width, petal length, petal width
+                    </p>
+                    <p className="mt-1">Classes: Setosa, Versicolor, Virginica</p>
+                    <p className="mt-1 text-blue-600 dark:text-blue-400">
+                      Real PCA typically preserves ~95% variance in 2 components
+                    </p>
+                  </div>
+                )}
+                {dataType === 'wine' && (
+                  <div>
+                    <strong>Wine Dataset</strong>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 13D wine chemistry data</p>
+                    <p className="mt-1">
+                      Original features: alcohol, acidity, phenols, flavonoids, etc.
+                    </p>
+                    <p className="mt-1">Classes: 3 Italian wine cultivars</p>
+                    <p className="mt-1 text-purple-600 dark:text-purple-400">
+                      Real PCA captures key chemical patterns in lower dimensions
+                    </p>
+                  </div>
+                )}
+                {dataType === 'breast-cancer' && (
+                  <div>
+                    <strong>Breast Cancer Wisconsin</strong>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 30D cell measurements</p>
+                    <p className="mt-1">
+                      Original features: radius, texture, perimeter, area, smoothness, etc.
+                    </p>
+                    <p className="mt-1">Classes: Malignant vs Benign tumors</p>
+                    <p className="mt-1 text-pink-600 dark:text-pink-400">
+                      Real PCA enables visualization and analysis of high-D medical data
+                    </p>
+                  </div>
+                )}
+                {dataType === 'mnist' && (
+                  <div>
+                    <strong>MNIST Handwritten Digits</strong>
+                    <p className="mt-1">📊 Simulated 2D/3D projection of 784D image data</p>
+                    <p className="mt-1">
+                      Original features: 28×28 pixel intensities (784 dimensions)
+                    </p>
+                    <p className="mt-1">Classes: 10 digits (0-9). Shown: 0, 1, 4, 7</p>
+                    <p className="mt-1 text-green-600 dark:text-green-400">
+                      Real PCA captures digit shapes in much lower dimensions
+                    </p>
+                  </div>
+                )}
               </div>
             </ControlGroup>
 
@@ -427,11 +682,21 @@ export function PCAPlayground() {
                 How PCA Works
               </h3>
               <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                <p><strong>Step 1:</strong> Center data by subtracting mean</p>
-                <p><strong>Step 2:</strong> Compute covariance matrix</p>
-                <p><strong>Step 3:</strong> Find eigenvalues/eigenvectors</p>
-                <p><strong>Step 4:</strong> Select principal components</p>
-                <p><strong>Step 5:</strong> Transform data</p>
+                <p>
+                  <strong>Step 1:</strong> Center data by subtracting mean
+                </p>
+                <p>
+                  <strong>Step 2:</strong> Compute covariance matrix
+                </p>
+                <p>
+                  <strong>Step 3:</strong> Find eigenvalues/eigenvectors
+                </p>
+                <p>
+                  <strong>Step 4:</strong> Select principal components
+                </p>
+                <p>
+                  <strong>Step 5:</strong> Transform data
+                </p>
               </div>
             </div>
 
@@ -439,6 +704,14 @@ export function PCAPlayground() {
             <RelatedAlgorithms route="pca" type="ml" compact />
           </div>
         </div>
+
+        {/* Theory Modal */}
+        <TheoryModal
+          isOpen={showExplanation}
+          onClose={() => setShowExplanation(false)}
+          theoryFile="/theory/ml/pca.md"
+          title="Understanding Principal Component Analysis (PCA)"
+        />
       </div>
     </div>
   )
