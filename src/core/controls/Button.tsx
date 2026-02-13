@@ -27,7 +27,7 @@ export function Button({
     secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
     destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
     outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-    ghost: 'hover:bg-accent hover:text-accent-foreground',
+    ghost: 'text-gray-700 dark:text-gray-300 hover:bg-accent hover:text-accent-foreground',
   }
 
   const sizeStyles = {

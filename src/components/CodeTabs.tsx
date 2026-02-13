@@ -94,13 +94,13 @@ const CodeTabs = memo(function CodeTabs({
   const { theme } = useTheme()
   const [activeTab, setActiveTab] = useState<string>('')
 
-  // Initialize active tab to first key
+  // Initialize or realign active tab when codes change
   useEffect(() => {
-    const firstKey = Object.keys(codes)[0]
-    if (firstKey && !activeTab) {
-      setActiveTab(firstKey)
-    }
-  }, [codes, activeTab])
+    const keys = Object.keys(codes)
+    const firstKey = keys[0]
+    if (!firstKey) return
+    setActiveTab(prev => (prev && codes[prev] ? prev : firstKey))
+  }, [codes])
 
   // Memoize code keys and entries for performance
   const codeKeys = useMemo(() => Object.keys(codes), [codes])

@@ -114,35 +114,46 @@ export function TheoryModal({ isOpen, onClose, theoryFile, title }: TheoryModalP
                     // Expected format: # Tab: Tab Name
                     if (typeof children === 'string' && children.includes('# Tab:')) {
                       const lines = children.trim().split('\n')
-                      const tabHeaderLines = lines.filter(isTabHeader)
-                      
-                      // Need at least 2 tab headers to create tabs
-                      if (tabHeaderLines.length >= 2) {
-                        const codes: Record<string, string> = {}
-                        let currentKey = ''
-                        let currentCode: string[] = []
 
-                        lines.forEach(line => {
-                          if (isTabHeader(line)) {
-                            // Save previous code block
-                            if (currentKey && currentCode.length > 0) {
-                              codes[currentKey] = currentCode.join('\n').trim()
-                            }
+                      const codes: Record<string, string> = {}
+                      let currentKey = ''
+                      let currentCode: string[] = []
+                      let hasContentBeforeFirstTab = false
 
-                            // Start new code block
-                            currentKey = extractTabName(line)
+                      lines.forEach(line => {
+                        if (isTabHeader(line)) {
+                          // If there's content before the first tab, save it as a default tab
+                          if (hasContentBeforeFirstTab && currentCode.length > 0) {
+                            codes['Code'] = currentCode.join('\n').trim()
                             currentCode = []
-                          } else if (currentKey) {
-                            // Add to current code block
-                            currentCode.push(line)
+                            hasContentBeforeFirstTab = false
                           }
-                        })
 
-                        // Save last code block
-                        if (currentKey && currentCode.length > 0) {
-                          codes[currentKey] = currentCode.join('\n').trim()
+                          // Save previous code block
+                          if (currentKey && currentCode.length > 0) {
+                            codes[currentKey] = currentCode.join('\n').trim()
+                          }
+
+                          // Start new code block
+                          currentKey = extractTabName(line)
+                          currentCode = []
+                        } else {
+                          if (!currentKey) {
+                            hasContentBeforeFirstTab = true
+                          }
+                          currentCode.push(line)
                         }
+                      })
 
+                      // Save last code block
+                      if (currentKey && currentCode.length > 0) {
+                        codes[currentKey] = currentCode.join('\n').trim()
+                      } else if (hasContentBeforeFirstTab && currentCode.length > 0) {
+                        codes['Code'] = currentCode.join('\n').trim()
+                      }
+
+                      // Need at least 2 tabs to create tabs
+                      if (Object.keys(codes).length >= 2) {
                         return (
                           <div className="my-6 not-prose">
                             <CodeTabs codes={codes} lang={language || 'python'} />
