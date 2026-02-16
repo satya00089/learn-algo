@@ -16,6 +16,7 @@ import { useKMeansPlayground } from '../hooks/useKMeansPlayground'
 import { KMeans3DScene } from '../visualizers/KMeans3DScene'
 import type { DataPoint } from '../types'
 
+// eslint-disable-next-line complexity
 export function KMeansClusteringPlayground() {
   const [isRelatedOpen, setIsRelatedOpen] = useState(false)
   const [showExplanation, setShowExplanation] = useState(
@@ -94,6 +95,7 @@ export function KMeansClusteringPlayground() {
   )
 
   // Generate sample data
+  // eslint-disable-next-line complexity
   const generateData = useCallback(
     (type: 'blobs' | 'circles' | 'grid' | 'uniform') => {
       const newPoints: DataPoint[] = []
@@ -478,7 +480,7 @@ export function KMeansClusteringPlayground() {
           }
           ctx.stroke()
           ctx.setLineDash([]) // Reset to solid line
-          ctx.globalAlpha = 1.0
+          ctx.globalAlpha = 1
 
           // Draw small circles at each trajectory point (except the last which is the current centroid)
           for (let i = 0; i < trajectory.length - 1; i++) {
@@ -502,7 +504,7 @@ export function KMeansClusteringPlayground() {
               ctx.fillText(String(i), point.canvasX, point.canvasY - 5)
             }
           }
-          ctx.globalAlpha = 1.0
+          ctx.globalAlpha = 1
         })
       }
 
@@ -910,9 +912,7 @@ export function KMeansClusteringPlayground() {
                   </Tooltip>
                 </div>
 
-                {view3D && (
-                  <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-                )}
+                {view3D && <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>}
 
                 {view3D && (
                   <Tooltip text="Auto-rotate 3D view">
@@ -1067,9 +1067,11 @@ export function KMeansClusteringPlayground() {
               )}
               {isPickingCentroids && (
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
-                  {pickedCentroids.length === 0
-                    ? 'Click to place centroids'
-                    : `${pickedCentroids.length} centroid${pickedCentroids.length > 1 ? 's' : ''} placed`}
+                  {(() => {
+                    if (pickedCentroids.length === 0) return 'Click to place centroids'
+                    const plural = pickedCentroids.length > 1 ? 's' : ''
+                    return `${pickedCentroids.length} centroid${plural} placed`
+                  })()}
                 </div>
               )}
               {engineState?.isInitializing && engineState?.phase === 'init' && (

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useMemo } from 'react'
 import { cn } from '@/core/utils'
 
 interface TabsContextType {
@@ -11,11 +11,11 @@ interface TabsContextType {
 const TabsContext = createContext<TabsContextType | null>(null)
 
 interface TabsProps {
-  defaultValue?: string
-  value?: string
-  onValueChange?: (value: string) => void
-  children: React.ReactNode
-  className?: string
+  readonly defaultValue?: string
+  readonly value?: string
+  readonly onValueChange?: (value: string) => void
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function Tabs({
@@ -23,25 +23,28 @@ export function Tabs({
   value: controlledValue,
   onValueChange,
   children,
-  className
+  className,
 }: TabsProps) {
   const [internalValue, setInternalValue] = useState(defaultValue || '')
 
   const value = controlledValue ?? internalValue
   const handleValueChange = onValueChange ?? setInternalValue
 
+  const contextValue = useMemo(
+    () => ({ value, onValueChange: handleValueChange }),
+    [value, handleValueChange]
+  )
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange: handleValueChange }}>
-      <div className={cn('w-full', className)}>
-        {children}
-      </div>
+    <TabsContext.Provider value={contextValue}>
+      <div className={cn('w-full', className)}>{children}</div>
     </TabsContext.Provider>
   )
 }
 
 interface TabsListProps {
-  children: React.ReactNode
-  className?: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function TabsList({ children, className }: TabsListProps) {
@@ -49,12 +52,12 @@ export function TabsList({ children, className }: TabsListProps) {
   if (!context) throw new Error('TabsList must be used within Tabs')
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    const tabs = Array.from(event.currentTarget.querySelectorAll('[role="tab"]')) as HTMLElement[]
+    const tabs = Array.from(event.currentTarget.querySelectorAll('[role="tab"]'))
     const currentTab = document.activeElement as HTMLElement
     const currentIndex = tabs.indexOf(currentTab)
     if (currentIndex === -1) return
 
-    let nextIndex = currentIndex
+    let nextIndex: number
     switch (event.key) {
       case 'ArrowLeft':
       case 'ArrowUp':
@@ -75,9 +78,9 @@ export function TabsList({ children, className }: TabsListProps) {
     }
 
     event.preventDefault()
-    const nextTab = tabs[nextIndex]
+    const nextTab = tabs[nextIndex] as HTMLElement
     nextTab.focus()
-    const nextValue = nextTab.getAttribute('data-value')
+    const nextValue = nextTab.dataset.value
     if (nextValue) {
       context.onValueChange(nextValue)
     }
@@ -86,6 +89,7 @@ export function TabsList({ children, className }: TabsListProps) {
   return (
     <div
       role="tablist"
+      tabIndex={0}
       onKeyDown={handleKeyDown}
       className={cn(
         'flex items-center justify-start border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-lg',
@@ -98,9 +102,9 @@ export function TabsList({ children, className }: TabsListProps) {
 }
 
 interface TabsTriggerProps {
-  value: string
-  children: React.ReactNode
-  className?: string
+  readonly value: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
@@ -132,9 +136,9 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
 }
 
 interface TabsContentProps {
-  value: string
-  children: React.ReactNode
-  className?: string
+  readonly value: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function TabsContent({ value, children, className }: TabsContentProps) {

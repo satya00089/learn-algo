@@ -120,7 +120,7 @@ export function TheoryModal({ isOpen, onClose, theoryFile, title }: TheoryModalP
                       let currentCode: string[] = []
                       let hasContentBeforeFirstTab = false
 
-                      lines.forEach(line => {
+                      lines.forEach((line) => {
                         if (isTabHeader(line)) {
                           // If there's content before the first tab, save it as a default tab
                           if (hasContentBeforeFirstTab && currentCode.length > 0) {
@@ -175,7 +175,10 @@ export function TheoryModal({ isOpen, onClose, theoryFile, title }: TheoryModalP
 
                     // Inline code
                     return (
-                      <code className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-sm font-mono border border-gray-200 dark:border-gray-700" {...props}>
+                      <code
+                        className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-sm font-mono border border-gray-200 dark:border-gray-700"
+                        {...props}
+                      >
                         {children}
                       </code>
                     )

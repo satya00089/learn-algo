@@ -5,11 +5,11 @@ import { FaCopy, FaCheck } from 'react-icons/fa'
 import { Button } from './Button'
 
 interface CopyButtonProps {
-  content: string
-  onCopy?: (content: string) => boolean | undefined
-  className?: string
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost'
+  readonly content: string
+  readonly onCopy?: (content: string) => boolean | undefined
+  readonly className?: string
+  readonly size?: 'sm' | 'md' | 'lg'
+  readonly variant?: 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost'
 }
 
 export function CopyButton({
@@ -17,7 +17,7 @@ export function CopyButton({
   onCopy,
   className,
   size = 'sm',
-  variant = 'outline'
+  variant = 'outline',
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -41,12 +41,12 @@ export function CopyButton({
     try {
       await navigator.clipboard.writeText(content)
       setCopied(true)
-      
+
       // Clear any existing timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-      
+
       // Set new timeout
       timeoutRef.current = setTimeout(() => {
         if (isMountedRef.current) {

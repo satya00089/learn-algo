@@ -365,7 +365,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-ensemble-models.png',
   },
   'k-means': {
-    title: 'K-Means & K-Means++ Clustering Algorithm - Interactive 3D Visualization | Unsupervised ML',
+    title:
+      'K-Means & K-Means++ Clustering Algorithm - Interactive 3D Visualization | Unsupervised ML',
     description:
       'Master K-Means and K-Means++ clustering with interactive 3D visualization. Compare initialization methods, watch centroids converge in real-time, explore the elbow method for optimal k selection, and visualize clustering in 2D/3D space. Step-by-step algorithm walkthrough with centroid trajectories and cluster assignments.',
     keywords: [
@@ -532,6 +533,51 @@ export const mlMetadata = {
       'distance-based classification',
     ],
     ogImage: '/og/og-ml-knn.png',
+  },
+  tsne: {
+    title:
+      't-SNE (t-Distributed Stochastic Neighbor Embedding) - Interactive 3D Visualization | Non-Linear Dimensionality Reduction',
+    description:
+      'Master t-SNE with interactive 3D visualization featuring real-time datasets. Explore perplexity effects, learning rates, and early exaggeration on Twitter influencers, crypto markets, news topics, and more. Watch high-dimensional data transform into interpretable 2D/3D clusters with live simulation and step-by-step optimization.',
+    keywords: [
+      't-SNE',
+      't distributed stochastic neighbor embedding',
+      'tsne algorithm',
+      'dimensionality reduction',
+      'non-linear dimensionality reduction',
+      'manifold learning',
+      'SNE algorithm',
+      'perplexity',
+      'learning rate',
+      'early exaggeration',
+      'high dimensional data',
+      'data visualization',
+      'unsupervised learning',
+      'clustering visualization',
+      'embedding visualization',
+      'student t-distribution',
+      'gaussian kernel',
+      'kl divergence',
+      'kullback leibler divergence',
+      'gradient descent',
+      't-SNE visualization',
+      'interactive t-SNE',
+      '3D t-SNE',
+      'real-time datasets',
+      'twitter influencer analysis',
+      'crypto market visualization',
+      'news clustering',
+      'spotify music features',
+      'github repository clustering',
+      'nba player analysis',
+      'machine learning visualization',
+      'ML unsupervised',
+      'feature extraction',
+      't-SNE tutorial',
+      'data science',
+      'exploratory data analysis',
+    ],
+    ogImage: '/og/og-ml-tsne.png',
   },
 }
 
