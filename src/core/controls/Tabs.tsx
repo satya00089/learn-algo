@@ -47,7 +47,7 @@ export function TabsList({ children, className }: TabsListProps) {
   if (!context) throw new Error('TabsList must be used within Tabs')
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    const tabs = Array.from(event.currentTarget.querySelectorAll('[role="tab"]')) as HTMLElement[]
+    const tabs = Array.from(event.currentTarget.querySelectorAll('[role="tab"]'))
     const currentTab = document.activeElement as HTMLElement
     const currentIndex = tabs.indexOf(currentTab)
     if (currentIndex === -1) return
@@ -73,7 +73,7 @@ export function TabsList({ children, className }: TabsListProps) {
     }
 
     event.preventDefault()
-    const nextTab = tabs[nextIndex]
+    const nextTab = tabs[nextIndex] as HTMLElement
     nextTab.focus()
     const nextValue = nextTab.getAttribute('data-value')
     if (nextValue) {
