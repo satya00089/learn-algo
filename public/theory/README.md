@@ -81,21 +81,30 @@ The theory system supports interactive code tabs for showing different implement
 Display multiple code implementations with syntax highlighting:
 
 ```bash
-npm: npm install algorithm-package
-yarn: yarn add algorithm-package
-pnpm: pnpm add algorithm-package
-bun: bun add algorithm-package
+# Tab: npm
+npm install algorithm-package
+
+# Tab: yarn
+yarn add algorithm-package
+
+# Tab: pnpm
+pnpm add algorithm-package
+
+# Tab: bun
+bun add algorithm-package
 ```
 
 Or show different implementation approaches:
 
 ```python
-From Scratch: import numpy as np
+# Tab: From Scratch
+import numpy as np
 def pca_from_scratch(X, n_components=2):
     # Standardize and compute PCA from first principles
     return X_pca, components, explained_var
 
-Using scikit-learn: from sklearn.decomposition import PCA
+# Tab: Using scikit-learn
+from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_std)
 print(f"Variance explained: {pca.explained_variance_ratio_}")

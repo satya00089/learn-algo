@@ -175,19 +175,6 @@ This demonstrates PCA's power to reveal hidden patterns in real data!
 - **Eigenvectors**: Directions of maximum variance (principal components)
 - **Loadings**: Feature contributions to each component
 
-1. **Standardize Data**: Center data by subtracting mean and scale to unit variance
-2. **Compute Covariance**: Calculate covariance matrix to understand feature relationships
-3. **Find Eigenvectors**: Compute eigenvalues and eigenvectors of covariance matrix
-4. **Select Components**: Choose top k eigenvectors (principal components)
-5. **Transform Data**: Project original data onto new coordinate system
-
-### Key Concepts
-
-- **Variance**: Spread of data points (higher = more information)
-- **Eigenvalues**: Amount of variance explained by each component
-- **Eigenvectors**: Directions of maximum variance (principal components)
-- **Loadings**: Feature contributions to each component
-
 ## Decision Rules for Component Selection
 
 ### The Scree Plot Method
@@ -218,12 +205,12 @@ def pca_from_scratch(X, n_components=2):
 
     # Sort by explained variance
     idx = np.argsort(eigenvalues)[::-1]
-    eigenvectors = eigenvectors[:, idx][:n_components]
+    eigenvectors = eigenvectors[:, idx[:n_components]]
 
     # Transform data
     X_pca = X_std @ eigenvectors
 
-    return X_pca, eigenvectors, eigenvalues[idx][:n_components]
+    return X_pca, eigenvectors, eigenvalues[idx[:n_components]]
 
 # Usage
 X_reduced, components, explained_var = pca_from_scratch(your_data, n_components=2)

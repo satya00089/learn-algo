@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { FaCopy, FaCheck } from 'react-icons/fa'
 import { Button } from './Button'
 
@@ -20,6 +20,17 @@ export function CopyButton({
   variant = 'outline'
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleCopy = async () => {
     // Allow onCopy callback to prevent copy if it returns false
@@ -30,7 +41,18 @@ export function CopyButton({
     try {
       await navigator.clipboard.writeText(content)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          setCopied(false)
+        }
+      }, 2000)
     } catch (err) {
       console.error('Failed to copy text: ', err)
     }
