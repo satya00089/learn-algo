@@ -75,7 +75,7 @@ export function TabsList({ children, className }: TabsListProps) {
     event.preventDefault()
     const nextTab = tabs[nextIndex] as HTMLElement
     nextTab.focus()
-    const nextValue = nextTab.getAttribute('data-value')
+    const nextValue = nextTab.dataset.value
     if (nextValue) {
       context.onValueChange(nextValue)
     }
