@@ -2,16 +2,18 @@
 
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
+import { TbRotate360 } from 'react-icons/tb'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip, Button } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
+import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { KMeansClusteringEngine } from '../engines/KMeansClusteringEngine'
 import { useKMeansPlayground } from '../hooks/useKMeansPlayground'
+import { KMeans3DScene } from '../visualizers/KMeans3DScene'
 import type { DataPoint } from '../types'
 
 export function KMeansClusteringPlayground() {
@@ -20,6 +22,7 @@ export function KMeansClusteringPlayground() {
     process.env.NEXT_PUBLIC_SHOW_THEORY_MODAL_BY_DEFAULT === 'true'
   )
   const { animationSpeed, setAnimationSpeed, isDebugMode, setIsDebugMode } = useKMeansPlayground()
+  const { theme } = useTheme()
 
   const engineRef = useRef<KMeansClusteringEngine | null>(null)
   const [engineState, setEngineState] = useState<ReturnType<
@@ -39,18 +42,22 @@ export function KMeansClusteringPlayground() {
     KMeansClusteringEngine['getState']
   > | null>(null)
 
-  // Elbow method state
-  const [elbowData, setElbowData] = useState<{ k: number; inertia: number }[]>([])
-  const [isComputingElbow, setIsComputingElbow] = useState(false)
-  const [selectedElbowK, setSelectedElbowK] = useState<number | null>(null)
-  const [currentElbowK, setCurrentElbowK] = useState<number>(1)
+  // 3D View state
+  const [view3D, setView3D] = useState(false)
+  const [autoRotate, setAutoRotate] = useState(true)
 
   // Data management
   const [points, setPoints] = useState<DataPoint[]>([])
-  const [k, setK] = useState(1)
+  const [k, setK] = useState(3)
   const [maxIterations, setMaxIterations] = useState(50)
   const [isPickingCentroids, setIsPickingCentroids] = useState(false)
   const [pickedCentroids, setPickedCentroids] = useState<DataPoint[]>([])
+
+  // Elbow method state
+  const [elbowData, setElbowData] = useState<Array<{ k: number; inertia: number }>>([])
+  const [isComputingElbow, setIsComputingElbow] = useState(false)
+  const [currentElbowK, setCurrentElbowK] = useState(3)
+  const [selectedElbowK, setSelectedElbowK] = useState<number | null>(null)
 
   // Canvas configuration - rectangular canvas
   const canvasConfig = useMemo(
@@ -90,24 +97,26 @@ export function KMeansClusteringPlayground() {
   const generateData = useCallback(
     (type: 'blobs' | 'circles' | 'grid' | 'uniform') => {
       const newPoints: DataPoint[] = []
+      const use3D = view3D
 
       if (type === 'blobs') {
         // Generate gaussian blobs - increased density and spread across wider canvas
         const centers = [
-          { x: -15, y: -5 },
-          { x: -15, y: 5 },
-          { x: -5, y: -5 },
-          { x: -5, y: 5 },
-          { x: 5, y: -5 },
-          { x: 5, y: 5 },
-          { x: 15, y: -5 },
-          { x: 15, y: 5 },
+          { x: -15, y: -5, z: use3D ? -3 : 0 },
+          { x: -15, y: 5, z: use3D ? 3 : 0 },
+          { x: -5, y: -5, z: use3D ? 2 : 0 },
+          { x: -5, y: 5, z: use3D ? -2 : 0 },
+          { x: 5, y: -5, z: use3D ? -1 : 0 },
+          { x: 5, y: 5, z: use3D ? 1 : 0 },
+          { x: 15, y: -5, z: use3D ? 4 : 0 },
+          { x: 15, y: 5, z: use3D ? -4 : 0 },
         ]
         centers.forEach((center) => {
           for (let i = 0; i < 50; i++) {
             newPoints.push({
               x: center.x + (Math.random() - 0.5) * 6,
               y: center.y + (Math.random() - 0.5) * 6,
+              z: use3D ? center.z + (Math.random() - 0.5) * 2 : undefined,
             })
           }
         })
@@ -119,6 +128,7 @@ export function KMeansClusteringPlayground() {
           newPoints.push({
             x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
             y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
+            z: use3D ? (Math.random() - 0.5) * 2 : undefined,
           })
         }
         for (let i = 0; i < 100; i++) {
@@ -127,6 +137,7 @@ export function KMeansClusteringPlayground() {
           newPoints.push({
             x: r * Math.cos(theta) + (Math.random() - 0.5) * 0.8,
             y: r * Math.sin(theta) + (Math.random() - 0.5) * 0.8,
+            z: use3D ? (Math.random() - 0.5) * 3 : undefined,
           })
         }
       } else if (type === 'uniform') {
@@ -135,6 +146,7 @@ export function KMeansClusteringPlayground() {
           newPoints.push({
             x: xMin + Math.random() * (xMax - xMin),
             y: yMin + Math.random() * (yMax - yMin),
+            z: use3D ? (Math.random() - 0.5) * 10 : undefined,
           })
         }
       } else {
@@ -145,6 +157,7 @@ export function KMeansClusteringPlayground() {
               newPoints.push({
                 x: i + (Math.random() - 0.5) * 4,
                 y: j + (Math.random() - 0.5) * 4,
+                z: use3D ? (Math.random() - 0.5) * 6 : undefined,
               })
             }
           }
@@ -157,7 +170,7 @@ export function KMeansClusteringPlayground() {
       setSelectedElbowK(null)
       setCurrentElbowK(1)
     },
-    [xMin, xMax, yMin, yMax]
+    [xMin, xMax, yMin, yMax, view3D]
   )
 
   // Compute Elbow Method data incrementally
@@ -767,7 +780,7 @@ export function KMeansClusteringPlayground() {
               className="flex items-center gap-2"
             >
               <GiBookCover className="w-4 h-4" />
-              Theory
+              How It Works
             </Button>
             <ThemeToggle />
           </div>
@@ -838,6 +851,85 @@ export function KMeansClusteringPlayground() {
                     className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                 </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">k:</span>
+                    <input
+                      type="number"
+                      value={k}
+                      min={1}
+                      max={8}
+                      onChange={(e) => {
+                        setK(Number.parseInt(e.target.value) || 1)
+                        setPickedCentroids([]) // Reset picked centroids when k changes
+                      }}
+                      disabled={isPlaying || isPickingCentroids}
+                      className="w-12 px-1 py-0.5 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-center disabled:opacity-50"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Max Iter:</span>
+                    <input
+                      type="number"
+                      value={maxIterations}
+                      min={10}
+                      max={100}
+                      step={10}
+                      onChange={(e) => setMaxIterations(Number.parseInt(e.target.value) || 50)}
+                      disabled={isPlaying || isPickingCentroids}
+                      className="w-16 px-1 py-0.5 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-center disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                <div className="flex items-center gap-1.5">
+                  <Tooltip text="Toggle 3D View (regenerates data with appropriate dimensions)">
+                    <button
+                      onClick={() => {
+                        const newView3D = !view3D
+                        setView3D(newView3D)
+                        // Regenerate data with new dimensionality
+                        if (points.length > 0) {
+                          generateData('blobs') // Regenerate with current 3D setting
+                        }
+                      }}
+                      disabled={isPlaying || isPickingCentroids}
+                      className={`px-3 py-1 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        view3D
+                          ? 'bg-purple-700 text-white'
+                          : 'bg-purple-600 hover:bg-purple-700 text-white'
+                      }`}
+                    >
+                      {view3D ? '3D View' : '2D View'}
+                    </button>
+                  </Tooltip>
+                </div>
+
+                {view3D && (
+                  <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+                )}
+
+                {view3D && (
+                  <Tooltip text="Auto-rotate 3D view">
+                    <button
+                      onClick={() => setAutoRotate(!autoRotate)}
+                      className={`w-8 h-8 flex items-center justify-center rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        autoRotate
+                          ? 'bg-purple-600 border-purple-600 text-white'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <TbRotate360 size={14} />
+                    </button>
+                  </Tooltip>
+                )}
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
                 <button
                   onClick={() => setIsDebugMode(!isDebugMode)}
@@ -941,17 +1033,36 @@ export function KMeansClusteringPlayground() {
               ) : (
                 /* Single Canvas Mode */
                 <div className="flex-1 flex items-center justify-center">
-                  <canvas
-                    ref={canvasRef}
-                    width={canvasConfig.width}
-                    height={canvasConfig.height}
-                    onClick={handleCanvasClick}
-                    className={`border border-gray-300 rounded-lg ${isPickingCentroids ? 'cursor-crosshair' : ''}`}
-                    style={{
-                      maxWidth: '100%',
-                      height: 'auto',
-                    }}
-                  />
+                  {view3D ? (
+                    <div className="w-full h-full">
+                      {engineState ? (
+                        <KMeans3DScene
+                          state={engineState}
+                          showPoints={true}
+                          showCentroids={true}
+                          showTrajectories={isDebugMode}
+                          theme={theme}
+                          autoRotate={autoRotate}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                          Generate data and run the algorithm to see the 3D visualization
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <canvas
+                      ref={canvasRef}
+                      width={canvasConfig.width}
+                      height={canvasConfig.height}
+                      onClick={handleCanvasClick}
+                      className={`border border-gray-300 rounded-lg ${isPickingCentroids ? 'cursor-crosshair' : ''}`}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
+                    />
+                  )}
                 </div>
               )}
               {isPickingCentroids && (
@@ -1294,45 +1405,6 @@ export function KMeansClusteringPlayground() {
                 <p className="text-[10px] text-gray-600 dark:text-gray-400">
                   Find optimal k by looking for the &quot;elbow&quot; in the inertia curve
                 </p>
-              </div>
-            </ControlGroup>
-
-            {/* Hyperparameters */}
-            <ControlGroup title="Algorithm Parameters">
-              <div className="space-y-2 text-xs">
-                <div>
-                  <label className="text-gray-600 dark:text-gray-400">
-                    Number of Clusters (k): {k}
-                  </label>
-                  <input
-                    type="range"
-                    value={k}
-                    min={1}
-                    max={8}
-                    step={1}
-                    onChange={(e) => {
-                      setK(Number.parseInt(e.target.value))
-                      setPickedCentroids([]) // Reset picked centroids when k changes
-                    }}
-                    disabled={isPlaying || isPickingCentroids}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <label className="text-gray-600 dark:text-gray-400">
-                    Max Iterations: {maxIterations}
-                  </label>
-                  <input
-                    type="range"
-                    value={maxIterations}
-                    min={10}
-                    max={100}
-                    step={10}
-                    onChange={(e) => setMaxIterations(Number.parseInt(e.target.value))}
-                    disabled={isPlaying || isPickingCentroids}
-                    className="w-full"
-                  />
-                </div>
               </div>
             </ControlGroup>
 

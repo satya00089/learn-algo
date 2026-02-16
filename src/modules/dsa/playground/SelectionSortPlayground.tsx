@@ -263,7 +263,7 @@ export function SelectionSortPlayground() {
               className="flex items-center gap-2"
             >
               <GiBookCover size={14} />
-              Theory
+              How It Works
             </Button>
             <ThemeToggle />
           </div>

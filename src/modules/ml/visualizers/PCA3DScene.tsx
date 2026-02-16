@@ -213,7 +213,7 @@ export function PCA3DScene({
           showComponents={showComponents}
           autoRotate={autoRotate}
         />
-        <OrbitControls enableDamping dampingFactor={0.05} minDistance={2} maxDistance={10} />
+        <OrbitControls enableDamping dampingFactor={0.05} minDistance={2} maxDistance={20} />
       </Canvas>
 
       {/* Step info overlay */}

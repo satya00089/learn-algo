@@ -72,6 +72,48 @@ public/theory/
 └── ...
 ```
 
+## Tabbed Content Features
+
+The theory system supports interactive code tabs for showing different implementations:
+
+### Code Tabs
+
+Display multiple code implementations with syntax highlighting:
+
+```bash
+# Tab: npm
+npm install algorithm-package
+
+# Tab: yarn
+yarn add algorithm-package
+
+# Tab: pnpm
+pnpm add algorithm-package
+
+# Tab: bun
+bun add algorithm-package
+```
+
+Or show different implementation approaches:
+
+```python
+# Tab: From Scratch
+import numpy as np
+def pca_from_scratch(X, n_components=2):
+    # Standardize and compute PCA from first principles
+    return X_pca, components, explained_var
+
+# Tab: Using scikit-learn
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_std)
+print(f"Variance explained: {pca.explained_variance_ratio_}")
+```
+
+### Regular Theory Content
+
+Theory explanations remain as standard markdown with headers, paragraphs, lists, and tables.
+
 ## Benefits
 
 - **Separation of Concerns**: Content separate from code

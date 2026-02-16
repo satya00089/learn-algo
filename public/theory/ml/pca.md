@@ -187,6 +187,51 @@ Use a scree plot to visualize variance explained by each component. Look for the
 - **Elbow Method**: Stop at the plot's "elbow" point
 - **Kaiser Rule**: Keep components with eigenvalues > 1
 
+## Implementation Examples
+
+```python
+# Tab: From Scratch
+import numpy as np
+
+def pca_from_scratch(X, n_components=2):
+    # Standardize data
+    X_std = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
+
+    # Compute covariance matrix
+    cov_matrix = np.cov(X_std.T)
+
+    # Eigenvalue decomposition
+    eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+
+    # Sort by explained variance
+    idx = np.argsort(eigenvalues)[::-1]
+    eigenvectors = eigenvectors[:, idx[:n_components]]
+
+    # Transform data
+    X_pca = X_std @ eigenvectors
+
+    return X_pca, eigenvectors, eigenvalues[idx[:n_components]]
+
+# Usage
+X_reduced, components, explained_var = pca_from_scratch(your_data, n_components=2)
+
+# Tab: Using scikit-learn
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Standardize data
+scaler = StandardScaler()
+X_std = scaler.fit_transform(your_data)
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_std)
+
+# Check explained variance
+print(f"Explained variance ratio: {pca.explained_variance_ratio_}")
+print(f"Total variance explained: {sum(pca.explained_variance_ratio_):.2%}")
+```
+
 ## 💡 Pro Tips
 
 - **Always standardize** your data first (mean=0, variance=1)

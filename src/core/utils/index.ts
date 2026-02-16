@@ -3,6 +3,13 @@
  */
 
 /**
+ * Utility function to merge and conditionally join class names
+ */
+export function cn(...classes: (string | undefined | null | boolean)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
+/**
  * Clamps a value between min and max
  */
 export function clamp(value: number, min: number, max: number): number {

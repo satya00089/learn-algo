@@ -1,23 +1,30 @@
 # Learn-Algo
 
-An interactive web platform for learning Data Structures & Algorithms, Machine Learning, and AI through hands-on visualizations and playgrounds. Built with React, TypeScript, and modern web technologies. Perfect for students and developers to explore algorithms visually and intuitively. 🚀
+An interactive web platform for learning Data Structures & Algorithms, Machine Learning, and AI through cutting-edge 3D visualizations and hands-on playgrounds. Built with React, TypeScript, Next.js, and Three.js for immersive learning experiences. Perfect for students, developers, and interview preparation to explore algorithms visually and intuitively. 🚀
 
 ## Features
 
-- 📊 **Interactive DSA Playgrounds**: Visualize sorting algorithms, trees, graphs, and more
-- 🤖 **ML Visualizations**: Explore regression, clustering, gradient descent, and optimization
-- 🎯 **AI Algorithms**: Interactive pathfinding, game theory, and evolutionary algorithms
-- 🌙 **Dark Mode Support**: Seamless experience in light and dark themes
+- 📊 **Interactive DSA Playgrounds**: Visualize sorting algorithms, binary trees, stacks, queues, recursion, and more with step-by-step explanations
+- 🤖 **Advanced ML Visualizations**: Explore 3D PCA, clustering algorithms (K-Means, DBSCAN, GMM, Hierarchical), regression models, gradient descent optimization, anomaly detection, ensemble methods
+- 🎲 **Probability Theory**: Interactive demonstrations of chance events, expected value, and variance with real-time convergence
+- 📈 **Feature Engineering**: Standard Scaler, MinMax Scaler with before/after visualizations
+- 📚 **Theory Modals**: In-depth explanations with mathematical formulas and concepts
+- 💻 **Multi-Language Code Examples**: Python, JavaScript, Java, and more with syntax highlighting
+- 🌙 **Dark Mode Support**: Seamless experience in light and dark themes with theme-aware visualizations
 - 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
-- ⚡ **Real-time Feedback**: See algorithms in action with step-by-step visualizations
+- ⚡ **Real-time Feedback**: See algorithms in action with interactive step-by-step visualizations
+- 🎯 **3D Interactive Scenes**: Rotate, zoom, and explore algorithms in three dimensions
 
 ## Tech Stack
 
-- **Frontend**: React 18, TypeScript, Next.js
+- **Frontend**: React 18, TypeScript, Next.js 16
+- **3D Graphics**: Three.js, React Three Fiber, React Three Drei
 - **Styling**: Tailwind CSS
-- **Charts/Visualization**: Custom Canvas implementations
-- **State Management**: React Hooks
-- **Build Tool**: Next.js with TypeScript
+- **Code Highlighting**: Shiki
+- **Charts/Visualization**: Custom Canvas implementations with interactive controls
+- **State Management**: React Hooks, Context API
+- **Build Tool**: Next.js with Turbopack
+- **PWA Support**: Service Workers for offline capability
 
 ## Getting Started
 
@@ -75,22 +82,48 @@ learn-algo/
 ```
 
 ## Available Playgrounds
-
-### Data Structures & Algorithms
-
-- Array Operations
-- Sorting Algorithms (Bubble, Selection, Insertion, Merge, Quick, Heap)
-- Binary Search Trees
-- Stack & Queue
-- String Operations
-- Bit Manipulation
-- Recursion
+**Array Operations**: Append, insert, delete, search, update with complexity analysis
+- **Sorting Algorithms**: Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort, Heap Sort with step-by-step visualization
+- **Binary Search**: Efficient searching in sorted arrays with divide and conquer
+- **Binary Search Trees**: Insertion, deletion, traversal (inorder, preorder, postorder)
+- **Stack (LIFO)**: Push, pop, peek operations with visual stack representation
+- **Queue (FIFO)**: Enqueue, dequeue, peek with circular queue visualization
+- **String Operations**: Reverse, palindrome check, anagram detection, substring search
+- **Bit Manipulation**: Bitwise AND, OR, XOR, shifts, and bit tricks
+- **Recursion**: Factorial, Fibonacci, Tower of Hanoi with call stack visualization
 
 ### Machine Learning
 
-- Gradient Descent
-- Linear Regression
-- Polynomial Regression
+#### Probability & Statistics Fundamentals
+- **Chance Events**: Coin flips and dice rolls demonstrating probability convergence
+- **Expectation (E[X])**: Expected value with fair and biased distributions
+- **Variance**: Statistical spread measurement with card drawing simulations
+
+#### Dimensionality Reduction
+- **PCA (Principal Component Analysis)**: Interactive 3D visualization with component vectors, explained variance, and data transformation
+
+#### Clustering Algorithms
+- **K-Means Clustering**: Centroid-based clustering with elbow method
+- **DBSCAN**: Density-based clustering for arbitrary shapes
+- **GMM (Gaussian Mixture Models)**: Probabilistic clustering with EM algorithm
+- **Hierarchical Clustering**: Agglomerative clustering with dendrograms
+
+#### Regression Models
+- **Linear Regression**: Simple and multiple linear regression with gradient descent
+- **Polynomial Regression**: Non-linear relationships with feature transformation
+- **Logistic Regression**: Binary classification with sigmoid function
+
+#### Optimization & Preprocessing
+- **Gradient Descent**: 3D visualization of optimization landscape with learning rate and momentum
+- **Standard Scaler**: Z-score standardization for feature scaling
+- **MinMax Scaler**: Range normalization [0,1] for bounded features
+
+#### Other Algorithms
+- **K-Nearest Neighbors (KNN)**: Distance-based classification and regression
+- **Decision Trees**: Tree-based classification with split visualization
+- **Anomaly Detection**: Outlier detection techniques
+- **Ensemble Models**: Bagging, boosting, and model combination strategies
+- **Regularization**: L1 (Lasso) and L2 (Ridge) regularization techniquesion
 - Logistic Regression
 - K-Nearest Neighbors
 - K-Means Clustering

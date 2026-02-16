@@ -4,12 +4,26 @@ import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { GiBookCover } from 'react-icons/gi'
+import { CodeTabs } from './CodeTabs'
 
 interface TheoryModalProps {
-  isOpen: boolean
-  onClose: () => void
-  theoryFile: string
-  title: string
+  readonly isOpen: boolean
+  readonly onClose: () => void
+  readonly theoryFile: string
+  readonly title: string
+}
+
+// Helper function to detect if a line is a tab header
+// Expected format: # Tab: Tab Name
+function isTabHeader(line: string): boolean {
+  const trimmed = line.trim()
+  return /^#\s*Tab:\s+.+$/.test(trimmed)
+}
+
+// Extract tab name from header line
+function extractTabName(line: string): string {
+  const match = line.trim().match(/^#\s*Tab:\s+(.+)$/)
+  return match ? match[1].trim() : ''
 }
 
 export function TheoryModal({ isOpen, onClose, theoryFile, title }: TheoryModalProps) {
@@ -92,6 +106,80 @@ export function TheoryModal({ isOpen, onClose, theoryFile, title }: TheoryModalP
                   li: ({ children }) => <li className="ml-4">{children}</li>,
                   p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
                   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                  code: ({ children, className, ...props }) => {
+                    const match = /language-(\w+)/.exec(className || '')
+                    const language = match ? match[1] : ''
+
+                    // Check if this is a code tabs block
+                    // Expected format: # Tab: Tab Name
+                    if (typeof children === 'string' && children.includes('# Tab:')) {
+                      const lines = children.trim().split('\n')
+
+                      const codes: Record<string, string> = {}
+                      let currentKey = ''
+                      let currentCode: string[] = []
+                      let hasContentBeforeFirstTab = false
+
+                      lines.forEach(line => {
+                        if (isTabHeader(line)) {
+                          // If there's content before the first tab, save it as a default tab
+                          if (hasContentBeforeFirstTab && currentCode.length > 0) {
+                            codes['Code'] = currentCode.join('\n').trim()
+                            currentCode = []
+                            hasContentBeforeFirstTab = false
+                          }
+
+                          // Save previous code block
+                          if (currentKey && currentCode.length > 0) {
+                            codes[currentKey] = currentCode.join('\n').trim()
+                          }
+
+                          // Start new code block
+                          currentKey = extractTabName(line)
+                          currentCode = []
+                        } else {
+                          if (!currentKey) {
+                            hasContentBeforeFirstTab = true
+                          }
+                          currentCode.push(line)
+                        }
+                      })
+
+                      // Save last code block
+                      if (currentKey && currentCode.length > 0) {
+                        codes[currentKey] = currentCode.join('\n').trim()
+                      } else if (hasContentBeforeFirstTab && currentCode.length > 0) {
+                        codes['Code'] = currentCode.join('\n').trim()
+                      }
+
+                      // Need at least 2 tabs to create tabs
+                      if (Object.keys(codes).length >= 2) {
+                        return (
+                          <div className="my-6 not-prose">
+                            <CodeTabs codes={codes} lang={language || 'python'} />
+                          </div>
+                        )
+                      }
+                    }
+
+                    // Regular code block
+                    if (className) {
+                      return (
+                        <pre className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 overflow-x-auto my-4 shadow-sm">
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        </pre>
+                      )
+                    }
+
+                    // Inline code
+                    return (
+                      <code className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-sm font-mono border border-gray-200 dark:border-gray-700" {...props}>
+                        {children}
+                      </code>
+                    )
+                  },
                   table: ({ children }) => (
                     <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600 mb-4">
                       {children}

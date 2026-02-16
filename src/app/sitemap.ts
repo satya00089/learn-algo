@@ -10,14 +10,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
       changeFrequency: 'daily' as const,
       description:
-        'Interactive algorithm visualizations for learning data structures, machine learning, and AI concepts',
+        'Interactive 3D algorithm visualizations for learning data structures, machine learning, probability theory, and AI concepts with step-by-step explanations and multi-language code examples',
     },
     {
       url: '/dsa',
       priority: 0.9,
       changeFrequency: 'weekly' as const,
       description:
-        'Data Structures & Algorithms - Interactive visualizations of fundamental computer science concepts',
+        'Data Structures & Algorithms - Interactive visualizations of sorting algorithms, binary trees, stacks, queues, recursion, bit manipulation, string operations, and more fundamental computer science concepts',
     },
     {
       url: '/dsa/array-operations',
@@ -118,7 +118,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
       changeFrequency: 'weekly' as const,
       description:
-        'Machine Learning algorithms - interactive visualizations of ML concepts and techniques',
+        'Machine Learning Algorithms - Interactive 3D visualizations of PCA, clustering (K-Means, DBSCAN, GMM, Hierarchical), regression models, gradient descent, anomaly detection, ensemble methods, feature scaling, probability theory, and more',
     },
     {
       url: '/ml/chance-events',
