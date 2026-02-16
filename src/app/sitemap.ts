@@ -184,6 +184,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'K-Nearest Neighbors classification - distance-based learning with interactive examples',
     },
     {
+      url: '/ml/tsne',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        't-SNE (t-Distributed Stochastic Neighbor Embedding) - interactive 3D visualization for non-linear dimensionality reduction with real-time datasets including Twitter influencers, crypto markets, and more',
+    },
+    {
       url: '/ml/linear-regression',
       priority: 0.8,
       changeFrequency: 'monthly' as const,

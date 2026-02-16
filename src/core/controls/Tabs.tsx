@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useMemo } from 'react'
 import { cn } from '@/core/utils'
 
 interface TabsContextType {
@@ -30,8 +30,13 @@ export function Tabs({
   const value = controlledValue ?? internalValue
   const handleValueChange = onValueChange ?? setInternalValue
 
+  const contextValue = useMemo(
+    () => ({ value, onValueChange: handleValueChange }),
+    [value, handleValueChange]
+  )
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange: handleValueChange }}>
+    <TabsContext.Provider value={contextValue}>
       <div className={cn('w-full', className)}>{children}</div>
     </TabsContext.Provider>
   )
@@ -52,7 +57,7 @@ export function TabsList({ children, className }: TabsListProps) {
     const currentIndex = tabs.indexOf(currentTab)
     if (currentIndex === -1) return
 
-    let nextIndex = currentIndex
+    let nextIndex: number
     switch (event.key) {
       case 'ArrowLeft':
       case 'ArrowUp':
@@ -84,6 +89,7 @@ export function TabsList({ children, className }: TabsListProps) {
   return (
     <div
       role="tablist"
+      tabIndex={0}
       onKeyDown={handleKeyDown}
       className={cn(
         'flex items-center justify-start border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-lg',

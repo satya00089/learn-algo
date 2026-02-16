@@ -257,6 +257,19 @@ export default function MLPage() {
       comingSoon: false,
       category: 'Dimensionality Reduction',
     },
+    // {
+    //   title: 't-SNE',
+    //   description:
+    //     'Nonlinear dimensionality reduction for visualizing high-dimensional data in 2D/3D',
+    //   href: '/ml/tsne',
+    //   icon: '/icons/ml/tsne.svg',
+    //   iconType: 'image' as const,
+    //   color: 'text-emerald-600 dark:text-emerald-400',
+    //   darkFilter: 'dark:invert',
+    //   difficulty: 'Advanced',
+    //   comingSoon: false,
+    //   category: 'Dimensionality Reduction',
+    // },
   ]
 
   return (
