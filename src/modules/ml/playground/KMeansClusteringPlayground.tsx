@@ -910,9 +910,7 @@ export function KMeansClusteringPlayground() {
                   </Tooltip>
                 </div>
 
-                {view3D && (
-                  <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-                )}
+                {view3D && <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>}
 
                 {view3D && (
                   <Tooltip text="Auto-rotate 3D view">

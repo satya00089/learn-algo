@@ -365,7 +365,8 @@ export const mlMetadata = {
     ogImage: '/og/og-ml-ensemble-models.png',
   },
   'k-means': {
-    title: 'K-Means & K-Means++ Clustering Algorithm - Interactive 3D Visualization | Unsupervised ML',
+    title:
+      'K-Means & K-Means++ Clustering Algorithm - Interactive 3D Visualization | Unsupervised ML',
     description:
       'Master K-Means and K-Means++ clustering with interactive 3D visualization. Compare initialization methods, watch centroids converge in real-time, explore the elbow method for optimal k selection, and visualize clustering in 2D/3D space. Step-by-step algorithm walkthrough with centroid trajectories and cluster assignments.',
     keywords: [

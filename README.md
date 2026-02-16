@@ -82,7 +82,9 @@ learn-algo/
 ```
 
 ## Available Playgrounds
+
 **Array Operations**: Append, insert, delete, search, update with complexity analysis
+
 - **Sorting Algorithms**: Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort, Heap Sort with step-by-step visualization
 - **Binary Search**: Efficient searching in sorted arrays with divide and conquer
 - **Binary Search Trees**: Insertion, deletion, traversal (inorder, preorder, postorder)
@@ -95,30 +97,36 @@ learn-algo/
 ### Machine Learning
 
 #### Probability & Statistics Fundamentals
+
 - **Chance Events**: Coin flips and dice rolls demonstrating probability convergence
 - **Expectation (E[X])**: Expected value with fair and biased distributions
 - **Variance**: Statistical spread measurement with card drawing simulations
 
 #### Dimensionality Reduction
+
 - **PCA (Principal Component Analysis)**: Interactive 3D visualization with component vectors, explained variance, and data transformation
 
 #### Clustering Algorithms
+
 - **K-Means Clustering**: Centroid-based clustering with elbow method
 - **DBSCAN**: Density-based clustering for arbitrary shapes
 - **GMM (Gaussian Mixture Models)**: Probabilistic clustering with EM algorithm
 - **Hierarchical Clustering**: Agglomerative clustering with dendrograms
 
 #### Regression Models
+
 - **Linear Regression**: Simple and multiple linear regression with gradient descent
 - **Polynomial Regression**: Non-linear relationships with feature transformation
 - **Logistic Regression**: Binary classification with sigmoid function
 
 #### Optimization & Preprocessing
+
 - **Gradient Descent**: 3D visualization of optimization landscape with learning rate and momentum
 - **Standard Scaler**: Z-score standardization for feature scaling
 - **MinMax Scaler**: Range normalization [0,1] for bounded features
 
 #### Other Algorithms
+
 - **K-Nearest Neighbors (KNN)**: Distance-based classification and regression
 - **Decision Trees**: Tree-based classification with split visualization
 - **Anomaly Detection**: Outlier detection techniques

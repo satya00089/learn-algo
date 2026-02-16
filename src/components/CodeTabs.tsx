@@ -21,7 +21,7 @@ type CodeTabsProps = {
 const SyntaxHighlightedCode = memo(function SyntaxHighlightedCode({
   code,
   lang,
-  theme
+  theme,
 }: {
   code: string
   lang: string
@@ -99,7 +99,7 @@ const CodeTabs = memo(function CodeTabs({
     const keys = Object.keys(codes)
     const firstKey = keys[0]
     if (!firstKey) return
-    setActiveTab(prev => (prev && codes[prev] ? prev : firstKey))
+    setActiveTab((prev) => (prev && codes[prev] ? prev : firstKey))
   }, [codes])
 
   // Memoize code keys and entries for performance
@@ -110,23 +110,26 @@ const CodeTabs = memo(function CodeTabs({
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className={cn('w-full gap-0 bg-inherit rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm', className)}
+      className={cn(
+        'w-full gap-0 bg-inherit rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm',
+        className
+      )}
     >
       <TabsList className="w-full relative justify-between rounded-none h-12 bg-inherit border-b border-gray-200 dark:border-gray-700 text-current py-0 pl-0 pr-5">
         <div className="flex h-full">
-          {codeKeys.map(code => (
+          {codeKeys.map((code) => (
             <TabsTrigger
               key={code}
               value={code}
               className={cn(
-                "relative px-4 py-2 text-sm font-medium transition-all",
-                "text-gray-600 dark:text-gray-400",
-                "hover:text-gray-900 dark:hover:text-gray-100",
-                "data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400",
+                'relative px-4 py-2 text-sm font-medium transition-all',
+                'text-gray-600 dark:text-gray-400',
+                'hover:text-gray-900 dark:hover:text-gray-100',
+                'data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400',
                 // Active underline effect
                 "after:content-[''] after:absolute after:inset-x-0 after:h-0.5 after:bottom-0",
-                "after:bg-transparent after:rounded-t-full after:transition-colors",
-                "data-[state=active]:after:bg-indigo-600 dark:data-[state=active]:after:bg-indigo-400"
+                'after:bg-transparent after:rounded-t-full after:transition-colors',
+                'data-[state=active]:after:bg-indigo-600 dark:data-[state=active]:after:bg-indigo-400'
               )}
             >
               {code}
@@ -153,11 +156,7 @@ const CodeTabs = memo(function CodeTabs({
             className="w-full text-sm flex items-start overflow-auto max-h-[600px] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full"
           >
             <div className="w-full [&>pre]:m-0 [&>pre]:p-0 [&>pre]:bg-transparent! [&>pre]:border-none [&>pre]:text-[13.5px] [&>pre]:leading-[1.6] [&_code]:text-[13.5px] [&_code]:leading-[1.6] [&_code]:bg-transparent! [&_.shiki]:bg-transparent! [&>pre]:font-mono">
-              <SyntaxHighlightedCode
-                code={code}
-                lang={lang}
-                theme={theme}
-              />
+              <SyntaxHighlightedCode code={code} lang={lang} theme={theme} />
             </div>
           </TabsContent>
         ))}

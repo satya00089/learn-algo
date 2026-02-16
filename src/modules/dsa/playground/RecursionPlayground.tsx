@@ -203,7 +203,12 @@ export function RecursionPlayground() {
       y?: number
     }
 
-    const renderNode = (node: TreeNode, x: number, y: number, width: number): React.ReactElement => {
+    const renderNode = (
+      node: TreeNode,
+      x: number,
+      y: number,
+      width: number
+    ): React.ReactElement => {
       const nodeSize = 50
       const childY = y + 100
       const childCount = node.children.length

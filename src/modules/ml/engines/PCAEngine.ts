@@ -268,7 +268,7 @@ export class PCAEngine {
     const dim = matrix.length
 
     // Create a deep copy of the matrix to avoid mutating the original
-    const deflatedMatrix = matrix.map(row => [...row])
+    const deflatedMatrix = matrix.map((row) => [...row])
 
     // Deflate for previously found eigenvectors
     for (let i = 0; i < deflationCount && i < this.state.eigenvectors.length; i++) {

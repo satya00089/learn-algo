@@ -11,11 +11,11 @@ interface TabsContextType {
 const TabsContext = createContext<TabsContextType | null>(null)
 
 interface TabsProps {
-  defaultValue?: string
-  value?: string
-  onValueChange?: (value: string) => void
-  children: React.ReactNode
-  className?: string
+  readonly defaultValue?: string
+  readonly value?: string
+  readonly onValueChange?: (value: string) => void
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function Tabs({
@@ -23,7 +23,7 @@ export function Tabs({
   value: controlledValue,
   onValueChange,
   children,
-  className
+  className,
 }: TabsProps) {
   const [internalValue, setInternalValue] = useState(defaultValue || '')
 
@@ -32,16 +32,14 @@ export function Tabs({
 
   return (
     <TabsContext.Provider value={{ value, onValueChange: handleValueChange }}>
-      <div className={cn('w-full', className)}>
-        {children}
-      </div>
+      <div className={cn('w-full', className)}>{children}</div>
     </TabsContext.Provider>
   )
 }
 
 interface TabsListProps {
-  children: React.ReactNode
-  className?: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function TabsList({ children, className }: TabsListProps) {
@@ -98,9 +96,9 @@ export function TabsList({ children, className }: TabsListProps) {
 }
 
 interface TabsTriggerProps {
-  value: string
-  children: React.ReactNode
-  className?: string
+  readonly value: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
@@ -132,9 +130,9 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
 }
 
 interface TabsContentProps {
-  value: string
-  children: React.ReactNode
-  className?: string
+  readonly value: string
+  readonly children: React.ReactNode
+  readonly className?: string
 }
 
 export function TabsContent({ value, children, className }: TabsContentProps) {
