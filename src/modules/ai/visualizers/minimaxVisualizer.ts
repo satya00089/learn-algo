@@ -125,7 +125,9 @@ export function drawTree(
   layout: Map<string, TreeNodeLayout>,
   isDark: boolean,
   currentNodeId?: string | null,
-  selectedNodeId?: string | null
+  selectedNodeId?: string | null,
+  highlightIds?: Set<string> | null,
+  showMoveSymbol: boolean = false
 ): void {
   const nodeRadius = 20
   const bgColor = isDark ? '#1F2937' : '#F3F4F6'
@@ -134,6 +136,9 @@ export function drawTree(
 
   // Draw connections first
   nodes.forEach((node) => {
+    // If highlightIds provided, only draw connections where both parent and child are highlighted
+    if (highlightIds && (!highlightIds.has(node.id) || !node.parent || !highlightIds.has(node.parent))) return
+
     const nodePos = layout.get(node.id)
     if (!nodePos || !node.parent) return
 
@@ -161,6 +166,9 @@ export function drawTree(
 
   // Draw nodes
   nodes.forEach((node) => {
+    // If highlightIds provided, only draw highlighted nodes
+    if (highlightIds && !highlightIds.has(node.id)) return
+
     const pos = layout.get(node.id)
     if (!pos) return
 
@@ -212,6 +220,29 @@ export function drawTree(
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(node.score.toString(), pos.x, pos.y)
+    }
+
+    // Show move position (Box 1-9) inferred from difference with parent board
+    if (showMoveSymbol && node.parent) {
+      const parentNode = nodes.find((n) => n.id === node.parent)
+      if (parentNode) {
+        const parentBoard = parentNode.board
+        const childBoard = node.board
+        let movePosition: number | null = null
+        for (let i = 0; i < 9; i++) {
+          if (parentBoard[i] !== childBoard[i]) {
+            movePosition = i + 1 // Convert 0-indexed to 1-9
+            break
+          }
+        }
+        if (movePosition !== null) {
+          ctx.fillStyle = isDark ? '#F9FAFB' : '#111827'
+          ctx.font = 'bold 11px sans-serif'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'bottom'
+          ctx.fillText(`Box ${movePosition}`, pos.x, pos.y - nodeRadius - 6)
+        }
+      }
     }
 
     // Alpha-Beta values

@@ -25,7 +25,7 @@ export default function AIPage() {
       iconType: 'image' as const,
       darkFilter: 'dark:invert',
       difficulty: 'Advanced',
-      comingSoon: true,
+      comingSoon: false,
       category: 'Game Theory',
     },
     {

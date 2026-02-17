@@ -257,6 +257,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       description:
         'Artificial Intelligence concepts - explore AI algorithms and intelligent systems',
     },
+    {
+      url: '/ai/minimax',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Minimax Algorithm - AI decision making with Alpha-Beta pruning, interactive Tic-Tac-Toe gameplay, and adversarial search visualization',
+    },
   ]
 
   return routeConfig.map((route) => ({

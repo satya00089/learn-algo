@@ -17,12 +17,11 @@ export function Canvas({ canvasRef, config, className = '' }: CanvasProps) {
   return (
     <canvas
       ref={canvasRef}
-      width={config.width}
-      height={config.height}
       className={`border border-gray-300 rounded-lg ${className}`}
       style={{
-        maxWidth: '100%',
-        height: 'auto',
+        width: '100%',
+        height: '100%',
+        display: 'block',
       }}
     />
   )

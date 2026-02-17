@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
+import { HomepageStructuredData } from '@/components/HomepageStructuredData'
 
 export default function Home() {
   const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28, bgSize: 16 })
@@ -78,6 +79,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <HomepageStructuredData />
       <div className="relative">
         {/* Left Decorative Pattern Column */}
         <div className="hidden lg:block fixed left-0 top-0 bottom-0 w-16 border-r border-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:theme(colors.gray.950/0.05)] dark:[--pattern-fg:theme(colors.white/0.1)]"></div>
@@ -932,7 +934,7 @@ export default function Home() {
               </div>
 
               {/* Module Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
                 {/* DSA Card */}
                 <Link
                   href="/dsa"
@@ -946,8 +948,8 @@ export default function Home() {
                     }
                   }}
                 >
-                  <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-xl">
-                    <div className="p-8">
+                  <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-xl h-full flex flex-col">
+                    <div className="p-8 flex-1 flex flex-col">
                       <div className="mb-6">
                         <Image
                           src="/icons/dsa/dsa.png"
@@ -1010,8 +1012,8 @@ export default function Home() {
                     }
                   }}
                 >
-                  <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl">
-                    <div className="p-8">
+                  <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl h-full flex flex-col">
+                    <div className="p-8 flex-1 flex flex-col">
                       <div className="mb-6">
                         <Image
                           src="/icons/ml/ml.png"
@@ -1062,9 +1064,20 @@ export default function Home() {
                 </Link>
 
                 {/* AI Card */}
-                <Link href="/ai" className="group">
-                  <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-700">
-                    <div className="p-8">
+                <Link
+                  href="/ai"
+                  className="group"
+                  onClick={() => {
+                    if (globalThis?.window?.gtag) {
+                      globalThis.window.gtag('event', 'click', {
+                        event_category: 'Module Card',
+                        event_label: 'AI',
+                      })
+                    }
+                  }}
+                >
+                  <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-green-500 dark:hover:border-green-500 hover:shadow-xl h-full flex flex-col">
+                    <div className="p-8 flex-1 flex flex-col">
                       <div className="mb-6">
                         <Image
                           src="/icons/ai/ai.png"
@@ -1078,7 +1091,7 @@ export default function Home() {
                         Artificial Intelligence
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                        Explore AI concepts, search algorithms, and intelligent agent systems
+                        Explore AI concepts, search algorithms, and intelligent agent systems through interactive visualizations
                       </p>
                       <div className="flex flex-wrap gap-2 mb-6">
                         <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-xs font-medium">
@@ -1093,11 +1106,11 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="px-8 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
-                      <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        <span className="w-2 h-2 bg-gray-400 rounded-full"></span> Coming soon
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span> Available now
                       </span>
                       <svg
-                        className="w-5 h-5 text-gray-300"
+                        className="w-5 h-5 text-gray-400 group-hover:text-green-500 group-hover:translate-x-1 transition-all"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

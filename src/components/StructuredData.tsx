@@ -8,7 +8,7 @@ export function StructuredData() {
     url: 'https://www.learn-algo.com',
     logo: 'https://www.learn-algo.com/logo/logo.png',
     description:
-      'Interactive algorithm visualizations for Data Structures, Machine Learning, and Artificial Intelligence',
+      'Interactive 3D algorithm visualizations for Data Structures & Algorithms (Sorting, BST, Recursion), Machine Learning (PCA, K-Means, DBSCAN, Regression, Gradient Descent), and Artificial Intelligence (Minimax, Game Theory). Step-by-step educational platform for students and developers.',
     educationalLevel: ['Beginner', 'Intermediate', 'Advanced'],
     sameAs: ['https://github.com/satya00089/learn-algo'],
   }
@@ -18,7 +18,7 @@ export function StructuredData() {
     '@type': 'WebSite',
     name: 'LEARN ALGO',
     url: 'https://www.learn-algo.com',
-    description: 'Master algorithms through interactive visualizations',
+    description: 'Master 30+ algorithms through interactive 3D visualizations including Sorting, Binary Search Trees, Machine Learning (PCA, Clustering, Regression), and AI algorithms. Free educational platform.',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://www.learn-algo.com/?q={search_term_string}',
@@ -43,9 +43,9 @@ export function StructuredData() {
   const courseSchema = {
     '@context': 'https://schema.org',
     '@type': 'Course',
-    name: 'Algorithm Visualization Course',
+    name: 'Interactive Algorithm Visualization Course',
     description:
-      'Learn algorithms through interactive visualizations across DSA, ML, and AI domains',
+      'Learn 30+ algorithms through interactive 3D visualizations. Covers Data Structures (Sorting, BST, Stack, Queue, Recursion), Machine Learning (PCA, K-Means, DBSCAN, GMM, Regression, Gradient Descent, Feature Scaling), and AI (Minimax, Game Theory). Includes step-by-step animations, code examples, and interactive controls.',
     provider: {
       '@type': 'Organization',
       name: 'LEARN ALGO',
