@@ -303,8 +303,20 @@ const mlPages: OGImageConfig[] = [
   },
 ]
 
+// AI algorithm pages
+const aiPages: OGImageConfig[] = [
+  {
+    title: 'Minimax Algorithm',
+    subtitle: 'AI Decision Making',
+    description: 'Explore adversarial search with Alpha-Beta pruning in Tic-Tac-Toe',
+    category: 'AI • Game Theory',
+    categoryColor: '#3B82F6',
+    filename: 'og-ai-minimax.png',
+  },
+]
+
 // Combine all configs
-const allConfigs = [...mainPages, ...dsaPages, ...mlPages]
+const allConfigs = [...mainPages, ...dsaPages, ...mlPages, ...aiPages]
 
 async function generateOGImage(config: OGImageConfig) {
   const browser = await puppeteer.launch({
@@ -584,6 +596,7 @@ async function generateAllImages() {
   console.log(`   - ${mainPages.length} main section pages`)
   console.log(`   - ${dsaPages.length} DSA algorithm pages`)
   console.log(`   - ${mlPages.length} ML algorithm pages`)
+  console.log(`   - ${aiPages.length} AI algorithm pages`)
 
   // Exit with appropriate code
   process.exit(failCount > 0 ? 1 : 0)

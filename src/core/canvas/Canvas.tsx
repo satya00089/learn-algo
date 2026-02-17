@@ -13,17 +13,20 @@ interface CanvasProps {
  * Reusable Canvas component
  * Pure presentation - receives ref from useCanvas hook
  */
-export function Canvas({ canvasRef, config, className = '' }: CanvasProps) {
+export function Canvas({ canvasRef, config, className = '' }: Readonly<CanvasProps>) {
   return (
     <canvas
       ref={canvasRef}
-      width={config.width}
-      height={config.height}
+      width={config?.width}
+      height={config?.height}
       className={`border border-gray-300 rounded-lg ${className}`}
       style={{
-        maxWidth: '100%',
-        height: 'auto',
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        backgroundColor: config?.backgroundColor ?? 'transparent',
       }}
+      data-grid-enabled={config?.gridEnabled ? '1' : '0'}
     />
   )
 }
