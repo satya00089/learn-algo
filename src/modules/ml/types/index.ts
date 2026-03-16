@@ -12,6 +12,9 @@ export interface Point3D extends Point2D {
 export interface DataPoint extends Point2D {
   label?: number
   z?: number // Optional third dimension for 3D visualization
+  embeddings?: number[] // Full embedding vector for high-dimensional data
+  metadata?: Record<string, any> // Optional metadata (e.g., movie info, image data)
+  std?: number[] // Standard deviation vector (for PCA standardization)
 }
 
 export interface LinearRegressionParams {

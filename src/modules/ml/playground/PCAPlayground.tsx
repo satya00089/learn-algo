@@ -11,6 +11,7 @@ import {
   FaDatabase,
   FaExchangeAlt,
   FaVectorSquare,
+  FaFilm,
 } from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
@@ -24,6 +25,7 @@ import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { PCAEngine } from '../engines/PCAEngine'
 import { drawPCA } from '../visualizers/pcaVisualizer'
 import { PCA3DScene } from '../visualizers/PCA3DScene'
+import { loadMoviesDataset } from '../data/movieDataLoader'
 import type { DataPoint } from '../types'
 
 // Gaussian random number generator
@@ -46,8 +48,10 @@ export function PCAPlayground() {
   const animationRef = useRef<NodeJS.Timeout | null>(null)
 
   // Data generation
-  const [dataType, setDataType] = useState<'iris' | 'wine' | 'breast-cancer' | 'mnist'>('iris')
+  const [dataType, setDataType] = useState<'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies'>('iris')
   const [numPoints, setNumPoints] = useState(150)
+  const [isLoadingMovies, setIsLoadingMovies] = useState(false)
+  const [moviesError, setMoviesError] = useState<string | null>(null)
 
   // Algorithm parameters
   const [numComponents, setNumComponents] = useState(2)
@@ -76,7 +80,10 @@ export function PCAPlayground() {
   // NOTE: This generates simulated 2D/3D projections that represent typical PCA results
   // from the original high-dimensional datasets, not actual dimensionality reduction
   const generateData = useCallback(
-    (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist') => {
+    (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies') => {
+      // Movies dataset is loaded externally, not generated
+      if (type === 'movies') return []
+      
       const newPoints: DataPoint[] = []
       const use3D = view3D || numComponents >= 3
 
@@ -226,13 +233,34 @@ export function PCAPlayground() {
   )
 
   // Initialize engine
-  const initializeEngine = useCallback(() => {
-    const points = generateData(dataType)
-    engineRef.current = new PCAEngine({
-      points,
-      numComponents,
-    })
-    setEngineState(engineRef.current.getState())
+  const initializeEngine = useCallback(async () => {
+    stopAnimation()
+    // Load movies dataset asynchronously if needed
+    if (dataType === 'movies') {
+      setIsLoadingMovies(true)
+      setMoviesError(null)
+      try {
+        const moviesData = await loadMoviesDataset()
+        engineRef.current = new PCAEngine({
+          points: moviesData.points,
+          numComponents,
+        })
+        setEngineState(engineRef.current.getState())
+      } catch (error) {
+        console.error('Failed to load movies dataset:', error)
+        setMoviesError('Failed to load movies dataset. Check console for details.')
+      } finally {
+        setIsLoadingMovies(false)
+      }
+    } else {
+      // Generate simulated data for other datasets
+      const points = generateData(dataType)
+      engineRef.current = new PCAEngine({
+        points,
+        numComponents,
+      })
+      setEngineState(engineRef.current.getState())
+    }
   }, [dataType, numComponents, generateData])
 
   // Initialize on mount and when parameters change
@@ -538,7 +566,27 @@ export function PCAPlayground() {
 
             {/* Main Canvas */}
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden relative">
-              {view3D && engineState ? (
+              {isLoadingMovies ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                    <div className="text-gray-600 dark:text-gray-400">Loading movies dataset...</div>
+                  </div>
+                </div>
+              ) : moviesError ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center text-red-600 dark:text-red-400">
+                    <p className="font-semibold mb-2">Error Loading Movies</p>
+                    <p className="text-sm">{moviesError}</p>
+                    <button
+                      onClick={() => initializeEngine()}
+                      className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              ) : view3D && engineState ? (
                 <PCA3DScene
                   state={engineState}
                   showOriginal={showOriginal}
@@ -546,6 +594,7 @@ export function PCAPlayground() {
                   showComponents={showComponents}
                   theme={theme}
                   autoRotate={autoRotate}
+                  usePosterSprites={dataType === 'movies'}
                 />
               ) : (
                 <canvas
@@ -616,6 +665,27 @@ export function PCAPlayground() {
                     MNIST
                   </button>
                 </Tooltip>
+                <Tooltip text="Real movie embeddings from 561 movies with ~500 features (text, metadata, ratings)">
+                  <button
+                    onClick={() => {
+                      setDataType('movies')
+                      // Force 3D view for movies with posters
+                      if (!view3D) {
+                        setView3D(true)
+                        if (numComponents < 3) setNumComponents(3)
+                      }
+                    }}
+                    disabled={isPlaying || isLoadingMovies}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
+                      dataType === 'movies'
+                        ? 'bg-orange-700 text-white'
+                        : 'bg-orange-600 hover:bg-orange-700 text-white'
+                    }`}
+                  >
+                    <FaFilm size={12} />
+                    Movies
+                  </button>
+                </Tooltip>
               </div>
 
               {/* Dataset Info */}
@@ -669,6 +739,23 @@ export function PCAPlayground() {
                     <p className="mt-1">Classes: 10 digits (0-9). Shown: 0, 1, 4, 7</p>
                     <p className="mt-1 text-green-600 dark:text-green-400">
                       Real PCA captures digit shapes in much lower dimensions
+                    </p>
+                  </div>
+                )}
+                {dataType === 'movies' && (
+                  <div>
+                    <strong>🎬 Movies Dataset (REAL DATA)</strong>
+                    <p className="mt-1">📊 Actual PCA on 561 movies × ~500 features</p>
+                    <p className="mt-1">
+                      Features: Text embeddings (overview, keywords), metadata (genre, language),
+                      ratings, box office, budget
+                    </p>
+                    <p className="mt-1">Visualization: Movie posters in 3D space</p>
+                    <p className="mt-1 text-orange-600 dark:text-orange-400">
+                      Similar movies cluster together (e.g., Marvel, Harry Potter, Pixar films)
+                    </p>
+                    <p className="mt-1 text-xs">
+                      💡 Hover over posters for details, click for more info
                     </p>
                   </div>
                 )}
