@@ -463,6 +463,9 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
   const viewRef = useRef({ scale: 1, panX: 0, panY: 0 })
   const dragRef = useRef<{ x: number; y: number } | null>(null)
   const [, forceRedraw] = useState(0)
+  // Animation: progress 0→1 when PCA completes (posters fly from center to final positions)
+  const animRef = useRef({ progress: 1, rafId: 0 })
+  const prevCompleteRef = useRef(false)
 
   const points = useMemo(() => {
     if (!state.isComplete) return []
@@ -487,6 +490,31 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
       alive = false
     }
   }, [points])
+
+  useEffect(() => {
+    const wasComplete = prevCompleteRef.current
+    prevCompleteRef.current = state.isComplete
+    if (state.isComplete && !wasComplete) {
+      // PCA just finished — animate posters flying from center to final positions
+      cancelAnimationFrame(animRef.current.rafId)
+      animRef.current.progress = 0
+      const startTime = performance.now()
+      const DURATION = 1200
+      const tick = (now: number) => {
+        const t = Math.min((now - startTime) / DURATION, 1)
+        // Cubic ease-in-out
+        animRef.current.progress = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+        forceRedraw((n) => n + 1)
+        if (t < 1) animRef.current.rafId = requestAnimationFrame(tick)
+      }
+      animRef.current.rafId = requestAnimationFrame(tick)
+    } else if (!state.isComplete) {
+      // Reset — cancel animation and snap back
+      cancelAnimationFrame(animRef.current.rafId)
+      animRef.current.progress = 1
+    }
+    return () => cancelAnimationFrame(animRef.current.rafId)
+  }, [state.isComplete])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -524,8 +552,9 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
     })
     const THUMB_W = 48
     const THUMB_H = 72
+    const prog = animRef.current.progress
     for (const p of points) {
-      const { cx, cy } = toCanvas(p.x, p.y)
+      const { cx, cy } = toCanvas(p.x * prog, p.y * prog)
       const sx = cx - THUMB_W / 2
       const sy = cy - THUMB_H / 2
       const bitmap = p.metadata?.tmdbId ? bitmapCache.get(p.metadata.tmdbId) : undefined
@@ -553,7 +582,7 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
 
   const hitTest = (ex: number, ey: number): MovieMetadata | null => {
     const canvas = canvasRef.current
-    if (!canvas || points.length === 0) return null
+    if (!canvas || points.length === 0 || animRef.current.progress < 1) return null
     const rect = canvas.getBoundingClientRect()
     const mx = (ex - rect.left) * (canvas.width / rect.width)
     const my = (ey - rect.top) * (canvas.height / rect.height)
@@ -574,10 +603,11 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
     const K = Math.min((w - pad * 2) / xRange, (h - pad * 2) / yRange)
     const THUMB_W = 48
     const THUMB_H = 72
+    const prog = animRef.current.progress
     for (let i = points.length - 1; i >= 0; i--) {
       const p = points[i]
-      const cx = w / 2 + panX + (p.x - xMid) * K * scale
-      const cy = h / 2 + panY - (p.y - yMid) * K * scale
+      const cx = w / 2 + panX + (p.x * prog - xMid) * K * scale
+      const cy = h / 2 + panY - (p.y * prog - yMid) * K * scale
       const sx = cx - THUMB_W / 2
       const sy = cy - THUMB_H / 2
       if (mx >= sx && mx <= sx + THUMB_W && my >= sy && my <= sy + THUMB_H)
