@@ -29,7 +29,7 @@ export interface PCAState {
   totalSteps: number
   stepDescription: string
   // Computed values
-  mean: DataPoint
+  mean: DataPoint & { std?: number[] } // Mean with optional std for standardization
   covarianceMatrix: number[][]
   eigenvalues: number[]
   eigenvectors: number[][]
@@ -51,6 +51,14 @@ export class PCAEngine {
   }
 
   private initializeState(config: PCAConfig): PCAState {
+    console.log(`🚀 PCA: Initializing with ${config.points.length} points`)
+    const firstPoint = config.points[0]
+    if (firstPoint?.embeddings) {
+      console.log(`📊 PCA: Data has embeddings array with ${firstPoint.embeddings.length} dimensions`)
+      console.log(`📊 PCA: First point embeddings (first 5):`, firstPoint.embeddings.slice(0, 5))
+    } else {
+      console.log(`📊 PCA: Low-dimensional data (x, y, z only)`)
+    }
     const points = config.points.map((p) => ({
       ...p,
       original: { ...p },
@@ -77,8 +85,34 @@ export class PCAEngine {
     }
   }
 
+  // Helper to extract features from a data point
+  private extractFeatures(point: DataPoint): number[] {
+    // If point has embeddings array, use it (high-dimensional data)
+    if (point.embeddings && Array.isArray(point.embeddings)) {
+      return point.embeddings
+    }
+    // Otherwise use x, y, z (low-dimensional data)
+    const features = [point.x, point.y]
+    if (point.z !== undefined) features.push(point.z)
+    return features
+  }
+
+  // Check if data is high-dimensional (has embeddings)
+  private isHighDimensional(): boolean { 
+    return this.state.originalPoints.length > 0 && 
+           this.state.originalPoints[0].embeddings !== undefined
+  }
+
   getState(): PCAState {
-    return { ...this.state }
+    // Return a new points array so React useMemo deps see a reference change
+    // (points are mutated in-place during each step; a shallow spread would miss that)
+    return {
+      ...this.state,
+      points: this.state.points.map((p) => ({
+        ...p,
+        transformed: { ...p.transformed },
+      })),
+    }
   }
 
   reset(): void {
@@ -126,34 +160,121 @@ export class PCAEngine {
   private centerData(): void {
     this.state.stepDescription = 'Centering data by subtracting mean'
 
-    // Calculate mean
-    const sum = this.state.originalPoints.reduce(
-      (acc, p) => ({
-        x: acc.x + p.x,
-        y: acc.y + p.y,
-        z: (acc.z || 0) + (p.z || 0),
-      }),
-      { x: 0, y: 0, z: 0 }
-    )
     const n = this.state.originalPoints.length
-    this.state.mean = {
-      x: sum.x / n,
-      y: sum.y / n,
-      z: (sum.z || 0) / n,
-    }
+    const isHighDim = this.isHighDimensional()
 
-    // Center the data
-    this.state.centeredPoints = this.state.originalPoints.map((p) => ({
-      x: p.x - this.state.mean.x,
-      y: p.y - this.state.mean.y,
-      z: (p.z || 0) - (this.state.mean.z || 0),
-    }))
+    if (isHighDim) {
+      // High-dimensional data: compute mean of embeddings
+      const firstFeatures = this.extractFeatures(this.state.originalPoints[0])
+      const dim = firstFeatures.length
+      const meanVector = new Array(dim).fill(0)
+
+      // Sum all feature vectors
+      for (const point of this.state.originalPoints) {
+        const features = this.extractFeatures(point)
+        for (let i = 0; i < dim; i++) {
+          meanVector[i] += features[i]
+        }
+      }
+
+      // Divide by n to get mean
+      for (let i = 0; i < dim; i++) {
+        meanVector[i] /= n
+      }
+      console.log(`📈 PCA: Computed mean vector, dim=${dim}, mean (first 5):`, meanVector.slice(0, 5))
+
+      // Compute standard deviation for each dimension
+      const stdVector = new Array(dim).fill(0)
+      for (const point of this.state.originalPoints) {
+        const features = this.extractFeatures(point)
+        for (let i = 0; i < dim; i++) {
+          const diff = features[i] - meanVector[i]
+          stdVector[i] += diff * diff
+        }
+      }
+      for (let i = 0; i < dim; i++) {
+        stdVector[i] = Math.sqrt(stdVector[i] / n)
+        // Avoid division by zero for constant features
+        if (stdVector[i] < 1e-10) stdVector[i] = 1
+      }
+      console.log(`📊 PCA: Computed std vector (first 5):`, stdVector.slice(0, 5))
+
+      // Store mean (use first 3 dims for x, y, z compatibility)
+      this.state.mean = {
+        x: meanVector[0] || 0,
+        y: meanVector[1] || 0,
+        z: meanVector[2] || 0,
+        embeddings: meanVector,
+        std: stdVector, // Store std for later use
+      }
+
+      // Center and standardize the data
+      this.state.centeredPoints = this.state.originalPoints.map((p) => {
+        const features = this.extractFeatures(p)
+        const standardized = features.map((val, i) => (val - meanVector[i]) / stdVector[i])
+        return {
+          x: standardized[0] || 0,
+          y: standardized[1] || 0,
+          z: standardized[2] || 0,
+          embeddings: standardized,
+        }
+      })
+    } else {
+      // Low-dimensional data: original logic
+      const sum = this.state.originalPoints.reduce(
+        (acc, p) => ({
+          x: acc.x + p.x,
+          y: acc.y + p.y,
+          z: (acc.z || 0) + (p.z || 0),
+        }),
+        { x: 0, y: 0, z: 0 }
+      )
+      this.state.mean = {
+        x: sum.x / n,
+        y: sum.y / n,
+        z: (sum.z || 0) / n,
+      }
+
+      // Center the data
+      this.state.centeredPoints = this.state.originalPoints.map((p) => ({
+        x: p.x - this.state.mean.x,
+        y: p.y - this.state.mean.y,
+        z: (p.z || 0) - (this.state.mean.z || 0),
+      }))
+    }
   }
 
   private computeCovariance(): void {
     this.state.stepDescription = 'Computing covariance matrix'
 
     const n = this.state.centeredPoints.length
+    const isHighDim = this.isHighDimensional()
+
+    if (isHighDim) {
+      // High-dimensional covariance: use embeddings
+      const firstFeatures = this.extractFeatures(this.state.centeredPoints[0])
+      const dim = firstFeatures.length
+
+      // Initialize covariance matrix
+      this.state.covarianceMatrix = Array.from({ length: dim }, () => new Array(dim).fill(0))
+
+      // Compute covariance: cov(i,j) = sum(x_i * x_j) / n
+      for (const point of this.state.centeredPoints) {
+        const features = this.extractFeatures(point)
+        for (let i = 0; i < dim; i++) {
+          for (let j = i; j < dim; j++) {
+            const cov = (features[i] * features[j]) / n
+            this.state.covarianceMatrix[i][j] += cov
+            if (i !== j) {
+              this.state.covarianceMatrix[j][i] += cov // Symmetric
+            }
+          }
+        }
+      }
+      return
+    }
+
+    // Low-dimensional covariance: original logic
     const hasZ = this.state.centeredPoints.some((p) => p.z !== undefined && p.z !== 0)
 
     if (hasZ) {
@@ -240,16 +361,19 @@ export class PCAEngine {
         const norm = Math.hypot(v1, v2)
         this.state.eigenvectors.push([v1 / norm, v2 / norm])
       }
-    } else if (dim === 3) {
-      // 3D case - use power iteration method
+    } else {
+      // 3D or higher-dimensional case - use power iteration method
       this.state.eigenvectors = []
       this.state.eigenvalues = []
 
       const A = this.state.covarianceMatrix
       let totalVariance = 0
 
-      // Find up to 3 principal components using deflation
-      for (let comp = 0; comp < 3; comp++) {
+      // Find principal components using deflation
+      // For high-dimensional data, find only as many as we need (up to numComponents)
+      const numToCompute = Math.min(this.state.numComponents, dim)
+      
+      for (let comp = 0; comp < numToCompute; comp++) {
         const { eigenvalue, eigenvector } = this.powerIteration(A, comp)
         this.state.eigenvalues.push(eigenvalue)
         this.state.eigenvectors.push(eigenvector)
@@ -346,8 +470,83 @@ export class PCAEngine {
   }
 
   private transformData(): void {
+    console.log('🎯 PCA: Step 5 - Transforming data')
     this.state.stepDescription = 'Transforming data to lower dimensions'
 
+    const isHighDim = this.isHighDimensional()
+    console.log(`🔍 PCA: Using high-dimensional transform = ${isHighDim}`)
+
+    if (isHighDim) {
+      // High-dimensional transformation: project standardized embeddings onto principal components
+      const meanVector = this.state.mean.embeddings || []
+      const stdVector = this.state.mean.std || meanVector.map(() => 1)
+      console.log(`📊 PCA: Mean vector length = ${meanVector.length}`)
+
+      // First pass: compute all projections
+      const allProjections: number[][] = []
+      for (const point of this.state.points) {
+        const originalFeatures = this.extractFeatures(point.original)
+
+        if (this.state.points.indexOf(point) === 0) {
+          console.log(`📍 First point original features (length=${originalFeatures.length}, first 5):`, originalFeatures.slice(0, 5))
+        }
+
+        // Standardize features: (val - mean) / std (same as during centering)
+        const standardizedFeatures = originalFeatures.map((val, i) => (val - meanVector[i]) / stdVector[i])
+
+        // Project onto each principal component (dot product)
+        const projections: number[] = []
+        for (let i = 0; i < Math.min(this.state.numComponents, this.state.components.length); i++) {
+          const eigenvector = this.state.components[i].eigenvector
+
+          if (this.state.points.indexOf(point) === 0 && i === 0) {
+            console.log(`📐 PC${i+1} eigenvector (length=${eigenvector.length}, first 5):`, eigenvector.slice(0, 5))
+          }
+
+          let projection = 0
+          for (let j = 0; j < standardizedFeatures.length; j++) {
+            projection += standardizedFeatures[j] * eigenvector[j]
+          }
+          projections.push(projection)
+
+          if (this.state.points.indexOf(point) === 0) {
+            console.log(`📐 First point PC${i+1} projection = ${projection.toFixed(4)}`)
+          }
+        }
+        allProjections.push(projections)
+      }
+
+      // Find range for normalization to fit 3D scene scale [-4, 4]
+      const numComps = allProjections[0]?.length || 0
+      const mins = new Array(numComps).fill(Infinity)
+      const maxs = new Array(numComps).fill(-Infinity)
+      for (const proj of allProjections) {
+        for (let i = 0; i < numComps; i++) {
+          if (proj[i] < mins[i]) mins[i] = proj[i]
+          if (proj[i] > maxs[i]) maxs[i] = proj[i]
+        }
+      }
+      const ranges = maxs.map((max, i) => max - mins[i] || 1)
+      const TARGET_SCALE = 8 // maps to [-4, 4] range
+      console.log(`📐 PCA projection ranges:`, ranges.slice(0, 3).map(r => r.toFixed(2)))
+
+      // Second pass: normalize and assign transformed coordinates
+      this.state.points.forEach((point, idx) => {
+        const projections = allProjections[idx]
+        point.transformed = {
+          x: numComps > 0 ? ((projections[0] - mins[0]) / ranges[0] - 0.5) * TARGET_SCALE : 0,
+          y: numComps > 1 ? ((projections[1] - mins[1]) / ranges[1] - 0.5) * TARGET_SCALE : 0,
+          z: numComps > 2 ? ((projections[2] - mins[2]) / ranges[2] - 0.5) * TARGET_SCALE : 0,
+        }
+
+        if (idx === 0) {
+          console.log(`✅ First point normalized to: (${point.transformed.x.toFixed(3)}, ${point.transformed.y.toFixed(3)}, ${(point.transformed.z ?? 0).toFixed(3)})`)
+        }
+      })
+      return
+    }
+
+    // Low-dimensional transformation: original logic
     const dim = this.state.covarianceMatrix.length
     const hasZ = dim === 3
 
