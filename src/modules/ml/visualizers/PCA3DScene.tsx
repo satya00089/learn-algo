@@ -432,6 +432,234 @@ function Scene({
   )
 }
 
+// ─── 2D Movie Poster Scene ────────────────────────────────────────────────────
+const bitmapCache = new Map<number, ImageBitmap>()
+
+async function getPosterBitmap(tmdbId: number): Promise<ImageBitmap | null> {
+  if (bitmapCache.has(tmdbId)) return bitmapCache.get(tmdbId)!
+  await loadManifest()
+  const entry = spriteManifest.get(String(tmdbId))
+  if (!entry) return null
+  const img = await loadSheetImage(entry.sheet_url)
+  const canvas = document.createElement('canvas')
+  canvas.width = entry.w
+  canvas.height = entry.h
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, entry.x, entry.y, entry.w, entry.h, 0, 0, entry.w, entry.h)
+  const bitmap = await createImageBitmap(canvas)
+  bitmapCache.set(tmdbId, bitmap)
+  return bitmap
+}
+
+export interface PCA2DMovieSceneProps {
+  readonly state: PCAState
+  readonly theme: 'light' | 'dark'
+}
+
+export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [selectedMovie, setSelectedMovie] = useState<MovieMetadata | null>(null)
+  const viewRef = useRef({ scale: 1, panX: 0, panY: 0 })
+  const dragRef = useRef<{ x: number; y: number } | null>(null)
+  const [, forceRedraw] = useState(0)
+
+  const points = useMemo(() => {
+    if (!state.isComplete) return []
+    return state.points
+      .map((p) => ({
+        x: p.transformed.x,
+        y: p.transformed.y,
+        metadata: (p as any).metadata as MovieMetadata | undefined,
+      }))
+      .filter((p) => p.metadata?.tmdbId)
+  }, [state])
+
+  useEffect(() => {
+    let alive = true
+    for (const p of points) {
+      if (!p.metadata?.tmdbId || bitmapCache.has(p.metadata.tmdbId)) continue
+      getPosterBitmap(p.metadata.tmdbId).then(() => {
+        if (alive) forceRedraw((n) => n + 1)
+      })
+    }
+    return () => {
+      alive = false
+    }
+  }, [points])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const w = canvas.width
+    const h = canvas.height
+    const { scale, panX, panY } = viewRef.current
+    ctx.fillStyle = theme === 'dark' ? '#1f2937' : '#ffffff'
+    ctx.fillRect(0, 0, w, h)
+    if (points.length === 0) {
+      ctx.fillStyle = theme === 'dark' ? '#9ca3af' : '#6b7280'
+      ctx.font = '16px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('Run PCA to see movie posters', w / 2, h / 2)
+      return
+    }
+    const xVals = points.map((p) => p.x)
+    const yVals = points.map((p) => p.y)
+    const dataXMin = Math.min(...xVals)
+    const dataXMax = Math.max(...xVals)
+    const dataYMin = Math.min(...yVals)
+    const dataYMax = Math.max(...yVals)
+    const xRange = dataXMax - dataXMin || 1
+    const yRange = dataYMax - dataYMin || 1
+    const xMid = (dataXMin + dataXMax) / 2
+    const yMid = (dataYMin + dataYMax) / 2
+    const pad = 60
+    // K: pixels-per-data-unit so the full dataset fits at scale=1
+    const K = Math.min((w - pad * 2) / xRange, (h - pad * 2) / yRange)
+    const toCanvas = (dx: number, dy: number) => ({
+      cx: w / 2 + panX + (dx - xMid) * K * scale,
+      cy: h / 2 + panY - (dy - yMid) * K * scale,
+    })
+    const THUMB_W = 48
+    const THUMB_H = 72
+    for (const p of points) {
+      const { cx, cy } = toCanvas(p.x, p.y)
+      const sx = cx - THUMB_W / 2
+      const sy = cy - THUMB_H / 2
+      const bitmap = p.metadata?.tmdbId ? bitmapCache.get(p.metadata.tmdbId) : undefined
+      if (bitmap) {
+        ctx.drawImage(bitmap, sx, sy, THUMB_W, THUMB_H)
+        ctx.strokeStyle =
+          theme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)'
+        ctx.lineWidth = 1
+        ctx.strokeRect(sx, sy, THUMB_W, THUMB_H)
+      } else {
+        ctx.fillStyle = '#3b82f6'
+        ctx.fillRect(sx, sy, THUMB_W, THUMB_H)
+      }
+    }
+    ctx.fillStyle = theme === 'dark' ? '#9ca3af' : '#6b7280'
+    ctx.font = '12px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('PC1', w / 2, h - 8)
+    ctx.save()
+    ctx.translate(14, h / 2)
+    ctx.rotate(-Math.PI / 2)
+    ctx.fillText('PC2', 0, 0)
+    ctx.restore()
+  })
+
+  const hitTest = (ex: number, ey: number): MovieMetadata | null => {
+    const canvas = canvasRef.current
+    if (!canvas || points.length === 0) return null
+    const rect = canvas.getBoundingClientRect()
+    const mx = (ex - rect.left) * (canvas.width / rect.width)
+    const my = (ey - rect.top) * (canvas.height / rect.height)
+    const w = canvas.width
+    const h = canvas.height
+    const { scale, panX, panY } = viewRef.current
+    const xVals = points.map((p) => p.x)
+    const yVals = points.map((p) => p.y)
+    const dataXMin = Math.min(...xVals)
+    const dataXMax = Math.max(...xVals)
+    const dataYMin = Math.min(...yVals)
+    const dataYMax = Math.max(...yVals)
+    const xRange = dataXMax - dataXMin || 1
+    const yRange = dataYMax - dataYMin || 1
+    const xMid = (dataXMin + dataXMax) / 2
+    const yMid = (dataYMin + dataYMax) / 2
+    const pad = 60
+    const K = Math.min((w - pad * 2) / xRange, (h - pad * 2) / yRange)
+    const THUMB_W = 48
+    const THUMB_H = 72
+    for (let i = points.length - 1; i >= 0; i--) {
+      const p = points[i]
+      const cx = w / 2 + panX + (p.x - xMid) * K * scale
+      const cy = h / 2 + panY - (p.y - yMid) * K * scale
+      const sx = cx - THUMB_W / 2
+      const sy = cy - THUMB_H / 2
+      if (mx >= sx && mx <= sx + THUMB_W && my >= sy && my <= sy + THUMB_H)
+        return p.metadata ?? null
+    }
+    return null
+  }
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault()
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    // Cursor position in canvas pixel space
+    const mcx = (e.clientX - rect.left) * (canvas.width / rect.width)
+    const mcy = (e.clientY - rect.top) * (canvas.height / rect.height)
+    const { scale, panX, panY } = viewRef.current
+    const factor = e.deltaY < 0 ? 1.1 : 0.91
+    const newScale = Math.max(0.5, Math.min(20, scale * factor))
+    // Keep the data point under the cursor stationary during zoom
+    const relX = mcx - canvas.width / 2
+    const relY = mcy - canvas.height / 2
+    viewRef.current.scale = newScale
+    viewRef.current.panX = relX * (1 - newScale / scale) + panX * (newScale / scale)
+    viewRef.current.panY = relY * (1 - newScale / scale) + panY * (newScale / scale)
+    forceRedraw((n) => n + 1)
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    dragRef.current = { x: e.clientX, y: e.clientY }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!dragRef.current) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const scaleX = canvas.width / canvas.getBoundingClientRect().width
+    const scaleY = canvas.height / canvas.getBoundingClientRect().height
+    viewRef.current.panX += (e.clientX - dragRef.current.x) * scaleX
+    viewRef.current.panY += (e.clientY - dragRef.current.y) * scaleY
+    dragRef.current = { x: e.clientX, y: e.clientY }
+    forceRedraw((n) => n + 1)
+  }
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (dragRef.current) {
+      const dx = Math.abs(e.clientX - dragRef.current.x)
+      const dy = Math.abs(e.clientY - dragRef.current.y)
+      if (dx < 4 && dy < 4) {
+        const hit = hitTest(e.clientX, e.clientY)
+        if (hit) setSelectedMovie(hit)
+      }
+    }
+    dragRef.current = null
+  }
+
+  return (
+    <div ref={containerRef} className="relative w-full h-full select-none">
+      <canvas
+        ref={canvasRef}
+        width={1200}
+        height={600}
+        className="w-full h-full cursor-grab active:cursor-grabbing"
+        style={{ objectFit: 'contain' }}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={() => {
+          dragRef.current = null
+        }}
+      />
+      <div className="absolute bottom-2 right-3 text-xs text-gray-400 pointer-events-none">
+        Scroll to zoom · Drag to pan · Click poster for details
+      </div>
+      {selectedMovie && (
+        <MovieDetailModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+      )}
+    </div>
+  )
+}
+
 // Modal that crops the poster from the sprite sheet (same source as 3D sprites)
 function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onClose: () => void }) {
   const [posterSrc, setPosterSrc] = useState<string | null>(null)

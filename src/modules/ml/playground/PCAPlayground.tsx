@@ -24,7 +24,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { PCAEngine } from '../engines/PCAEngine'
 import { drawPCA } from '../visualizers/pcaVisualizer'
-import { PCA3DScene } from '../visualizers/PCA3DScene'
+import { PCA3DScene, PCA2DMovieScene } from '../visualizers/PCA3DScene'
 import { loadMoviesDataset } from '../data/movieDataLoader'
 import type { DataPoint } from '../types'
 
@@ -596,6 +596,8 @@ export function PCAPlayground() {
                   autoRotate={autoRotate}
                   usePosterSprites={dataType === 'movies'}
                 />
+              ) : !view3D && dataType === 'movies' && engineState ? (
+                <PCA2DMovieScene state={engineState} theme={theme} />
               ) : (
                 <canvas
                   ref={canvasRef}
@@ -669,11 +671,9 @@ export function PCAPlayground() {
                   <button
                     onClick={() => {
                       setDataType('movies')
-                      // Force 3D view for movies with posters
-                      if (!view3D) {
-                        setView3D(true)
-                        if (numComponents < 3) setNumComponents(3)
-                      }
+                      // Default to 2D view for movies so poster scatter is shown
+                      setView3D(false)
+                      if (numComponents > 2) setNumComponents(2)
                     }}
                     disabled={isPlaying || isLoadingMovies}
                     className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
