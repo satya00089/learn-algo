@@ -28,17 +28,32 @@ function computeBubbleSortSteps(arr: number[]): SortStep[] {
 
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - 1 - i; j++) {
-      steps.push({ array: [...a], comparing: [j, j + 1], swapped: false, sortedIndices: [...sorted] })
+      steps.push({
+        array: [...a],
+        comparing: [j, j + 1],
+        swapped: false,
+        sortedIndices: [...sorted],
+      })
       if (a[j] > a[j + 1]) {
         ;[a[j], a[j + 1]] = [a[j + 1], a[j]]
-        steps.push({ array: [...a], comparing: [j, j + 1], swapped: true, sortedIndices: [...sorted] })
+        steps.push({
+          array: [...a],
+          comparing: [j, j + 1],
+          swapped: true,
+          sortedIndices: [...sorted],
+        })
       }
     }
     sorted.push(n - 1 - i)
     steps.push({ array: [...a], comparing: null, swapped: false, sortedIndices: [...sorted] })
   }
   sorted.push(0)
-  steps.push({ array: [...a], comparing: null, swapped: false, sortedIndices: Array.from({ length: n }, (_, i) => i) })
+  steps.push({
+    array: [...a],
+    comparing: null,
+    swapped: false,
+    sortedIndices: Array.from({ length: n }, (_, i) => i),
+  })
 
   return steps
 }
@@ -47,13 +62,16 @@ const BUBBLE_STEPS = computeBubbleSortSteps(DEMO_BARS)
 
 function BubbleSortViz() {
   const [stepIdx, setStepIdx] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const [speed, setSpeed] = useState<number>(480) // ms per step
 
   useEffect(() => {
-    const id = setInterval(() => {
+    if (!isPlaying) return
+    const id = globalThis.setInterval(() => {
       setStepIdx((i) => (i + 1) % BUBBLE_STEPS.length)
-    }, 480)
-    return () => clearInterval(id)
-  }, [])
+    }, speed)
+    return () => globalThis.clearInterval(id)
+  }, [isPlaying, speed])
 
   const step = BUBBLE_STEPS[stepIdx]
   const n = DEMO_BARS.length
@@ -77,12 +95,7 @@ function BubbleSortViz() {
 
       {/* Bars area */}
       <div className="absolute inset-x-0 top-10 bottom-14 flex items-end justify-center pb-4 px-10">
-        <svg
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${totalW} 100`}
-          preserveAspectRatio="none"
-        >
+        <svg width="100%" height="100%" viewBox={`0 0 ${totalW} 100`} preserveAspectRatio="none">
           {step.array.map((val, i) => {
             const isCmp = step.comparing
               ? step.comparing[0] === i || step.comparing[1] === i
@@ -93,10 +106,10 @@ function BubbleSortViz() {
             const fill = isSorted
               ? '#22c55e'
               : isCmp
-              ? step.swapped
-                ? '#f97316'
-                : '#f59e0b'
-              : '#94a3b8'
+                ? step.swapped
+                  ? '#f97316'
+                  : '#f59e0b'
+                : '#94a3b8'
             return (
               <rect
                 key={i}
@@ -114,20 +127,122 @@ function BubbleSortViz() {
       </div>
 
       {/* Status bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-14 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between px-6">
-        <div className="flex items-center gap-2.5">
-          <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+      <div className="absolute bottom-0 left-0 right-0 h-14 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 grid grid-cols-12 items-center px-4 sm:px-6">
+        <div className="col-span-5 flex items-center gap-3 min-w-0">
+          <div
+            className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0"
+            aria-hidden
+          />
+          <span
+            className="text-xs font-medium text-gray-600 dark:text-gray-400 truncate"
+            role="status"
+            aria-live="polite"
+          >
             {step.sortedIndices.length === n
               ? 'Array sorted!'
               : step.comparing
-              ? `Comparing [${step.comparing[0] + 1}] and [${step.comparing[1] + 1}]${step.swapped ? ' → swapping' : ''}`
-              : 'Pass complete'}
+                ? `Comparing [${step.comparing[0] + 1}] and [${step.comparing[1] + 1}]${step.swapped ? ' → swapping' : ''}`
+                : 'Pass complete'}
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-500">Bubble Sort</span>
-          <code className="text-xs text-gray-400 dark:text-gray-600 font-mono">O(n²)</code>
+
+        <div className="col-span-7 flex items-center justify-end gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              aria-label="Previous step"
+              className="grid place-items-center w-5 h-5 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+              onClick={() => setStepIdx((i) => (i - 1 + BUBBLE_STEPS.length) % BUBBLE_STEPS.length)}
+            >
+              <svg
+                className="w-full h-full text-gray-600 dark:text-gray-300"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
+            <button
+              aria-pressed={isPlaying}
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+              className="grid place-items-center w-7 h-7 rounded bg-gray-100 dark:bg-gray-800 hover:scale-105"
+              onClick={() => setIsPlaying((v) => !v)}
+            >
+              {isPlaying ? (
+                <svg
+                  className="w-full h-full text-gray-700 dark:text-gray-200"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 19h4V5H6v14zM14 5v14h4V5h-4z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-full h-full text-gray-700 dark:text-gray-200"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 3v18l15-9L5 3z"
+                  />
+                </svg>
+              )}
+            </button>
+
+            <button
+              aria-label="Next step"
+              className="grid place-items-center w-5 h-5 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+              onClick={() => setStepIdx((i) => (i + 1) % BUBBLE_STEPS.length)}
+            >
+              <svg
+                className="w-full h-full text-gray-600 dark:text-gray-300"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <select
+            aria-label="Playback speed"
+            value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            className="text-xs rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-400"
+          >
+            <option value={750}>Slow</option>
+            <option value={480}>Normal</option>
+            <option value={200}>Fast</option>
+          </select>
+
+          <div className="hidden sm:flex items-center gap-3">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-500">
+              Bubble Sort
+            </span>
+            <code className="text-xs text-gray-400 dark:text-gray-600 font-mono">O(n²)</code>
+          </div>
         </div>
       </div>
     </div>
@@ -137,9 +252,9 @@ function BubbleSortViz() {
 export default function Home() {
   const size1Ref = useRef(25)
   const size2Ref = useRef(28)
-    const mainIntervalRef = useRef<NodeJS.Timeout | null>(null)
-    const animationRef = useRef<NodeJS.Timeout | null>(null)
-    const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28 })
+  const mainIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const animationRef = useRef<NodeJS.Timeout | null>(null)
+  const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28 })
 
   const updatePattern = useCallback((s1: number, s2: number) => {
     size1Ref.current = s1
@@ -148,38 +263,38 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-      const getRandomSize = () => Math.floor(Math.random() * (36 - 16 + 1)) + 16
-      updatePattern(getRandomSize(), getRandomSize())
+    const getRandomSize = () => Math.floor(Math.random() * (36 - 16 + 1)) + 16
+    updatePattern(getRandomSize(), getRandomSize())
 
-      const animateToNewValues = () => {
-        const startSize1 = size1Ref.current
-        const startSize2 = size2Ref.current
-        const targetSize1 = getRandomSize()
-        const targetSize2 = getRandomSize()
-        const diff1 = (targetSize1 - startSize1) / 60
-        const diff2 = (targetSize2 - startSize2) / 60
-        let step = 0
+    const animateToNewValues = () => {
+      const startSize1 = size1Ref.current
+      const startSize2 = size2Ref.current
+      const targetSize1 = getRandomSize()
+      const targetSize2 = getRandomSize()
+      const diff1 = (targetSize1 - startSize1) / 60
+      const diff2 = (targetSize2 - startSize2) / 60
+      let step = 0
 
-        if (animationRef.current) clearInterval(animationRef.current)
+      if (animationRef.current) clearInterval(animationRef.current)
 
-        animationRef.current = setInterval(() => {
-          step++
-          if (step >= 60) {
-            updatePattern(targetSize1, targetSize2)
-            clearInterval(animationRef.current!)
-            animationRef.current = null
-          } else {
-            updatePattern(startSize1 + diff1 * step, startSize2 + diff2 * step)
-          }
-        }, 16)
-      }
+      animationRef.current = setInterval(() => {
+        step++
+        if (step >= 60) {
+          updatePattern(targetSize1, targetSize2)
+          clearInterval(animationRef.current!)
+          animationRef.current = null
+        } else {
+          updatePattern(startSize1 + diff1 * step, startSize2 + diff2 * step)
+        }
+      }, 16)
+    }
 
-      mainIntervalRef.current = setInterval(animateToNewValues, 10000)
+    mainIntervalRef.current = setInterval(animateToNewValues, 10000)
 
-      return () => {
-        if (mainIntervalRef.current) clearInterval(mainIntervalRef.current)
-        if (animationRef.current) clearInterval(animationRef.current)
-      }
+    return () => {
+      if (mainIntervalRef.current) clearInterval(mainIntervalRef.current)
+      if (animationRef.current) clearInterval(animationRef.current)
+    }
   }, [updatePattern])
 
   return (
@@ -204,7 +319,7 @@ export default function Home() {
           />
 
           {/* Header */}
-          <header className="relative z-10 flex justify-between items-center py-6 px-6 lg:px-8">
+          <header className="relative max-w-7xl mx-auto z-10 flex justify-between items-center py-6 px-6 lg:px-8">
             <div className="flex items-center space-x-3">
               <Image
                 src="/logo/logo.png"
@@ -236,7 +351,7 @@ export default function Home() {
           <div className="h-px bg-gray-950/5 dark:bg-white/10" />
 
           {/* Hero Section */}
-          <section className="relative z-10 py-12 px-6 lg:px-8">
+          <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column */}
               <div className="lg:col-span-6 space-y-8">
@@ -264,7 +379,12 @@ export default function Home() {
                     <span>30+ algorithms</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-4 h-4 text-orange-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -283,11 +403,9 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  <h1 className="text-5xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.08]">
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.08]">
                     Understand algorithms{' '}
-                    <span className="block text-orange-500">
-                      by seeing why each step happens.
-                    </span>
+                    <span className="block text-orange-500">by seeing why each step happens.</span>
                   </h1>
                   <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
                     Step-by-step visualizations of sorting, searching, and ML algorithms. Play,
@@ -298,7 +416,8 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href="/dsa"
-                    className="group inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]"
+                    aria-label="Start learning with bubble sort"
+                    className="group inline-flex items-center justify-center px-6 py-3.5 min-h-11 text-base font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]"
                     onClick={() => {
                       if (globalThis.window !== undefined && (globalThis.window as any).gtag) {
                         ;(globalThis.window as any).gtag('event', 'click', {
@@ -345,7 +464,9 @@ export default function Home() {
           <section className="relative z-10 py-7 px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
               <div>
-                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">30+</span>{' '}
+                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
+                  30+
+                </span>{' '}
                 algorithms
               </div>
               <div>
@@ -353,11 +474,15 @@ export default function Home() {
                 domains
               </div>
               <div>
-                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">100%</span>{' '}
+                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
+                  100%
+                </span>{' '}
                 interactive
               </div>
               <div>
-                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">Free</span>{' '}
+                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
+                  Free
+                </span>{' '}
                 &amp; open-source
               </div>
             </div>
@@ -366,7 +491,7 @@ export default function Home() {
           <div className="h-px bg-gray-950/5 dark:bg-white/10" />
 
           {/* Module Cards */}
-          <section id="modules" className="relative z-10 py-12 px-6 lg:px-8">
+          <section id="modules" className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
             <div className="mb-8 text-center">
               <h2 className="text-2xl font-black text-gray-900 dark:text-white">
                 Choose your learning path
@@ -472,14 +597,16 @@ export default function Home() {
                       adapt in real time.
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {['Regression', 'Clustering', 'Classification', 'Dimensionality'].map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded text-xs font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                      {['Regression', 'Clustering', 'Classification', 'Dimensionality'].map(
+                        (tag) => (
+                          <span
+                            key={tag}
+                            className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded text-xs font-medium"
+                          >
+                            {tag}
+                          </span>
+                        )
+                      )}
                     </div>
                   </div>
                   <div className="px-7 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
@@ -598,14 +725,16 @@ export default function Home() {
                     key={item.num}
                     className={`flex gap-8 items-start py-8 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}
                   >
-                    <span className="text-5xl font-black text-gray-100 dark:text-gray-800 leading-none select-none w-14 flex-shrink-0 text-right tabular-nums">
+                    <span className="text-5xl font-black text-gray-400 dark:text-gray-600 leading-none select-none w-14 flex-shrink-0 text-right tabular-nums">
                       {item.num}
                     </span>
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1.5">
                         {item.title}
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{item.body}</p>
+                      <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+                        {item.body}
+                      </p>
                     </div>
                   </li>
                 ))}
@@ -665,7 +794,9 @@ export default function Home() {
                         />
                       </svg>
                     </summary>
-                    <div className="px-6 pb-5 text-gray-500 dark:text-gray-400 leading-relaxed">{a}</div>
+                    <div className="px-6 pb-5 text-gray-500 dark:text-gray-400 leading-relaxed">
+                      {a}
+                    </div>
                   </details>
                 ))}
               </div>
@@ -690,9 +821,15 @@ export default function Home() {
                         LEARN ALGO
                       </div>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="px-1.5 py-px bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">DSA</span>
-                        <span className="px-1.5 py-px bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded text-xs font-bold">ML</span>
-                        <span className="px-1.5 py-px bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs font-bold">AI</span>
+                        <span className="px-1.5 py-px bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
+                          DSA
+                        </span>
+                        <span className="px-1.5 py-px bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded text-xs font-bold">
+                          ML
+                        </span>
+                        <span className="px-1.5 py-px bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs font-bold">
+                          AI
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -707,17 +844,26 @@ export default function Home() {
                   </h4>
                   <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                     <li>
-                      <Link href="/dsa" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                      <Link
+                        href="/dsa"
+                        className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
                         Data Structures &amp; Algorithms
                       </Link>
                     </li>
                     <li>
-                      <Link href="/ml" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                      <Link
+                        href="/ml"
+                        className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
                         Machine Learning
                       </Link>
                     </li>
                     <li>
-                      <Link href="/ai" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                      <Link
+                        href="/ai"
+                        className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
                         Artificial Intelligence
                       </Link>
                     </li>
@@ -725,7 +871,9 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">About</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">
+                    About
+                  </h4>
                   <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                     <li>Free &amp; open source</li>
                     <li>Built for developers, by developers</li>
@@ -735,15 +883,24 @@ export default function Home() {
 
               <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400 dark:text-gray-500">
-                  <p>&copy; 2025 LEARN ALGO. All rights reserved.</p>
+                  <p>&copy; 2026 LEARN ALGO. All rights reserved.</p>
                   <div className="flex gap-6">
-                    <Link href="/privacy" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <Link
+                      href="/privacy"
+                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
                       Privacy Policy
                     </Link>
-                    <Link href="/terms" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <Link
+                      href="/terms"
+                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
                       Terms of Service
                     </Link>
-                    <Link href="/contact" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <Link
+                      href="/contact"
+                      className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
                       Contact
                     </Link>
                   </div>
@@ -756,4 +913,3 @@ export default function Home() {
     </main>
   )
 }
-
