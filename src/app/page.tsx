@@ -546,7 +546,7 @@ export default function Home() {
                   </div>
                   <div className="px-7 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                     <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-                      14 visualizations
+                      14 algorithms
                     </span>
                     <svg
                       className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-purple-500 group-hover:translate-x-1 transition-all"
@@ -611,7 +611,7 @@ export default function Home() {
                   </div>
                   <div className="px-7 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                     <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-                      13 visualizations
+                      13 algorithms
                     </span>
                     <svg
                       className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-sky-500 group-hover:translate-x-1 transition-all"
