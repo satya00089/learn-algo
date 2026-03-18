@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import Script from 'next/script'
@@ -7,7 +7,7 @@ import { PWARegister } from '@/components/PWARegister'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 import { StructuredData } from '@/components/StructuredData'
 
-const inter = Inter({ subsets: ['latin'] })
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.learn-algo.com'),
@@ -294,7 +294,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }}
         />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={spaceGrotesk.className} suppressHydrationWarning>
         <PWARegister />
         <Providers>
           {children}
