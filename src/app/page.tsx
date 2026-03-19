@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
@@ -6,248 +6,13 @@ import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 import { HomepageStructuredData } from '@/components/HomepageStructuredData'
 
-// ─── Bubble Sort Visualization ───
-
-const DEMO_BARS = [7, 2, 9, 4, 1, 8, 3, 6, 5]
-const MAX_BAR = Math.max(...DEMO_BARS)
-
-type SortStep = {
-  array: number[]
-  comparing: [number, number] | null
-  swapped: boolean
-  sortedIndices: number[]
-}
-
-function computeBubbleSortSteps(arr: number[]): SortStep[] {
-  const steps: SortStep[] = []
-  const a = [...arr]
-  const sorted: number[] = []
-  const n = a.length
-
-  steps.push({ array: [...a], comparing: null, swapped: false, sortedIndices: [] })
-
-  for (let i = 0; i < n - 1; i++) {
-    for (let j = 0; j < n - 1 - i; j++) {
-      steps.push({
-        array: [...a],
-        comparing: [j, j + 1],
-        swapped: false,
-        sortedIndices: [...sorted],
-      })
-      if (a[j] > a[j + 1]) {
-        ;[a[j], a[j + 1]] = [a[j + 1], a[j]]
-        steps.push({
-          array: [...a],
-          comparing: [j, j + 1],
-          swapped: true,
-          sortedIndices: [...sorted],
-        })
-      }
-    }
-    sorted.push(n - 1 - i)
-    steps.push({ array: [...a], comparing: null, swapped: false, sortedIndices: [...sorted] })
-  }
-  sorted.push(0)
-  steps.push({
-    array: [...a],
-    comparing: null,
-    swapped: false,
-    sortedIndices: Array.from({ length: n }, (_, i) => i),
-  })
-
-  return steps
-}
-
-const BUBBLE_STEPS = computeBubbleSortSteps(DEMO_BARS)
-
-function BubbleSortViz() {
-  const [stepIdx, setStepIdx] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [speed, setSpeed] = useState<number>(480) // ms per step
-
-  useEffect(() => {
-    if (!isPlaying) return
-    const id = globalThis.setInterval(() => {
-      setStepIdx((i) => (i + 1) % BUBBLE_STEPS.length)
-    }, speed)
-    return () => globalThis.clearInterval(id)
-  }, [isPlaying, speed])
-
-  const step = BUBBLE_STEPS[stepIdx]
-  const n = DEMO_BARS.length
-  const barW = 9
-  const gap = 2
-  const totalW = n * barW + (n - 1) * gap
-
-  return (
-    <div className="relative aspect-[4/3] bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden">
-      {/* Top chrome */}
-      <div className="h-10 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center px-4 gap-3">
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-400/50" />
-          <div className="w-3 h-3 rounded-full bg-yellow-400/50" />
-          <div className="w-3 h-3 rounded-full bg-green-400/50" />
-        </div>
-        <span className="text-xs font-medium text-gray-400 dark:text-gray-500 select-none">
-          Bubble Sort · step {stepIdx + 1}/{BUBBLE_STEPS.length}
-        </span>
-      </div>
-
-      {/* Bars area */}
-      <div className="absolute inset-x-0 top-10 bottom-14 flex items-end justify-center pb-4 px-10">
-        <svg width="100%" height="100%" viewBox={`0 0 ${totalW} 100`} preserveAspectRatio="none">
-          {step.array.map((val, i) => {
-            const isCmp = step.comparing
-              ? step.comparing[0] === i || step.comparing[1] === i
-              : false
-            const isSorted = step.sortedIndices.includes(i)
-            const h = (val / MAX_BAR) * 92
-            const x = i * (barW + gap)
-            const fill = isSorted
-              ? '#22c55e'
-              : isCmp
-                ? step.swapped
-                  ? '#f97316'
-                  : '#f59e0b'
-                : '#94a3b8'
-            return (
-              <rect
-                key={i}
-                x={x}
-                y={100 - h}
-                width={barW}
-                height={h}
-                fill={fill}
-                rx="1.5"
-                style={{ transition: 'fill 0.15s ease' }}
-              />
-            )
-          })}
-        </svg>
-      </div>
-
-      {/* Status bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-14 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 grid grid-cols-12 items-center px-4 sm:px-6">
-        <div className="col-span-5 flex items-center gap-3 min-w-0">
-          <div
-            className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0"
-            aria-hidden
-          />
-          <span
-            className="text-xs font-medium text-gray-600 dark:text-gray-400 truncate"
-            role="status"
-            aria-live="polite"
-          >
-            {step.sortedIndices.length === n
-              ? 'Array sorted!'
-              : step.comparing
-                ? `Comparing [${step.comparing[0] + 1}] and [${step.comparing[1] + 1}]${step.swapped ? ' → swapping' : ''}`
-                : 'Pass complete'}
-          </span>
-        </div>
-
-        <div className="col-span-7 flex items-center justify-end gap-3">
-          <div className="flex items-center gap-2">
-            <button
-              aria-label="Previous step"
-              className="grid place-items-center w-5 h-5 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setStepIdx((i) => (i - 1 + BUBBLE_STEPS.length) % BUBBLE_STEPS.length)}
-            >
-              <svg
-                className="w-full h-full text-gray-600 dark:text-gray-300"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-
-            <button
-              aria-pressed={isPlaying}
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-              className="grid place-items-center w-7 h-7 rounded bg-gray-100 dark:bg-gray-800 hover:scale-105"
-              onClick={() => setIsPlaying((v) => !v)}
-            >
-              {isPlaying ? (
-                <svg
-                  className="w-full h-full text-gray-700 dark:text-gray-200"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 19h4V5H6v14zM14 5v14h4V5h-4z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-full h-full text-gray-700 dark:text-gray-200"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 3v18l15-9L5 3z"
-                  />
-                </svg>
-              )}
-            </button>
-
-            <button
-              aria-label="Next step"
-              className="grid place-items-center w-5 h-5 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setStepIdx((i) => (i + 1) % BUBBLE_STEPS.length)}
-            >
-              <svg
-                className="w-full h-full text-gray-600 dark:text-gray-300"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <select
-            aria-label="Playback speed"
-            value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
-            className="text-xs rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-400"
-          >
-            <option value={750}>Slow</option>
-            <option value={480}>Normal</option>
-            <option value={200}>Fast</option>
-          </select>
-
-          <div className="hidden sm:flex items-center gap-3">
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-500">
-              Bubble Sort
-            </span>
-            <code className="text-xs text-gray-400 dark:text-gray-600 font-mono">O(n²)</code>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { BubbleSortViz } from '@/components/home/BubbleSortViz'
+import { CountUpStat } from '@/components/home/CountUpStat'
+import { FaqItem } from '@/components/home/FaqItem'
+import { ViewTransitionLink } from '@/components/home/ViewTransitionLink'
+import { DsaCardBody } from '@/components/home/cards/DsaCardBody'
+import { MlCardBody } from '@/components/home/cards/MlCardBody'
+import { AiCardBody } from '@/components/home/cards/AiCardBody'
 
 export default function Home() {
   const size1Ref = useRef(25)
@@ -255,6 +20,9 @@ export default function Home() {
   const mainIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const animationRef = useRef<NodeJS.Timeout | null>(null)
   const [patternValues, setPatternValues] = useState({ size1: 25, size2: 28 })
+  const [dsaHov, setDsaHov] = useState(false)
+  const [mlHov, setMlHov] = useState(false)
+  const [aiHov, setAiHov] = useState(false)
 
   const updatePattern = useCallback((s1: number, s2: number) => {
     size1Ref.current = s1
@@ -297,8 +65,62 @@ export default function Home() {
     }
   }, [updatePattern])
 
+  // Scroll progress bar
+  useEffect(() => {
+    const bar = document.getElementById('scroll-progress')
+    if (!bar) return
+    const update = () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight
+      if (total <= 0) return
+      const pct = Math.min(window.scrollY / total, 1)
+      bar.style.opacity = pct > 0.005 ? '1' : '0'
+      bar.style.transform = `scaleX(${pct})`
+    }
+    window.addEventListener('scroll', update, { passive: true })
+    update()
+    return () => window.removeEventListener('scroll', update)
+  }, [])
+
+  // Observe all .reveal elements for scroll-triggered entrance
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>('.reveal')
+    if (!els.length) return
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible')
+            obs.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+    els.forEach((el) => obs.observe(el))
+    return () => obs.disconnect()
+  }, [])
+
+  useEffect(() => {
+    console.log(
+      '%c LEARN ALGO ',
+      'background:#f97316;color:#fff;font-size:16px;font-weight:900;padding:2px 8px;border-radius:4px'
+    )
+    console.log(
+      '%cYou opened DevTools. Respect.\n%cThis site is open-source · Visualize algorithms · PRs welcome.',
+      'color:#f97316;font-weight:700',
+      'color:#94a3b8;font-size:11px'
+    )
+  }, [])
+
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Scroll progress bar */}
+      <div
+        id="scroll-progress"
+        className="fixed top-0 left-0 right-0 h-[2px] bg-orange-500 pointer-events-none z-[9999] opacity-0"
+        style={{ transform: 'scaleX(0)', transformOrigin: '0 0' }}
+        aria-hidden="true"
+      />
       <HomepageStructuredData />
       <div className="relative">
         {/* Left Decorative Pattern Column */}
@@ -320,7 +142,7 @@ export default function Home() {
 
           {/* Header */}
           <header className="relative max-w-7xl mx-auto z-10 flex justify-between items-center py-6 px-6 lg:px-8">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 animate-fade-in">
               <Image
                 src="/logo/logo.png"
                 alt="Learn Algo Logo"
@@ -354,9 +176,9 @@ export default function Home() {
           <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column */}
-              <div className="lg:col-span-6 space-y-8">
+              <div className="lg:col-span-6 space-y-8" aria-label="hero-text">
                 {/* Trust indicators – above the ask */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400 animate-fade-slide-up stagger-1">
                   <div className="flex items-center gap-1.5">
                     <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path
@@ -402,7 +224,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 animate-fade-slide-up stagger-2">
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-[1.08]">
                     Understand algorithms{' '}
                     <span className="block text-orange-500">by seeing why each step happens.</span>
@@ -413,11 +235,11 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 animate-fade-slide-up stagger-3">
                   <Link
                     href="/dsa"
                     aria-label="Start learning with bubble sort"
-                    className="group inline-flex items-center justify-center px-6 py-3.5 min-h-11 text-base font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]"
+                    className="group inline-flex items-center justify-center px-6 py-3.5 min-h-11 text-base font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.97] active:shadow-sm"
                     onClick={() => {
                       if (globalThis.window !== undefined && (globalThis.window as any).gtag) {
                         ;(globalThis.window as any).gtag('event', 'click', {
@@ -444,7 +266,7 @@ export default function Home() {
                   </Link>
                   <Link
                     href="#modules"
-                    className="inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-gray-700 hover:border-gray-500 dark:hover:border-gray-500 transition-colors"
+                    className="inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-gray-900 dark:text-white rounded-lg border border-gray-300 dark:border-gray-700 hover:border-gray-500 dark:hover:border-gray-500 transition-colors active:scale-[0.97] active:shadow-sm"
                   >
                     Browse all modules
                   </Link>
@@ -452,7 +274,7 @@ export default function Home() {
               </div>
 
               {/* Right Column – Real visualization */}
-              <div className="lg:col-span-6">
+              <div className="lg:col-span-6 animate-scale-in stagger-2">
                 <BubbleSortViz />
               </div>
             </div>
@@ -465,17 +287,19 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
               <div>
                 <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
-                  30+
+                  <CountUpStat target={30} suffix="+" />
                 </span>{' '}
                 algorithms
               </div>
               <div>
-                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">3</span>{' '}
+                <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
+                  <CountUpStat target={3} />
+                </span>{' '}
                 domains
               </div>
               <div>
                 <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
-                  100%
+                  <CountUpStat target={100} suffix="%" />
                 </span>{' '}
                 interactive
               </div>
@@ -503,9 +327,11 @@ export default function Home() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
               {/* DSA Card */}
-              <Link
+              <ViewTransitionLink
                 href="/dsa"
-                className="group"
+                className="group reveal stagger-1"
+                onMouseEnter={() => setDsaHov(true)}
+                onMouseLeave={() => setDsaHov(false)}
                 onClick={() => {
                   if (globalThis.window !== undefined && (globalThis.window as any).gtag) {
                     ;(globalThis.window as any).gtag('event', 'click', {
@@ -515,60 +341,15 @@ export default function Home() {
                   }
                 }}
               >
-                <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-purple-400 dark:hover:border-purple-500 hover:shadow-lg h-full flex flex-col">
-                  <div className="p-7 flex-1 flex flex-col">
-                    <div className="mb-5">
-                      <Image
-                        src="/icons/dsa/dsa.png"
-                        alt="Data Structures & Algorithms"
-                        width={48}
-                        height={48}
-                        className="object-contain"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      Data Structures &amp; Algorithms
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-5 leading-relaxed text-sm flex-1">
-                      Sorting, searching, trees, stacks, queues — every step visualized with full
-                      interactive control.
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {['Sorting', 'Trees', 'Searching', 'Recursion'].map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded text-xs font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="px-7 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-                      14 algorithms
-                    </span>
-                    <svg
-                      className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-purple-500 group-hover:translate-x-1 transition-all"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
+                <DsaCardBody hovered={dsaHov} />
+              </ViewTransitionLink>
 
               {/* ML Card */}
-              <Link
+              <ViewTransitionLink
                 href="/ml"
-                className="group"
+                className="group reveal stagger-2"
+                onMouseEnter={() => setMlHov(true)}
+                onMouseLeave={() => setMlHov(false)}
                 onClick={() => {
                   if (globalThis.window !== undefined && (globalThis.window as any).gtag) {
                     ;(globalThis.window as any).gtag('event', 'click', {
@@ -578,62 +359,15 @@ export default function Home() {
                   }
                 }}
               >
-                <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-sky-400 dark:hover:border-sky-500 hover:shadow-lg h-full flex flex-col">
-                  <div className="p-7 flex-1 flex flex-col">
-                    <div className="mb-5">
-                      <Image
-                        src="/icons/ml/ml.png"
-                        alt="Machine Learning"
-                        width={48}
-                        height={48}
-                        className="object-contain"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      Machine Learning
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-5 leading-relaxed text-sm flex-1">
-                      Regression, clustering, classification — adjust parameters and watch the model
-                      adapt in real time.
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {['Regression', 'Clustering', 'Classification', 'Dimensionality'].map(
-                        (tag) => (
-                          <span
-                            key={tag}
-                            className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded text-xs font-medium"
-                          >
-                            {tag}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                  <div className="px-7 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-                      13 algorithms
-                    </span>
-                    <svg
-                      className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-sky-500 group-hover:translate-x-1 transition-all"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
+                <MlCardBody hovered={mlHov} />
+              </ViewTransitionLink>
 
               {/* AI Card */}
-              <Link
+              <ViewTransitionLink
                 href="/ai"
-                className="group"
+                className="group reveal stagger-3"
+                onMouseEnter={() => setAiHov(true)}
+                onMouseLeave={() => setAiHov(false)}
                 onClick={() => {
                   if (globalThis.window !== undefined && (globalThis.window as any).gtag) {
                     ;(globalThis.window as any).gtag('event', 'click', {
@@ -643,55 +377,8 @@ export default function Home() {
                   }
                 }}
               >
-                <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300 hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-lg h-full flex flex-col">
-                  <div className="p-7 flex-1 flex flex-col">
-                    <div className="mb-5">
-                      <Image
-                        src="/icons/ai/ai.png"
-                        alt="Artificial Intelligence"
-                        width={48}
-                        height={48}
-                        className="object-contain dark:invert dark:drop-shadow-[0_0_6px_rgba(156,163,175,0.6)]"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      Artificial Intelligence
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-5 leading-relaxed text-sm flex-1">
-                      Search algorithms, game trees, and intelligent agents — see how AI reasons
-                      through decision spaces.
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {['Search', 'Game Trees', 'Planning'].map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded text-xs font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="px-7 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-                      Growing collection
-                    </span>
-                    <svg
-                      className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
+                <AiCardBody hovered={aiHov} />
+              </ViewTransitionLink>
             </div>
           </section>
 
@@ -704,28 +391,30 @@ export default function Home() {
                 How it works
               </h2>
               <ol className="space-y-0">
-                {[
-                  {
-                    num: '01',
-                    title: 'Choose an algorithm',
-                    body: 'Pick from 30+ algorithms across DSA, ML, and AI. Generate a random dataset or supply your own. Adjust parameters like array size or cluster count before you begin.',
-                  },
-                  {
-                    num: '02',
-                    title: 'Watch every step',
-                    body: 'Hit play and watch each comparison, swap, or iteration animate in real time. Pause at any moment, step forward or backward, and change the speed to match your pace.',
-                  },
-                  {
-                    num: '03',
-                    title: 'Build real intuition',
-                    body: "Enable debug mode to see why each decision is made. Experiment with edge cases — nearly-sorted arrays, single clusters, adversarial inputs — until the algorithm's logic becomes second nature.",
-                  },
-                ].map((item, i, arr) => (
+                {(
+                  [
+                    {
+                      num: '01',
+                      title: 'Choose an algorithm',
+                      body: 'Pick from 30+ algorithms across DSA, ML, and AI. Generate a random dataset or supply your own. Adjust parameters like array size or cluster count before you begin.',
+                    },
+                    {
+                      num: '02',
+                      title: 'Watch every step',
+                      body: 'Hit play and watch each comparison, swap, or iteration animate in real time. Pause at any moment, step forward or backward, and change the speed to match your pace.',
+                    },
+                    {
+                      num: '03',
+                      title: 'Build real intuition',
+                      body: "Enable debug mode to see why each decision is made. Experiment with edge cases — nearly-sorted arrays, single clusters, adversarial inputs — until the algorithm's logic becomes second nature.",
+                    },
+                  ] as const
+                ).map((item, i, arr) => (
                   <li
                     key={item.num}
-                    className={`flex gap-8 items-start py-8 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}
+                    className={`group reveal stagger-${i + 1} flex gap-8 items-start py-8 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}
                   >
-                    <span className="text-5xl font-black text-gray-400 dark:text-gray-600 leading-none select-none w-14 flex-shrink-0 text-right tabular-nums">
+                    <span className="how-step-num text-5xl font-black text-gray-400 dark:text-gray-600 group-hover:text-orange-400 dark:group-hover:text-orange-500 transition-colors duration-300 leading-none select-none w-14 flex-shrink-0 text-right tabular-nums">
                       {item.num}
                     </span>
                     <div>
@@ -752,52 +441,31 @@ export default function Home() {
               </h2>
 
               <div className="space-y-3">
-                {[
-                  {
-                    q: 'Do I need programming experience to use LEARN ALGO?',
-                    a: 'No. Visualizations make algorithms intuitive even for beginners. Watch, experiment, and learn by doing — no code required. Basic programming knowledge helps when reading the complexity analysis, but the visuals stand on their own.',
-                  },
-                  {
-                    q: 'Are new algorithms added regularly?',
-                    a: "Yes. We're constantly expanding the library across all three domains. Algorithms are prioritized by user requests and educational value.",
-                  },
-                  {
-                    q: 'How long does it take to learn an algorithm?',
-                    a: 'Most users get a solid intuition in 15–30 minutes through the interactive visualizer. Deeper mastery — understanding edge cases, complexity trade-offs, and real-world applicability — takes an hour of hands-on experimentation.',
-                  },
-                  {
-                    q: 'Can I use this for interview preparation?',
-                    a: 'Absolutely. The step-by-step visualization builds the intuition you need to reason through algorithm problems under pressure. Many users report improved performance on coding challenges after spending time here.',
-                  },
-                  {
-                    q: 'What makes LEARN ALGO different from other resources?',
-                    a: 'Full interactive control: play, pause, step forward/backward, adjust speed, change array sizes, generate random data. The focus is on helping you understand why each step happens — not just what the algorithm does.',
-                  },
-                ].map(({ q, a }) => (
-                  <details
-                    key={q}
-                    className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
-                  >
-                    <summary className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
-                      <span className="font-semibold text-gray-900 dark:text-white pr-4">{q}</span>
-                      <svg
-                        className="w-4 h-4 text-gray-400 flex-shrink-0 group-open:rotate-180 transition-transform"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </summary>
-                    <div className="px-6 pb-5 text-gray-500 dark:text-gray-400 leading-relaxed">
-                      {a}
-                    </div>
-                  </details>
+                {(
+                  [
+                    {
+                      q: 'Do I need programming experience to use LEARN ALGO?',
+                      a: 'No. Visualizations make algorithms intuitive even for beginners. Watch, experiment, and learn by doing — no code required. Basic programming knowledge helps when reading the complexity analysis, but the visuals stand on their own.',
+                    },
+                    {
+                      q: 'Are new algorithms added regularly?',
+                      a: "Yes. We're constantly expanding the library across all three domains. Algorithms are prioritized by user requests and educational value.",
+                    },
+                    {
+                      q: 'How long does it take to learn an algorithm?',
+                      a: 'Most users get a solid intuition in 15–30 minutes through the interactive visualizer. Deeper mastery — understanding edge cases, complexity trade-offs, and real-world applicability — takes an hour of hands-on experimentation.',
+                    },
+                    {
+                      q: 'Can I use this for interview preparation?',
+                      a: 'Absolutely. The step-by-step visualization builds the intuition you need to reason through algorithm problems under pressure. Many users report improved performance on coding challenges after spending time here.',
+                    },
+                    {
+                      q: 'What makes LEARN ALGO different from other resources?',
+                      a: 'Full interactive control: play, pause, step forward/backward, adjust speed, change array sizes, generate random data. The focus is on helping you understand why each step happens — not just what the algorithm does.',
+                    },
+                  ] as const
+                ).map(({ q, a }) => (
+                  <FaqItem key={q} q={q} a={a} />
                 ))}
               </div>
             </div>
