@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
+import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaFilm } from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
@@ -12,8 +12,10 @@ import { TheoryModal } from '@/components/TheoryModal'
 import { TSNEEngine } from '../engines/TSNEEngine'
 import type { TSNEState, TSNEConfig } from '../engines/TSNEEngine'
 import { generateTSNEDataset } from '../data/tsneDatasets'
+import { loadMoviesForTSNE, clearTSNEMoviesCache } from '../data/movieDataLoader'
 import { drawTSNEVisualization } from '../visualizers/tsneVisualizer'
 import { TSNE3DScene } from '../visualizers/TSNE3DScene'
+import { TSNE2DMovieScene } from '../visualizers/TSNE2DMovieScene'
 
 export function TSNEPlayground() {
   const [showExplanation, setShowExplanation] = useState(
@@ -26,6 +28,11 @@ export function TSNEPlayground() {
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
+  // Dataset selection
+  const [dataType, setDataType] = useState<'mnist-digits' | 'movies'>('mnist-digits')
+  const [isLoadingMovies, setIsLoadingMovies] = useState(false)
+  const [moviesError, setMoviesError] = useState<string | null>(null)
+
   // 3D View state
   const [view3D, setView3D] = useState(false)
   const [autoRotate, setAutoRotate] = useState(true)
@@ -33,7 +40,7 @@ export function TSNEPlayground() {
   // Configuration
   const [perplexity, setPerplexity] = useState(30)
   const [learningRate, setLearningRate] = useState(200)
-  const maxIterations = 1000
+  const [maxIterations, setMaxIterations] = useState(1000)
   const [animationSpeed, setAnimationSpeed] = useState(10) // iterations per step
 
   // Canvas configuration
@@ -46,27 +53,64 @@ export function TSNEPlayground() {
     []
   )
 
-  // Initialize engine with MNIST dataset
-  const initializeEngine = useCallback(() => {
-    const { points, highDimData } = generateTSNEDataset('mnist-digits')
-
-    const config: TSNEConfig = {
-      inputDimensions: highDimData[0].length, // 64 dimensions (8x8 pixels)
-      outputDimensions: view3D ? 3 : 2,
-      perplexity,
-      learningRate,
-      momentum: 0.8,
-      earlyExaggeration: 4,
-      earlyExaggerationIter: 250,
-      maxIterations,
-      dataset: 'mnist-digits',
-      enableLiveSimulation: false,
+  // Initialize engine
+  const initializeEngine = useCallback(async () => {
+    setIsPlaying(false)
+    if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current)
+      playIntervalRef.current = undefined
     }
 
-    const engine = new TSNEEngine(config, points, highDimData)
-    engineRef.current = engine
-    setEngineState(engine.getState())
-  }, [perplexity, learningRate, maxIterations, view3D])
+    if (dataType === 'movies') {
+      setIsLoadingMovies(true)
+      setMoviesError(null)
+      try {
+        const { tsnePoints, highDimData } = await loadMoviesForTSNE()
+        // sklearn auto learning rate: max(n / (exaggeration×4), 50)
+        // For 561 movies with exaggeration=12: max(11.7, 50) = 50
+        const autoLR = Math.max(tsnePoints.length / (12 * 4), 50)
+        const config: TSNEConfig = {
+          inputDimensions: highDimData[0].length,
+          outputDimensions: view3D ? 3 : 2,
+          perplexity,
+          learningRate: autoLR, // override slider — perplexity is still user-configurable
+          momentum: 0.8,
+          // sklearn default is 12; higher exaggeration → crisper genre separation early on
+          earlyExaggeration: 12,
+          earlyExaggerationIter: 250,
+          maxIterations,
+          dataset: 'movies',
+          enableLiveSimulation: false,
+          init: 'pca', // matches sklearn TSNE(init='pca') — deterministic, stable clusters
+        }
+        const engine = new TSNEEngine(config, tsnePoints, highDimData)
+        engineRef.current = engine
+        setEngineState(engine.getState())
+      } catch (error) {
+        console.error('Failed to load movies dataset:', error)
+        setMoviesError('Failed to load movies dataset. Check console for details.')
+      } finally {
+        setIsLoadingMovies(false)
+      }
+    } else {
+      const { points, highDimData } = generateTSNEDataset('mnist-digits')
+      const config: TSNEConfig = {
+        inputDimensions: highDimData[0].length,
+        outputDimensions: view3D ? 3 : 2,
+        perplexity,
+        learningRate,
+        momentum: 0.8,
+        earlyExaggeration: 4,
+        earlyExaggerationIter: 250,
+        maxIterations,
+        dataset: 'mnist-digits',
+        enableLiveSimulation: false,
+      }
+      const engine = new TSNEEngine(config, points, highDimData)
+      engineRef.current = engine
+      setEngineState(engine.getState())
+    }
+  }, [perplexity, learningRate, maxIterations, view3D, dataType])
 
   // Initialize on mount and when parameters change
   useEffect(() => {
@@ -102,10 +146,10 @@ export function TSNEPlayground() {
     return undefined
   }, [isPlaying, animationSpeed])
 
-  // Canvas drawing
+  // Canvas drawing (MNIST only — movies use TSNE2DMovieScene)
   const { canvasRef } = useCanvas({
     draw: (ctx: CanvasRenderingContext2D) => {
-      if (!engineState || view3D) return
+      if (!engineState || view3D || dataType === 'movies') return
 
       const canvas = ctx.canvas
       drawTSNEVisualization(ctx, canvas, engineState, {
@@ -153,8 +197,9 @@ export function TSNEPlayground() {
   const handleReset = useCallback(() => {
     setIsPlaying(false)
     if (playIntervalRef.current) clearInterval(playIntervalRef.current)
+    if (dataType === 'movies') clearTSNEMoviesCache() // force fresh PCA init on next run
     initializeEngine()
-  }, [initializeEngine])
+  }, [initializeEngine, dataType])
 
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
@@ -179,7 +224,9 @@ export function TSNEPlayground() {
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
-          Dimensionality reduction: Visualize 64-dimensional handwritten digits in 2D/3D
+          {dataType === 'mnist-digits'
+            ? 'Dimensionality reduction: Visualize 64-dimensional handwritten digits in 2D/3D'
+            : 'Dimensionality reduction: Watch 561 movies cluster by genre as t-SNE iterates over their semantic embeddings'}
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -239,6 +286,24 @@ export function TSNEPlayground() {
                     className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                   <span className="text-xs text-gray-600 dark:text-gray-400">iter/step</span>
+                </div>
+
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">Max Iters:</span>
+                  <input
+                    type="number"
+                    value={maxIterations}
+                    min={100}
+                    max={5000}
+                    step={100}
+                    onChange={(e) =>
+                      setMaxIterations(Math.max(100, Math.min(5000, Number.parseInt(e.target.value) || 1000)))
+                    }
+                    className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    disabled={isPlaying}
+                  />
                 </div>
 
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
@@ -307,50 +372,107 @@ export function TSNEPlayground() {
             </div>
 
             {/* Canvas Visualization */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 overflow-hidden flex flex-col">
-              <div className="flex-1 flex items-center justify-center">
-                {view3D ? (
-                  <div className="w-full h-full">
-                    {engineState ? (
-                      <TSNE3DScene
-                        state={engineState}
-                        autoRotate={autoRotate}
-                        showLabels={engineState.points.length < 100}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-                        Run the algorithm to see the 3D visualization
-                      </div>
-                    )}
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden relative">
+              {isLoadingMovies ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
+                    <div className="text-gray-600 dark:text-gray-400">Loading movies &amp; computing affinities…</div>
+                    <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">First 50 of ~500 embedding dims · 561 movies</div>
                   </div>
-                ) : (
+                </div>
+              ) : moviesError ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center text-red-600 dark:text-red-400">
+                    <p className="font-semibold mb-2">Error Loading Movies</p>
+                    <p className="text-sm">{moviesError}</p>
+                    <button
+                      onClick={() => initializeEngine()}
+                      className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              ) : view3D ? (
+                <div className="w-full h-full">
+                  {engineState ? (
+                    <TSNE3DScene
+                      state={engineState}
+                      autoRotate={autoRotate}
+                      showLabels={engineState.points.length < 100}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                      Run the algorithm to see the 3D visualization
+                    </div>
+                  )}
+                </div>
+              ) : dataType === 'movies' && engineState ? (
+                <TSNE2DMovieScene state={engineState} theme={theme} />
+              ) : (
+                <div className="flex items-center justify-center h-full">
                   <canvas
                     ref={canvasRef}
                     width={canvasConfig.width}
                     height={canvasConfig.height}
                     className="border border-gray-300 rounded-lg"
-                    style={{
-                      maxWidth: '100%',
-                      height: 'auto',
-                    }}
+                    style={{ maxWidth: '100%', height: 'auto' }}
                   />
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Right Side: Controls */}
           <div className="space-y-3 overflow-y-auto min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
             {/* Dataset Info */}
-            <ControlGroup title="Dataset: MNIST Digits">
-              <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                <p>📊 300 handwritten digit samples</p>
-                <p>📐 64 dimensions (8×8 pixels)</p>
-                <p>🏷️ 10 categories (digits 0-9)</p>
-                <p className="text-[10px] mt-2 text-gray-500 dark:text-gray-500">
-                  Each point represents an 8×8 grayscale image of a handwritten digit. t-SNE maps
-                  these 64-dimensional vectors to 2D/3D while preserving local neighborhoods.
-                </p>
+            <ControlGroup title="Datasets">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => { setDataType('mnist-digits'); setPerplexity(30); setLearningRate(200); setMaxIterations(1000) }}
+                  disabled={isPlaying || isLoadingMovies}
+                  className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    dataType === 'mnist-digits'
+                      ? 'bg-purple-700 text-white'
+                      : 'bg-purple-600 hover:bg-purple-700 text-white'
+                  }`}
+                >
+                  MNIST Digits
+                </button>
+                <button
+                  onClick={() => { setDataType('movies'); setPerplexity(15); setLearningRate(50); setMaxIterations(1000) }}
+                  disabled={isPlaying || isLoadingMovies}
+                  className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
+                    dataType === 'movies'
+                      ? 'bg-orange-700 text-white'
+                      : 'bg-orange-600 hover:bg-orange-700 text-white'
+                  }`}
+                >
+                  <FaFilm size={10} />
+                  Movies
+                </button>
+              </div>
+              <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs text-gray-600 dark:text-gray-400">
+                {dataType === 'mnist-digits' ? (
+                  <div className="space-y-1">
+                    <p>📊 300 handwritten digit samples</p>
+                    <p>📐 64 dimensions (8×8 pixels)</p>
+                    <p>🏷️ 10 categories (digits 0-9)</p>
+                    <p className="text-[10px] mt-1 text-gray-500 dark:text-gray-500">
+                      Each point represents an 8×8 grayscale image. t-SNE maps 64D vectors to 2D/3D preserving local neighborhoods.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p>🎬 561 movies with genre clustering</p>
+                    <p>📐 numeric + genre + keyword features</p>
+                    <p>🏷️ Perplexity 15, LR 50 (sklearn auto)</p>
+                    <p className="text-[10px] mt-1 text-orange-600 dark:text-orange-400">
+                      Watch genre clusters form live — action, comedy, sci-fi, and horror movies drift together as t-SNE iterates.
+                    </p>
+                  </div>
+                )}
               </div>
             </ControlGroup>
 
@@ -394,6 +516,8 @@ export function TSNEPlayground() {
               </div>
             </ControlGroup>
 
+
+
             {/* Algorithm Phases */}
             <ControlGroup title="Algorithm Phases">
               <div className="text-xs text-gray-600 dark:text-gray-400 space-y-2">
@@ -427,28 +551,55 @@ export function TSNEPlayground() {
             {/* What to Look For */}
             <ControlGroup title="What to Look For">
               <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5">
-                <p>
-                  <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                    • Digit clustering:
-                  </span>{' '}
-                  Similar digits (e.g., 3s, 8s) naturally group together
-                </p>
-                <p>
-                  <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                    • Confusion zones:
-                  </span>{' '}
-                  Look for overlaps between similar digits like 4/9 or 3/8
-                </p>
-                <p>
-                  <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                    • Handwriting variation:
-                  </span>{' '}
-                  Each digit cluster shows natural writing style diversity
-                </p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                  💡 Tip: Try different perplexity values to see how it affects local vs global
-                  structure visibility!
-                </p>
+                {dataType === 'mnist-digits' ? (
+                  <>
+                    <p>
+                      <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                        • Digit clustering:
+                      </span>{' '}
+                      Similar digits (e.g., 3s, 8s) naturally group together
+                    </p>
+                    <p>
+                      <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                        • Confusion zones:
+                      </span>{' '}
+                      Look for overlaps between similar digits like 4/9 or 3/8
+                    </p>
+                    <p>
+                      <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                        • Handwriting variation:
+                      </span>{' '}
+                      Each digit cluster shows natural writing style diversity
+                    </p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
+                      💡 Tip: Try different perplexity values to see how it affects local vs global structure visibility!
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                        • Genre clusters:
+                      </span>{' '}
+                      Action, sci-fi, horror, and comedy films group by theme
+                    </p>
+                    <p>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                        • Franchises:
+                      </span>{' '}
+                      Marvel, Harry Potter, and Pixar films cluster tightly together
+                    </p>
+                    <p>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                        • Live formation:
+                      </span>{' '}
+                      Watch posters drift into neighbourhoods each iteration
+                    </p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
+                      💡 Early exaggeration (0–250 iter) pushes clusters far apart; optimization refines them.
+                    </p>
+                  </>
+                )}
               </div>
             </ControlGroup>
           </div>

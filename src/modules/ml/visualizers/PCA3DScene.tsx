@@ -40,7 +40,7 @@ const posterTextureCache = new Map<number, THREE.Texture>()  // tmdbId num → t
 
 let manifestPromise: Promise<void> | null = null
 
-function loadManifest(): Promise<void> {
+export function loadManifest(): Promise<void> {
   if (manifestPromise) return manifestPromise
   const url = process.env.NEXT_PUBLIC_SPRITE_MANIFEST_URL
   if (!url) { manifestPromise = Promise.resolve(); return manifestPromise }
@@ -71,7 +71,7 @@ function loadSheetImage(sheetUrl: string): Promise<HTMLImageElement> {
   })
 }
 
-async function loadPosterTexture(tmdbId: number): Promise<THREE.Texture | null> {
+export async function loadPosterTexture(tmdbId: number): Promise<THREE.Texture | null> {
   if (posterTextureCache.has(tmdbId)) return posterTextureCache.get(tmdbId)!
   await loadManifest()
   const entry = spriteManifest.get(String(tmdbId))
@@ -433,9 +433,9 @@ function Scene({
 }
 
 // ─── 2D Movie Poster Scene ────────────────────────────────────────────────────
-const bitmapCache = new Map<number, ImageBitmap>()
+export const bitmapCache = new Map<number, ImageBitmap>()
 
-async function getPosterBitmap(tmdbId: number): Promise<ImageBitmap | null> {
+export async function getPosterBitmap(tmdbId: number): Promise<ImageBitmap | null> {
   if (bitmapCache.has(tmdbId)) return bitmapCache.get(tmdbId)!
   await loadManifest()
   const entry = spriteManifest.get(String(tmdbId))
@@ -691,7 +691,7 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
 }
 
 // Modal that crops the poster from the sprite sheet (same source as 3D sprites)
-function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onClose: () => void }) {
+export function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onClose: () => void }) {
   const [posterSrc, setPosterSrc] = useState<string | null>(null)
 
   useEffect(() => {

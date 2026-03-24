@@ -267,7 +267,7 @@ export default function MLPage() {
       color: 'text-emerald-600 dark:text-emerald-400',
       darkFilter: 'dark:invert',
       difficulty: 'Advanced',
-      comingSoon: true,
+      comingSoon: false,
       category: 'Dimensionality Reduction',
     },
   ]

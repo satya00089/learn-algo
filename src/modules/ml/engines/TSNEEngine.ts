@@ -45,8 +45,9 @@ export interface TSNEConfig {
   earlyExaggeration: number // 4-12, typical value is 4
   earlyExaggerationIter: number // 250 iterations
   // Dataset
-  dataset: 'mnist-digits'
+  dataset: 'mnist-digits' | 'movies'
   enableLiveSimulation: boolean
+  init?: 'random' | 'pca' // PCA init matches sklearn and gives stable convergence
 }
 
 /**
@@ -99,6 +100,82 @@ export class TSNEEngine {
 
     // Compute pairwise affinities in high-dimensional space
     this.computePairwiseAffinities()
+
+    // PCA initialization: project high-dim data onto top-2 PCs and use as
+    // starting positions. Matches sklearn TSNE(init='pca') for stable convergence.
+    if (config.init === 'pca') {
+      this.initWithPCA()
+    }
+  }
+
+  /**
+   * PCA initialization: project high-dim data onto its top-k principal components
+   * and use those as starting coordinates (scaled to 1e-4 / std(PC1)).
+   * Matches sklearn TSNE(init='pca'): deterministic, faster to converge, fewer
+   * entangled clusters than random init.
+   */
+  private initWithPCA(): void {
+    const n = this.highDimData.length
+    if (n === 0) return
+    const d = this.highDimData[0].length
+    const k = this.config.outputDimensions
+
+    // Center the data
+    const means = new Array<number>(d).fill(0)
+    for (const row of this.highDimData) {
+      for (let j = 0; j < d; j++) means[j] += row[j]
+    }
+    for (let j = 0; j < d; j++) means[j] /= n
+    const X = this.highDimData.map((row) => row.map((v, j) => v - means[j]))
+
+    // Power iteration with deflation to find top-k eigenvectors of X^T X.
+    // Deterministic seed (LCG) so results are reproducible across resets.
+    const eigenvectors: number[][] = []
+    for (let c = 0; c < k; c++) {
+      let seed = 42 + c * 1337
+      let v = Array.from({ length: d }, () => {
+        seed = Math.trunc(seed * 1664525 + 1013904223) >>> 0
+        return seed / 0x100000000 - 0.5
+      })
+      // Gram-Schmidt against previous eigenvectors before starting
+      for (const ev of eigenvectors) {
+        const dot = v.reduce((s, vi, j) => s + vi * ev[j], 0)
+        for (let j = 0; j < d; j++) v[j] -= dot * ev[j]
+      }
+      let norm = Math.sqrt(v.reduce((s, vi) => s + vi * vi, 0)) || 1
+      v = v.map((vi) => vi / norm)
+
+      // Power iteration: v ← X^T (X v), deflated, normalised
+      for (let iter = 0; iter < 100; iter++) {
+        const Xv = X.map((row) => row.reduce((s, xi, j) => s + xi * v[j], 0))
+        const newV = new Array<number>(d).fill(0)
+        for (let i = 0; i < n; i++) {
+          for (let j = 0; j < d; j++) newV[j] += X[i][j] * Xv[i]
+        }
+        for (const ev of eigenvectors) {
+          const dot = newV.reduce((s, vi, j) => s + vi * ev[j], 0)
+          for (let j = 0; j < d; j++) newV[j] -= dot * ev[j]
+        }
+        norm = Math.sqrt(newV.reduce((s, vi) => s + vi * vi, 0)) || 1
+        v = newV.map((vi) => vi / norm)
+      }
+      eigenvectors.push(v)
+    }
+
+    // Project onto top-k PCs and scale to 1e-4 / std(PC1)
+    const projections = eigenvectors.map((v) =>
+      X.map((row) => row.reduce((s, xi, j) => s + xi * v[j], 0)),
+    )
+    const std0 = Math.sqrt(projections[0].reduce((s, xi) => s + xi * xi, 0) / n) || 1
+    const scale = 1e-4 / std0
+
+    for (let i = 0; i < n; i++) {
+      this.state.points[i].x = projections[0][i] * scale
+      this.state.points[i].y = projections[1][i] * scale
+      if (k >= 3 && projections[2] !== undefined) {
+        this.state.points[i].z = projections[2][i] * scale
+      }
+    }
   }
 
   /**
@@ -248,7 +325,9 @@ export class TSNEEngine {
 
         const pij = this.pairwiseAffinities[i][j] * exaggeration
         const qij_val = qij[i][j]
-        const mult = (pij - qij_val) * qij_val * (1 + 0) // (1 + d_ij^2) from denominator
+        // Correct t-SNE gradient: (P_ij - Q_ij) * q_unnorm = (P_ij - Q_ij) * Q_ij * Z
+        // where Z = qSum (the normalization constant of the low-dim t-distribution)
+        const mult = (pij - qij_val) * qij_val * qSum
 
         grad[i][0] += 4 * mult * (this.state.points[i].x - this.state.points[j].x)
         grad[i][1] += 4 * mult * (this.state.points[i].y - this.state.points[j].y)
@@ -268,9 +347,13 @@ export class TSNEEngine {
 
     for (let i = 0; i < n; i++) {
       for (let d = 0; d < outputDim; d++) {
-        // Adaptive learning rates
-        const gainAdjust = grad[i][d] * this.velocity[i][d] < 0 ? 0.8 : 1.2
-        this.gains[i][d] = Math.max(0.01, this.gains[i][d] * gainAdjust)
+        // sklearn gain update: gain = gain*0.8 if same sign, gain+0.2 if different sign
+        // (additive increase prevents gains from exploding unlike multiplicative)
+        const sameSign = grad[i][d] * this.velocity[i][d] >= 0
+        this.gains[i][d] = Math.max(
+          0.01,
+          sameSign ? this.gains[i][d] * 0.8 : this.gains[i][d] + 0.2,
+        )
 
         // Update velocity
         this.velocity[i][d] =
@@ -284,6 +367,16 @@ export class TSNEEngine {
 
         gradNorm += grad[i][d] ** 2
       }
+    }
+
+    // Center embedding every step (sklearn does this to prevent drift)
+    const meanX = this.state.points.reduce((s, p) => s + p.x, 0) / n
+    const meanY = this.state.points.reduce((s, p) => s + p.y, 0) / n
+    const meanZ = outputDim === 3 ? this.state.points.reduce((s, p) => s + (p.z ?? 0), 0) / n : 0
+    for (const pt of this.state.points) {
+      pt.x -= meanX
+      pt.y -= meanY
+      if (outputDim === 3 && pt.z !== undefined) pt.z -= meanZ
     }
 
     this.state.gradientNorm = Math.sqrt(gradNorm)
@@ -315,7 +408,7 @@ export class TSNEEngine {
    */
   public simulateLiveEvents(): void {
     if (!this.state.isLiveMode) return
-    if (this.config.dataset === 'mnist-digits') return // MNIST is static dataset
+    if (this.config.dataset === 'mnist-digits' || this.config.dataset === 'movies') return
 
     const now = Date.now()
     if (now - this.state.lastUpdate < 5000) return // Update every 5 seconds
