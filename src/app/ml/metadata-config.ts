@@ -128,6 +128,30 @@ export const mlMetadata = {
     ],
     ogImage: '/og/og-ml-minmax-scaler.png',
   },
+  pca: {
+    title: 'Principal Component Analysis (PCA) - Dimensionality Reduction & 3D Visualization',
+    description:
+      'Learn PCA through interactive 3D visualization. Understand principal components, variance capture, eigenvectors, and how to project high-dimensional data onto lower-dimensional subspaces for exploration and preprocessing.',
+    keywords: [
+      'principal component analysis',
+      'pca',
+      'dimensionality reduction',
+      'eigenvectors',
+      'eigenvalues',
+      'variance capture',
+      'covariance matrix',
+      'singular value decomposition',
+      'projection',
+      'feature reduction',
+      'exploratory data analysis',
+      'linear dimensionality reduction',
+      'pca visualization',
+      '3d visualization',
+      'machine learning preprocessing',
+      'data science',
+    ],
+    ogImage: '/og/og-ml-pca.png',
+  },
   'standard-scaler': {
     title: 'Standard Scaler - Z-Score Standardization & Normalization | Interactive Visualization',
     description:

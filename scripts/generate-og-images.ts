@@ -301,6 +301,24 @@ const mlPages: OGImageConfig[] = [
     categoryColor: '#10B981',
     filename: 'og-ml-minmax-scaler.png',
   },
+  {
+    title: 'PCA (Principal Component Analysis)',
+    subtitle: 'Linear Dimensionality Reduction — Principal Components & 3D Visualization',
+    description:
+      'Visualize principal components that capture maximum variance. Explore how PCA reduces dimensionality and reveals dominant directions in data.',
+    category: 'ML • Dimensionality Reduction',
+    categoryColor: '#10B981',
+    filename: 'og-ml-pca.png',
+  },
+  {
+    title: 't-SNE (t-Distributed Stochastic Neighbor Embedding)',
+    subtitle: 'Non-Linear Dimensionality Reduction — Interactive 3D Visualization',
+    description:
+      'Explore perplexity, learning rate, and early exaggeration with live datasets. Visualize how high-dimensional data forms interpretable clusters in 2D/3D.',
+    category: 'ML • Dimensionality Reduction',
+    categoryColor: '#10B981',
+    filename: 'og-ml-tsne.png',
+  },
 ]
 
 // AI algorithm pages

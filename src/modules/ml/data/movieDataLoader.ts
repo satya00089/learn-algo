@@ -1,12 +1,13 @@
 /**
- * Movie Dataset Loader for PCA
- * 
+ * Movie Dataset Loader for PCA and t-SNE
+ *
  * Fetches pre-computed embeddings and metadata from S3
- * for movie dataset visualization with PCA
+ * for movie dataset visualization with PCA and t-SNE
  */
 
 import Papa from 'papaparse'
 import type { DataPoint } from '../types'
+import type { TSNEPoint } from '../engines/TSNEEngine'
 
 export interface MovieMetadata {
   tmdbId: number
@@ -21,6 +22,7 @@ export interface MovieMetadata {
   rating: number
   votes: number
   popularity: number
+  keywords: string
 }
 
 export interface MovieDataPoint extends DataPoint {
@@ -124,7 +126,7 @@ async function fetchAndParseMoviesDataset(): Promise<MoviesDataset> {
 
     for (const row of rows) {
       // Extract embeddings as array
-      const embeddings = embeddingCols.map((col) => parseFloat(row[col] as string) || 0)
+      const embeddings = embeddingCols.map((col) => Number.parseFloat(row[col]) || 0)
 
       // For PCA input, we'll use the first 3 embedding dimensions as x, y, z
       // (PCA will recompute these, but we need initial values)
@@ -138,18 +140,19 @@ async function fetchAndParseMoviesDataset(): Promise<MoviesDataset> {
 
       // Extract metadata
       const meta: MovieMetadata = {
-        tmdbId: parseInt(row.tmdb_id as string) || 0,
-        title: (row.title as string) || 'Unknown',
-        year: parseInt(row.year as string) || 0,
-        genre: (row.genre as string) || '',
-        allGenres: (row.all_genres as string) || '',
-        posterUrl: (row.s3_poster_url as string) || '',
-        budget: parseFloat(row.budget_million as string) || 0,
-        boxOffice: parseFloat(row.box_office_million as string) || 0,
-        runtime: parseInt(row.runtime_min as string) || 0,
-        rating: parseFloat(row.imdb_rating as string) || 0,
-        votes: parseFloat(row.imdb_votes_million as string) || 0,
-        popularity: parseFloat(row.popularity as string) || 0,
+        tmdbId: Number.parseInt(row.tmdb_id) || 0,
+        title: row.title || 'Unknown',
+        year: Number.parseInt(row.year) || 0,
+        genre: row.genre || '',
+        allGenres: row.all_genres || '',
+        posterUrl: row.s3_poster_url || '',
+        budget: Number.parseFloat(row.budget_million) || 0,
+        boxOffice: Number.parseFloat(row.box_office_million) || 0,
+        runtime: Number.parseInt(row.runtime_min) || 0,
+        rating: Number.parseFloat(row.imdb_rating) || 0,
+        votes: Number.parseFloat(row.imdb_votes_million) || 0,
+        popularity: Number.parseFloat(row.popularity) || 0,
+        keywords: row.keywords || '',
       }
 
       point.metadata = meta
@@ -210,4 +213,149 @@ export async function checkMoviesDatasetAvailability(): Promise<{
       error: error instanceof Error ? error.message : 'Network error',
     }
   }
+}
+
+// ─── t-SNE Movies Input ───────────────────────────────────────────────────────
+
+let tsneMoviesCache: { tsnePoints: TSNEPoint[]; highDimData: number[][] } | null = null
+
+/** Z-score normalize each column so every feature has zero mean, unit variance. */
+function zScoreNormalize(data: number[][]): number[][] {
+  if (data.length === 0) return data
+  const n = data.length
+  const d = data[0].length
+  const means = new Array<number>(d).fill(0)
+  const stds = new Array<number>(d).fill(0)
+  for (let i = 0; i < n; i++) for (let j = 0; j < d; j++) means[j] += data[i][j]
+  for (let j = 0; j < d; j++) means[j] /= n
+  for (let i = 0; i < n; i++) for (let j = 0; j < d; j++) stds[j] += (data[i][j] - means[j]) ** 2
+  for (let j = 0; j < d; j++) stds[j] = Math.sqrt(stds[j] / n) || 1
+  return data.map((row) => row.map((v, j) => (v - means[j]) / stds[j]))
+}
+
+/**
+ * One-hot encode primary genres.
+ * Returns a feature matrix (n × numGenres) and the ordered genre labels.
+ */
+function buildGenreOneHot(genres: string[]): { features: number[][]; labels: string[] } {
+  const unique = [...new Set(genres)].filter(Boolean).sort((a, b) => a.localeCompare(b))
+  const features = genres.map((g) => unique.map((u) => (g === u ? 1 : 0)))
+  return { features, labels: unique }
+}
+
+/** Common English stop words to exclude from keyword TF-IDF. */
+const STOP_WORDS = new Set([
+  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
+  'from', 'as', 'is', 'was', 'are', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
+  'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'not', 'no',
+  'that', 'this', 'these', 'those', 'it', 'its', 'he', 'she', 'they', 'we', 'you',
+])
+
+/**
+ * Compute TF-IDF feature matrix over the provided text documents.
+ * Matches sklearn TfidfVectorizer with smooth IDF.
+ */
+function computeKeywordsTFIDF(documents: string[], maxFeatures: number): number[][] {
+  const tokenize = (text: string): string[] =>
+    text
+      .toLowerCase()
+      .replaceAll('_', ' ')
+      .split(/\W+/)
+      .filter((w) => w.length > 2 && !STOP_WORDS.has(w))
+
+  const tokenizedDocs = documents.map(tokenize)
+
+  // Document frequency
+  const dfMap = new Map<string, number>()
+  for (const tokens of tokenizedDocs) {
+    for (const t of new Set(tokens)) dfMap.set(t, (dfMap.get(t) || 0) + 1)
+  }
+
+  // Take top maxFeatures terms by document frequency
+  const vocab = [...dfMap.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, maxFeatures)
+    .map(([term]) => term)
+
+  const N = documents.length
+  return tokenizedDocs.map((tokens) => {
+    const tfMap = new Map<string, number>()
+    for (const t of tokens) tfMap.set(t, (tfMap.get(t) || 0) + 1)
+    const docLen = tokens.length || 1
+    return vocab.map((term) => {
+      const tf = (tfMap.get(term) || 0) / docLen
+      const idf = Math.log((N + 1) / ((dfMap.get(term) || 0) + 1)) + 1 // smooth IDF
+      return tf * idf
+    })
+  })
+}
+
+/**
+ * Load movies for t-SNE using the same feature engineering as the reference notebook:
+ * numeric metadata (7 cols) + derived features (ROI, box_per_min)
+ * + genre one-hot + keyword TF-IDF (30 cols), all z-score normalised.
+ *
+ * Reuses `loadMoviesDataset()` so there is only one S3 fetch shared with PCA.
+ */
+export async function loadMoviesForTSNE(): Promise<{
+  tsnePoints: TSNEPoint[]
+  highDimData: number[][]
+}> {
+  if (tsneMoviesCache) return tsneMoviesCache
+
+  const dataset = await loadMoviesDataset()
+  const metas = dataset.metadata
+
+  // ── 1. Numeric + derived features (matches notebook Section 3a) ──────────────
+  const numericMatrix = metas.map((m) => [
+    m.year,
+    m.budget,
+    m.boxOffice,
+    m.runtime,
+    m.rating,
+    m.votes,
+    m.popularity,
+    m.budget > 0 ? m.boxOffice / m.budget : 0,         // ROI
+    m.runtime > 0 ? m.boxOffice / m.runtime : 0,        // box_per_min
+  ])
+
+  // ── 2. Genre one-hot (matches notebook Section 3b) ───────────────────────────
+  const primaryGenres = metas.map((m) => m.genre || 'Unknown')
+  const { features: genreFeatures } = buildGenreOneHot(primaryGenres)
+
+  // ── 3. Keyword TF-IDF top-30 (matches notebook Section 3c) ──────────────────
+  const kwFeatures = computeKeywordsTFIDF(
+    metas.map((m) => m.keywords || ''),
+    30,
+  )
+
+  // ── 4. Concatenate and z-score normalise (matches notebook Section 3d) ───────
+  const rawHighDim = numericMatrix.map((nums, i) => [
+    ...nums,
+    ...genreFeatures[i],
+    ...kwFeatures[i],
+  ])
+  const highDimData = zScoreNormalize(rawHighDim)
+
+  const tsnePoints: TSNEPoint[] = dataset.points.map((p, i) => ({
+    x: 0,
+    y: 0,
+    z: undefined,
+    originalIndex: i,
+    label: p.metadata?.title,
+    category: p.metadata?.genre || 'Unknown',
+    metadata: p.metadata as Record<string, unknown> | undefined,
+  }))
+
+  console.log(
+    `[t-SNE] Feature matrix: ${tsnePoints.length} movies × ${highDimData[0]?.length} features`,
+    `(genre sample: ${(tsnePoints[0]?.category as string) ?? '?'})`,
+  )
+
+  tsneMoviesCache = { tsnePoints, highDimData }
+  return tsneMoviesCache
+}
+
+export function clearTSNEMoviesCache(): void {
+  tsneMoviesCache = null
 }
