@@ -152,7 +152,10 @@ export default function Home() {
               />
               <div className="space-y-0.5">
                 <div className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-                  LEARN ALGO
+                  LEARN{' '}
+                  <span className="text-orange-500">
+                    ALGO
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">

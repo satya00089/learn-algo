@@ -285,7 +285,7 @@ export default function MLPage() {
             </Link>
             <ThemeToggle />
           </div>
-          <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-white">
+          <h1 className="text-4xl font-bold mb-2 text-orange-500">
             Machine Learning
           </h1>
           <p className="text-base text-gray-600 dark:text-gray-300">
@@ -330,16 +330,16 @@ export default function MLPage() {
                           alt={topic.title}
                           width={88}
                           height={64}
-                          className={`object-contain ${topic.darkFilter}`}
+                          className={`object-contain h-16 ${topic.darkFilter}`}
                         />
                       ) : (
                         <div className="text-4xl">{topic.icon}</div>
                       )}
                     </div>
-                    <div className="flex items-center justify-left mb-2">
-                      <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                    <div className="flex items-center justify-start mb-2">
+                      <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                         {topic.title}
-                      </h2>
+                      </h3>
                       <div className="flex items-center gap-2">
                         {topic.comingSoon && (
                           <span className="text-xs bg-yellow-100 text-yellow-800 mx-2 px-2 py-1 rounded">
@@ -352,9 +352,14 @@ export default function MLPage() {
                       {topic.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-orange-600 dark:text-orange-400 font-semibold">
-                        {topic.category}
-                      </span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-orange-600 dark:text-orange-400 font-semibold">
+                          {topic.category}
+                        </span>
+                        <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+                          {topic.difficulty}
+                        </span>
+                      </div>
                       {!topic.comingSoon && (
                         <span className="text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
                           Learn →
@@ -403,16 +408,16 @@ export default function MLPage() {
                         alt={algo.title}
                         width={algo.width || 88}
                         height={64}
-                        className={`object-contain ${algo.darkFilter}`}
+                        className={`object-contain h-16 ${algo.darkFilter}`}
                       />
                     ) : (
                       <div className="text-4xl">{algo.icon}</div>
                     )}
                   </div>
-                  <div className="flex items-center justify-left mb-2">
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                  <div className="flex items-center justify-start mb-2">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">
                       {algo.title}
-                    </h2>
+                    </h3>
                     <div className="flex items-center gap-2">
                       {algo.comingSoon && (
                         <span className="text-xs bg-yellow-100 text-yellow-800 mx-2 px-2 py-1 rounded">
@@ -430,9 +435,14 @@ export default function MLPage() {
                     {algo.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
-                      {algo.category}
-                    </span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
+                        {algo.category}
+                      </span>
+                      <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+                        {algo.difficulty}
+                      </span>
+                    </div>
                     {!algo.comingSoon && (
                       <span className="text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
                         Try it →
