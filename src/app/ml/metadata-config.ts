@@ -601,7 +601,7 @@ export const mlMetadata = {
       'data science',
       'exploratory data analysis',
     ],
-    ogImage: '/og/og-ml-tsne.png',
+    ogImage: ['/og/og-ml-tsne.png', '/og/og-ml-tsne-1.png'],
   },
 }
 
@@ -635,31 +635,50 @@ export function generateMLMetadata(route: MLRoute, customAlt?: string) {
         'max-snippet': -1,
       },
     },
-    openGraph: {
-      title: `${meta.title} | Learn Algo`,
-      description: meta.description,
-      type: 'article' as const,
-      url: canonicalUrl,
-      siteName: 'LEARN ALGO',
-      locale: 'en_US',
-      images: [
-        {
-          url: `${baseUrl}${meta.ogImage}`,
-          width: 1200,
-          height: 630,
-          alt: customAlt || `${meta.title} Visualization`,
-          type: 'image/png',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image' as const,
-      title: `${meta.title} | Learn Algo`,
-      description: meta.description,
-      site: '@LearnAlgo',
-      creator: '@LearnAlgo',
-      images: [`${baseUrl}${meta.ogImage}`],
-    },
+    // Normalize ogImage to support string | string[] entries in metadata
+    openGraph: (() => {
+      const rawImages = (meta as any).ogImage
+      const images = Array.isArray(rawImages) ? rawImages : rawImages ? [rawImages] : []
+      const ogImages = images.length
+        ? images.map((img: string) => ({
+            url: `${baseUrl}${img}`,
+            width: 1200,
+            height: 630,
+            alt: customAlt || `${meta.title} Visualization`,
+            type: 'image/png',
+          }))
+        : [
+            {
+              url: `${baseUrl}/og/og-default.png`,
+              width: 1200,
+              height: 630,
+              alt: customAlt || `${meta.title} Visualization`,
+              type: 'image/png',
+            },
+          ]
+
+      return {
+        title: `${meta.title} | Learn Algo`,
+        description: meta.description,
+        type: 'article' as const,
+        url: canonicalUrl,
+        siteName: 'LEARN ALGO',
+        locale: 'en_US',
+        images: ogImages,
+      }
+    })(),
+    twitter: (() => {
+      const rawImages = (meta as any).ogImage
+      const images = Array.isArray(rawImages) ? rawImages : rawImages ? [rawImages] : []
+      return {
+        card: 'summary_large_image' as const,
+        title: `${meta.title} | Learn Algo`,
+        description: meta.description,
+        site: '@LearnAlgo',
+        creator: '@LearnAlgo',
+        images: images.length ? images.map((i: string) => `${baseUrl}${i}`) : [`${baseUrl}/og/og-default.png`],
+      }
+    })(),
   }
 }
 
@@ -685,7 +704,11 @@ export function generateMLStructuredData(route: MLRoute) {
     headline: meta.title,
     description: meta.description,
     url: canonicalUrl,
-    image: `${baseUrl}${meta.ogImage}`,
+    image: (() => {
+      const rawImages = (meta as any).ogImage
+      const images = Array.isArray(rawImages) ? rawImages : rawImages ? [rawImages] : []
+      return images.length === 1 ? `${baseUrl}${images[0]}` : images.map((i: string) => `${baseUrl}${i}`)
+    })(),
     author: {
       '@type': 'Organization',
       name: 'LEARN ALGO',
