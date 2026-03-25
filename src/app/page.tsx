@@ -130,7 +130,7 @@ export default function Home() {
         <div className="hidden lg:block fixed right-0 top-0 bottom-0 w-16 border-l border-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:theme(colors.gray.950/0.05)] dark:[--pattern-fg:theme(colors.white/0.1)]" />
 
         {/* Content Container */}
-        <div className="relative mx-16">
+        <div className="relative lg:mx-16">
           {/* Background Pattern */}
           <div
             className="absolute inset-0 opacity-20 dark:opacity-10 pointer-events-none"
@@ -287,7 +287,7 @@ export default function Home() {
 
           {/* Stats strip */}
           <section className="relative z-10 py-7 px-6 lg:px-8">
-            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-col lg:flex-row flex-wrap items-center justify-center gap-x-12 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
               <div>
                 <span className="text-3xl font-black text-gray-900 dark:text-white mr-1.5">
                   <CountUpStat target={30} suffix="+" />
