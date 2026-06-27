@@ -45,7 +45,7 @@ export interface TSNEConfig {
   earlyExaggeration: number // 4-12, typical value is 4
   earlyExaggerationIter: number // 250 iterations
   // Dataset
-  dataset: 'mnist-digits' | 'movies'
+  dataset: 'mnist-digits' | 'movies' | 'countries'
   enableLiveSimulation: boolean
   init?: 'random' | 'pca' // PCA init matches sklearn and gives stable convergence
 }
@@ -422,7 +422,12 @@ export class TSNEEngine {
    */
   public simulateLiveEvents(): void {
     if (!this.state.isLiveMode) return
-    if (this.config.dataset === 'mnist-digits' || this.config.dataset === 'movies') return
+    if (
+      this.config.dataset === 'mnist-digits' ||
+      this.config.dataset === 'movies' ||
+      this.config.dataset === 'countries'
+    )
+      return
 
     const now = Date.now()
     if (now - this.state.lastUpdate < 5000) return // Update every 5 seconds
