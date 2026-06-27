@@ -1,7 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
-import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaFilm } from 'react-icons/fa'
+import {
+  FaPlay,
+  FaPause,
+  FaStepForward,
+  FaFastForward,
+  FaRedo,
+  FaFilm,
+  FaGlobe,
+} from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
@@ -13,9 +21,11 @@ import { TSNEEngine } from '../engines/TSNEEngine'
 import type { TSNEState, TSNEConfig } from '../engines/TSNEEngine'
 import { generateTSNEDataset } from '../data/tsneDatasets'
 import { loadMoviesForTSNE, clearTSNEMoviesCache } from '../data/movieDataLoader'
+import { loadCountriesForTSNE, clearCountriesTSNECache } from '../data/countryDataLoader'
 import { drawTSNEVisualization } from '../visualizers/tsneVisualizer'
 import { TSNE3DScene } from '../visualizers/TSNE3DScene'
 import { TSNE2DMovieScene } from '../visualizers/TSNE2DMovieScene'
+import { TSNE2DCountryScene } from '../visualizers/TSNE2DCountryScene'
 
 export function TSNEPlayground() {
   const [showExplanation, setShowExplanation] = useState(
@@ -27,11 +37,15 @@ export function TSNEPlayground() {
   const [engineState, setEngineState] = useState<TSNEState | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const playIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const fastForwardWorkerRef = useRef<Worker | null>(null)
+  const [isFastForwarding, setIsFastForwarding] = useState(false)
 
   // Dataset selection
-  const [dataType, setDataType] = useState<'mnist-digits' | 'movies'>('mnist-digits')
-  const [isLoadingMovies, setIsLoadingMovies] = useState(false)
-  const [moviesError, setMoviesError] = useState<string | null>(null)
+  const [dataType, setDataType] = useState<'mnist-digits' | 'movies' | 'countries'>(
+    'mnist-digits'
+  )
+  const [isLoadingDataset, setIsLoadingDataset] = useState(false)
+  const [datasetError, setDatasetError] = useState<string | null>(null)
 
   // 3D View state
   const [view3D, setView3D] = useState(false)
@@ -55,17 +69,21 @@ export function TSNEPlayground() {
 
   // Initialize engine
   const initializeEngine = useCallback(async () => {
+    fastForwardWorkerRef.current?.terminate()
+    fastForwardWorkerRef.current = null
+    setIsFastForwarding(false)
     setIsPlaying(false)
     if (playIntervalRef.current) {
       clearInterval(playIntervalRef.current)
       playIntervalRef.current = undefined
     }
 
-    if (dataType === 'movies') {
-      setIsLoadingMovies(true)
-      setMoviesError(null)
+    if (dataType === 'movies' || dataType === 'countries') {
+      setIsLoadingDataset(true)
+      setDatasetError(null)
       try {
-        const { tsnePoints, highDimData } = await loadMoviesForTSNE()
+        const loader = dataType === 'movies' ? loadMoviesForTSNE : loadCountriesForTSNE
+        const { tsnePoints, highDimData } = await loader()
         // sklearn auto learning rate: max(n / (exaggeration×4), 50)
         // For 561 movies with exaggeration=12: max(11.7, 50) = 50
         const autoLR = Math.max(tsnePoints.length / (12 * 4), 50)
@@ -79,7 +97,7 @@ export function TSNEPlayground() {
           earlyExaggeration: 12,
           earlyExaggerationIter: 250,
           maxIterations,
-          dataset: 'movies',
+          dataset: dataType,
           enableLiveSimulation: false,
           init: 'pca', // matches sklearn TSNE(init='pca') — deterministic, stable clusters
         }
@@ -87,10 +105,10 @@ export function TSNEPlayground() {
         engineRef.current = engine
         setEngineState(engine.getState())
       } catch (error) {
-        console.error('Failed to load movies dataset:', error)
-        setMoviesError('Failed to load movies dataset. Check console for details.')
+        console.error(`Failed to load ${dataType} dataset:`, error)
+        setDatasetError(`Failed to load ${dataType} dataset. Check console for details.`)
       } finally {
-        setIsLoadingMovies(false)
+        setIsLoadingDataset(false)
       }
     } else {
       const { points, highDimData } = generateTSNEDataset('mnist-digits')
@@ -146,10 +164,16 @@ export function TSNEPlayground() {
     return undefined
   }, [isPlaying, animationSpeed])
 
+  useEffect(() => {
+    return () => {
+      fastForwardWorkerRef.current?.terminate()
+    }
+  }, [])
+
   // Canvas drawing (MNIST only — movies use TSNE2DMovieScene)
   const { canvasRef } = useCanvas({
     draw: (ctx: CanvasRenderingContext2D) => {
-      if (!engineState || view3D || dataType === 'movies') return
+      if (!engineState || view3D || dataType !== 'mnist-digits') return
 
       const canvas = ctx.canvas
       drawTSNEVisualization(ctx, canvas, engineState, {
@@ -188,16 +212,66 @@ export function TSNEPlayground() {
   }, [])
 
   const handleRun = useCallback(() => {
-    if (engineRef.current) {
-      engineRef.current.runSteps(100)
-      setEngineState(engineRef.current.getState())
+    const engine = engineRef.current
+    if (!engine) return
+
+    setIsPlaying(false)
+    if (playIntervalRef.current) {
+      clearInterval(playIntervalRef.current)
+      playIntervalRef.current = undefined
     }
+    fastForwardWorkerRef.current?.terminate()
+
+    const snapshot = engine.createSnapshot()
+    const worker = new Worker(new URL('../workers/tsneRunWorker.ts', import.meta.url), {
+      type: 'module',
+    })
+    fastForwardWorkerRef.current = worker
+    setIsFastForwarding(true)
+
+    worker.onmessage = (
+      event: MessageEvent<{ type: 'done' | 'error'; state?: TSNEState; error?: string }>
+    ) => {
+      if (fastForwardWorkerRef.current !== worker) return
+
+      if (event.data.type === 'done' && event.data.state) {
+        engineRef.current = TSNEEngine.fromSnapshot({
+          ...snapshot,
+          state: event.data.state,
+        })
+        setEngineState(event.data.state)
+      } else if (event.data.type === 'error') {
+        console.error('t-SNE fast-forward worker failed:', event.data.error)
+      }
+
+      setIsFastForwarding(false)
+      worker.terminate()
+      if (fastForwardWorkerRef.current === worker) {
+        fastForwardWorkerRef.current = null
+      }
+    }
+
+    worker.onerror = (error) => {
+      if (fastForwardWorkerRef.current !== worker) return
+      console.error('t-SNE fast-forward worker error:', error)
+      setIsFastForwarding(false)
+      worker.terminate()
+      if (fastForwardWorkerRef.current === worker) {
+        fastForwardWorkerRef.current = null
+      }
+    }
+
+    worker.postMessage({ type: 'run', snapshot })
   }, [])
 
   const handleReset = useCallback(() => {
+    fastForwardWorkerRef.current?.terminate()
+    fastForwardWorkerRef.current = null
+    setIsFastForwarding(false)
     setIsPlaying(false)
     if (playIntervalRef.current) clearInterval(playIntervalRef.current)
     if (dataType === 'movies') clearTSNEMoviesCache() // force fresh PCA init on next run
+    if (dataType === 'countries') clearCountriesTSNECache()
     initializeEngine()
   }, [initializeEngine, dataType])
 
@@ -226,7 +300,9 @@ export function TSNEPlayground() {
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           {dataType === 'mnist-digits'
             ? 'Dimensionality reduction: Visualize 64-dimensional handwritten digits in 2D/3D'
-            : 'Dimensionality reduction: Watch 561 movies cluster by genre as t-SNE iterates over their semantic embeddings'}
+            : dataType === 'movies'
+              ? 'Dimensionality reduction: Watch 561 movies cluster by genre as t-SNE iterates over their semantic embeddings'
+              : 'Dimensionality reduction: Watch countries cluster by region as t-SNE iterates over their semantic embeddings'}
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -238,7 +314,7 @@ export function TSNEPlayground() {
                   <Tooltip text={isPlaying ? 'Pause' : 'Play'}>
                     <button
                       onClick={handlePlayPause}
-                      disabled={engineState?.phase === 'complete' && !isPlaying}
+                      disabled={(engineState?.phase === 'complete' && !isPlaying) || isFastForwarding}
                       className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
@@ -247,7 +323,7 @@ export function TSNEPlayground() {
                   <Tooltip text="Step Forward">
                     <button
                       onClick={handleStep}
-                      disabled={isPlaying || engineState?.phase === 'complete'}
+                      disabled={isPlaying || engineState?.phase === 'complete' || isFastForwarding}
                       className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <FaStepForward size={12} />
@@ -256,7 +332,7 @@ export function TSNEPlayground() {
                   <Tooltip text="Run to Completion">
                     <button
                       onClick={handleRun}
-                      disabled={isPlaying || engineState?.phase === 'complete'}
+                      disabled={isPlaying || engineState?.phase === 'complete' || isFastForwarding}
                       className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <FaFastForward size={12} />
@@ -373,7 +449,7 @@ export function TSNEPlayground() {
 
             {/* Canvas Visualization */}
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden relative">
-              {isLoadingMovies ? (
+              {isLoadingDataset ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
@@ -381,11 +457,23 @@ export function TSNEPlayground() {
                     <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">First 50 of ~500 embedding dims · 561 movies</div>
                   </div>
                 </div>
-              ) : moviesError ? (
+              ) : isFastForwarding ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
+                    <div className="text-gray-600 dark:text-gray-400">
+                      Finishing t-SNE in the background...
+                    </div>
+                    <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                      The page stays responsive while the worker computes the final embedding.
+                    </div>
+                  </div>
+                </div>
+              ) : datasetError ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center text-red-600 dark:text-red-400">
-                    <p className="font-semibold mb-2">Error Loading Movies</p>
-                    <p className="text-sm">{moviesError}</p>
+                    <p className="font-semibold mb-2">Error Loading Dataset</p>
+                    <p className="text-sm">{datasetError}</p>
                     <button
                       onClick={() => initializeEngine()}
                       className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
@@ -410,6 +498,8 @@ export function TSNEPlayground() {
                 </div>
               ) : dataType === 'movies' && engineState ? (
                 <TSNE2DMovieScene state={engineState} theme={theme} />
+              ) : dataType === 'countries' && engineState ? (
+                <TSNE2DCountryScene state={engineState} theme={theme} />
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <canvas
@@ -431,7 +521,7 @@ export function TSNEPlayground() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => { setDataType('mnist-digits'); setPerplexity(30); setLearningRate(200); setMaxIterations(1000) }}
-                  disabled={isPlaying || isLoadingMovies}
+                  disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     dataType === 'mnist-digits'
                       ? 'bg-purple-700 text-white'
@@ -442,7 +532,7 @@ export function TSNEPlayground() {
                 </button>
                 <button
                   onClick={() => { setDataType('movies'); setPerplexity(15); setLearningRate(50); setMaxIterations(1000) }}
-                  disabled={isPlaying || isLoadingMovies}
+                  disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                     dataType === 'movies'
                       ? 'bg-orange-700 text-white'
@@ -451,6 +541,18 @@ export function TSNEPlayground() {
                 >
                   <FaFilm size={10} />
                   Movies
+                </button>
+                <button
+                  onClick={() => { setDataType('countries'); setPerplexity(15); setLearningRate(50); setMaxIterations(1000) }}
+                  disabled={isPlaying || isLoadingDataset}
+                  className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
+                    dataType === 'countries'
+                      ? 'bg-emerald-700 text-white'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  }`}
+                >
+                  <FaGlobe size={10} />
+                  Countries
                 </button>
               </div>
               <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs text-gray-600 dark:text-gray-400">
@@ -463,13 +565,22 @@ export function TSNEPlayground() {
                       Each point represents an 8×8 grayscale image. t-SNE maps 64D vectors to 2D/3D preserving local neighborhoods.
                     </p>
                   </div>
-                ) : (
+                ) : dataType === 'movies' ? (
                   <div className="space-y-1">
                     <p>🎬 561 movies with genre clustering</p>
                     <p>📐 numeric + genre + keyword features</p>
                     <p>🏷️ Perplexity 15, LR 50 (sklearn auto)</p>
                     <p className="text-[10px] mt-1 text-orange-600 dark:text-orange-400">
                       Watch genre clusters form live — action, comedy, sci-fi, and horror movies drift together as t-SNE iterates.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p>Country sprites with regional clustering</p>
+                    <p>271 embedding dimensions + sprite metadata</p>
+                    <p>Perplexity 15, LR 50 (sklearn auto)</p>
+                    <p className="text-[10px] mt-1 text-emerald-600 dark:text-emerald-400">
+                      Watch countries group by region and geography while the sprite sheet keeps the showcase visual and familiar.
                     </p>
                   </div>
                 )}
@@ -616,3 +727,6 @@ export function TSNEPlayground() {
     </div>
   )
 }
+
+
+

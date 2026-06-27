@@ -51,7 +51,6 @@ export function loadManifest(): Promise<void> {
         spriteManifest.set(id, entry)
       }
       const sheets = new Set([...spriteManifest.values()].map((e) => e.sheet_url)).size
-      console.log(`🎬 Sprite manifest: ${spriteManifest.size} movies across ${sheets} sheets`)
     })
     .catch((e) => console.error('Failed to load sprite manifest', e))
   return manifestPromise

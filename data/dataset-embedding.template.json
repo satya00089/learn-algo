@@ -1,0 +1,22 @@
+{
+  "input": "data/your-dataset.csv",
+  "output": "data/your-dataset-emb.csv",
+  "titleColumn": "name",
+  "titleLabel": "Item",
+  "textColumns": [
+    "name",
+    "description",
+    "category",
+    "tags"
+  ],
+  "listColumns": [
+    "tags"
+  ],
+  "excludedColumns": [
+    "image_url",
+    "source_url"
+  ],
+  "model": "text-embedding-3-small",
+  "dimensions": 256,
+  "batchSize": 50
+}

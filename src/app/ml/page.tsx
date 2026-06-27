@@ -245,7 +245,7 @@ export default function MLPage() {
       category: 'Unsupervised Learning',
     },
     {
-      title: 'Principal Component Analysis',
+      title: 'PCA (Principal Component Analysis)',
       description:
         'Dimensionality reduction using principal components to capture maximum variance',
       href: '/ml/pca',
@@ -258,7 +258,7 @@ export default function MLPage() {
       category: 'Dimensionality Reduction',
     },
     {
-      title: 't-SNE',
+      title: 't-SNE (t-distributed Stochastic Neighbor Embedding)',
       description:
         'Nonlinear dimensionality reduction for visualizing high-dimensional data in 2D/3D',
       href: '/ml/tsne',

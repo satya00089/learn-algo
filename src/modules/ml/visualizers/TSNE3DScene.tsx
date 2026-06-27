@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 'use client'
 
 import { useRef, useMemo, useState, useEffect } from 'react'
@@ -8,6 +8,10 @@ import * as THREE from 'three'
 import type { TSNEState, TSNEPoint } from '../engines/TSNEEngine'
 import { loadPosterTexture, MovieDetailModal } from './PCA3DScene'
 import type { MovieMetadata } from '../data/movieDataLoader'
+import {
+  getCountrySpriteDataUrl,
+  type CountryMetadata,
+} from '../data/countryDataLoader'
 
 interface TSNE3DSceneProps {
   readonly state: TSNEState
@@ -15,15 +19,126 @@ interface TSNE3DSceneProps {
   readonly showLabels?: boolean
 }
 
-/* --- Movie poster billboard — follows live t-SNE position every frame --- */
-function TSNEMoviePoster({
+const CATEGORY_COLORS: Record<string, string> = {
+  Tech: '#3b82f6',
+  Politics: '#dc2626',
+  Entertainment: '#f59e0b',
+  Sports: '#10b981',
+  Business: '#8b5cf6',
+  Science: '#06b6d4',
+  Gaming: '#ec4899',
+  Art: '#f97316',
+  Bitcoin: '#f7931a',
+  Ethereum: '#627eea',
+  DeFi: '#00d4aa',
+  'Meme Coins': '#ff6b9d',
+  Stablecoins: '#26a17b',
+  NFT: '#ff4785',
+  Layer2: '#a855f7',
+  Technology: '#3b82f6',
+  Health: '#10b981',
+  Climate: '#059669',
+  Economy: '#8b5cf6',
+  Pop: '#ff6b9d',
+  Rock: '#ef4444',
+  'Hip-Hop': '#f59e0b',
+  Electronic: '#8b5cf6',
+  Classical: '#0891b2',
+  Jazz: '#d97706',
+  Country: '#ea580c',
+  'R&B': '#ec4899',
+  Web: '#3b82f6',
+  'ML/AI': '#8b5cf6',
+  DevOps: '#10b981',
+  Mobile: '#f59e0b',
+  Data: '#06b6d4',
+  Security: '#dc2626',
+  Blockchain: '#f7931a',
+  'Point Guards': '#3b82f6',
+  'Shooting Guards': '#ef4444',
+  'Small Forwards': '#10b981',
+  'Power Forwards': '#f59e0b',
+  Centers: '#8b5cf6',
+  Shooters: '#ec4899',
+  Defenders: '#14b8a6',
+  Playmakers: '#f97316',
+  Action: '#ef4444',
+  Adventure: '#f97316',
+  Animation: '#eab308',
+  Comedy: '#84cc16',
+  Crime: '#dc2626',
+  Documentary: '#6b7280',
+  Drama: '#8b5cf6',
+  Family: '#06b6d4',
+  Fantasy: '#a855f7',
+  History: '#7c3aed',
+  Horror: '#991b1b',
+  Music: '#ec4899',
+  Mystery: '#0891b2',
+  Romance: '#f43f5e',
+  'Science Fiction': '#3b82f6',
+  Thriller: '#d97706',
+  War: '#78716c',
+  Western: '#92400e',
+  Africa: '#ef4444',
+  Asia: '#f59e0b',
+  Europe: '#3b82f6',
+  Oceania: '#10b981',
+  'North America': '#8b5cf6',
+  'South America': '#ec4899',
+  Antarctica: '#9ca3af',
+  Unknown: '#9ca3af',
+}
+
+const countryTextureCache = new Map<string, THREE.Texture>()
+
+function isMoviePoint(point: TSNEPoint): boolean {
+  return typeof point.metadata?.tmdbId === 'number'
+}
+
+function isCountryPoint(point: TSNEPoint): boolean {
+  return !!point.metadata?.cca3 || !!point.metadata?.cca2
+}
+
+function getCountryTextureKey(metadata: CountryMetadata): string {
+  return metadata.cca3 || metadata.cca2 || metadata.name
+}
+
+async function loadCountrySpriteTexture(metadata: CountryMetadata): Promise<THREE.Texture | null> {
+  const cacheKey = getCountryTextureKey(metadata)
+  if (countryTextureCache.has(cacheKey)) {
+    return countryTextureCache.get(cacheKey) ?? null
+  }
+
+  const dataUrl = await getCountrySpriteDataUrl(metadata)
+  if (!dataUrl) return null
+
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader()
+    loader.load(
+      dataUrl,
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace
+        texture.needsUpdate = true
+        countryTextureCache.set(cacheKey, texture)
+        resolve(texture)
+      },
+      undefined,
+      () => resolve(null)
+    )
+  })
+}
+
+function TSNESpriteBillboard({
   point,
   fallbackColor,
+  kind,
   onHover,
   onClick,
 }: {
   readonly point: TSNEPoint
   readonly fallbackColor: string
+  readonly kind: 'movie' | 'country'
   readonly onHover?: (pt: TSNEPoint | null) => void
   readonly onClick?: () => void
 }) {
@@ -32,18 +147,31 @@ function TSNEMoviePoster({
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
-    const tmdbId = point.metadata?.tmdbId as number | undefined
-    if (!tmdbId) return
     let alive = true
-    loadPosterTexture(tmdbId).then((tex) => {
+
+    async function loadTexture() {
+      if (kind === 'movie') {
+        const tmdbId = point.metadata?.tmdbId as number | undefined
+        if (!tmdbId) return
+        const tex = await loadPosterTexture(tmdbId)
+        if (alive && tex) setTexture(tex)
+        return
+      }
+
+      const metadata = point.metadata as CountryMetadata | undefined
+      if (!metadata) return
+      const tex = await loadCountrySpriteTexture(metadata)
       if (alive && tex) setTexture(tex)
-    })
+    }
+
+    setTexture(null)
+    void loadTexture()
+
     return () => {
       alive = false
     }
-  }, [point.metadata?.tmdbId])
+  }, [kind, point.metadata])
 
-  // Update position, face camera, and apply hover scale every frame
   useFrame(({ camera }) => {
     if (!meshRef.current) return
     meshRef.current.position.set(point.x, point.z ?? 0, -point.y)
@@ -52,11 +180,13 @@ function TSNEMoviePoster({
     meshRef.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15)
   })
 
+  const geometryArgs = kind === 'movie' ? [0.8, 1.2] : [1.1, 0.7]
+
   return (
     <mesh
       ref={meshRef}
-      onPointerOver={(e) => {
-        e.stopPropagation()
+      onPointerOver={(event) => {
+        event.stopPropagation()
         setHovered(true)
         onHover?.(point)
         document.body.style.cursor = 'pointer'
@@ -66,12 +196,12 @@ function TSNEMoviePoster({
         onHover?.(null)
         document.body.style.cursor = 'default'
       }}
-      onClick={(e) => {
-        e.stopPropagation()
+      onClick={(event) => {
+        event.stopPropagation()
         onClick?.()
       }}
     >
-      <planeGeometry args={[0.8, 1.2]} />
+      <planeGeometry args={geometryArgs} />
       {texture ? (
         <meshBasicMaterial map={texture} transparent side={THREE.DoubleSide} />
       ) : (
@@ -81,7 +211,6 @@ function TSNEMoviePoster({
   )
 }
 
-/* --- Tooltip that tracks a live-animated TSNEPoint position --- */
 function MovieHoverTooltip({ point }: { readonly point: TSNEPoint }) {
   const groupRef = useRef<THREE.Group>(null)
   const meta = point.metadata as MovieMetadata
@@ -107,43 +236,174 @@ function MovieHoverTooltip({ point }: { readonly point: TSNEPoint }) {
             minWidth: '160px',
           }}
         >
-          <div style={{ fontWeight: 700, marginBottom: 2 }}>{meta?.title ?? '—'}</div>
+          <div style={{ fontWeight: 700, marginBottom: 2 }}>{meta?.title ?? '-'}</div>
           <div style={{ color: '#d1d5db', fontSize: '11px' }}>
             {meta?.year} · {meta?.genre}
           </div>
           <div style={{ color: '#9ca3af', fontSize: '11px', marginTop: 2 }}>
-            ⭐ {meta?.rating?.toFixed(1)} · 💰 ${meta?.boxOffice?.toFixed(0)}M
+            Rating {meta?.rating?.toFixed(1)} · Box office ${meta?.boxOffice?.toFixed(0)}M
           </div>
-          <div style={{ color: '#6b7280', fontSize: '10px', marginTop: 2 }}>
-            Click for details
-          </div>
+          <div style={{ color: '#6b7280', fontSize: '10px', marginTop: 2 }}>Click for details</div>
         </div>
       </Html>
     </group>
   )
 }
 
+function CountryHoverTooltip({ point }: { readonly point: TSNEPoint }) {
+  const groupRef = useRef<THREE.Group>(null)
+  const meta = point.metadata as CountryMetadata
+
+  useFrame(() => {
+    if (!groupRef.current) return
+    groupRef.current.position.set(point.x, (point.z ?? 0) + 1.4, -point.y)
+  })
+
+  return (
+    <group ref={groupRef}>
+      <Html center distanceFactor={12} style={{ pointerEvents: 'none' }}>
+        <div
+          style={{
+            background: 'rgba(0,0,0,0.88)',
+            color: '#fff',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            minWidth: '160px',
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 2 }}>{meta?.name ?? point.label ?? '-'}</div>
+          <div style={{ color: '#d1d5db', fontSize: '11px' }}>
+            {meta?.region || 'Unknown region'}
+            {meta?.subregion ? ` · ${meta.subregion}` : ''}
+          </div>
+          <div style={{ color: '#9ca3af', fontSize: '11px', marginTop: 2 }}>
+            {meta?.cca2 || '--'} / {meta?.cca3 || '---'}
+          </div>
+          <div style={{ color: '#6b7280', fontSize: '10px', marginTop: 2 }}>Click for details</div>
+        </div>
+      </Html>
+    </group>
+  )
+}
+
+function CountryDetailModal({
+  country,
+  onClose,
+}: {
+  readonly country: CountryMetadata
+  readonly onClose: () => void
+}) {
+  const numberFormatter = new Intl.NumberFormat('en-US')
+  const compactCurrencyFormatter = new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  })
+
+  return (
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{country.name}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{country.officialName}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-md px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          {country.capital && (
+            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="text-gray-500 dark:text-gray-400">Capital</div>
+              <div className="font-semibold text-gray-900 dark:text-white">{country.capital}</div>
+            </div>
+          )}
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">CCA2</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{country.cca2 || '--'}</div>
+          </div>
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">CCA3</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{country.cca3 || '---'}</div>
+          </div>
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">Region</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{country.region || 'Unknown'}</div>
+          </div>
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">Subregion</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{country.subregion || 'Unknown'}</div>
+          </div>
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">Latitude</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{country.latitude}</div>
+          </div>
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">Longitude</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{country.longitude}</div>
+          </div>
+          {typeof country.population === 'number' && (
+            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="text-gray-500 dark:text-gray-400">Population</div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                {numberFormatter.format(country.population)}
+              </div>
+            </div>
+          )}
+          {typeof country.gdpCurrentUsd === 'number' && (
+            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="text-gray-500 dark:text-gray-400">GDP</div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                ${compactCurrencyFormatter.format(country.gdpCurrentUsd)}
+              </div>
+            </div>
+          )}
+          {country.languages && country.languages.length > 0 && (
+            <div className="col-span-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="text-gray-500 dark:text-gray-400">Languages</div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                {country.languages.join(', ')}
+              </div>
+            </div>
+          )}
+          {country.majorityReligion && (
+            <div className="col-span-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="text-gray-500 dark:text-gray-400">Majority religion</div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                {country.majorityReligion}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CategoryPoints({
   points,
-  category,
   color,
 }: {
   readonly points: TSNEState['points']
-  readonly category: string
   readonly color: string
 }) {
   const meshRef = useRef<THREE.InstancedMesh>(null)
 
-  // useFrame runs every RAF — reads the CURRENT (mutated) x/y/z from TSNEPoint
-  // objects directly, so the 3D scene updates every frame without needing React
-  // state/props changes to trigger a re-render.
   useFrame(() => {
     if (!meshRef.current) return
     const tempObject = new THREE.Object3D()
-    points.forEach((point, i) => {
+    points.forEach((point, index) => {
       tempObject.position.set(point.x, point.z ?? 0, -point.y)
       tempObject.updateMatrix()
-      meshRef.current!.setMatrixAt(i, tempObject.matrix)
+      meshRef.current?.setMatrixAt(index, tempObject.matrix)
     })
     meshRef.current.instanceMatrix.needsUpdate = true
   })
@@ -165,111 +425,41 @@ function CategoryPoints({
 function DataPoints({
   points,
   onClickMovie,
+  onClickCountry,
 }: {
   readonly points: TSNEState['points']
   readonly onClickMovie?: (meta: MovieMetadata) => void
+  readonly onClickCountry?: (meta: CountryMetadata) => void
 }) {
   const [hoveredPoint, setHoveredPoint] = useState<TSNEPoint | null>(null)
-  // Define category colors
-  const categoryColors: Record<string, string> = {
-    // Twitter
-    Tech: '#3b82f6',
-    Politics: '#dc2626',
-    Entertainment: '#f59e0b',
-    Sports: '#10b981',
-    Business: '#8b5cf6',
-    Science: '#06b6d4',
-    Gaming: '#ec4899',
-    Art: '#f97316',
-    // Crypto
-    Bitcoin: '#f7931a',
-    Ethereum: '#627eea',
-    DeFi: '#00d4aa',
-    'Meme Coins': '#ff6b9d',
-    Stablecoins: '#26a17b',
-    NFT: '#ff4785',
-    Layer2: '#a855f7',
-    // News
-    Technology: '#3b82f6',
-    Health: '#10b981',
-    Climate: '#059669',
-    Economy: '#8b5cf6',
-    // Music
-    Pop: '#ff6b9d',
-    Rock: '#ef4444',
-    'Hip-Hop': '#f59e0b',
-    Electronic: '#8b5cf6',
-    Classical: '#0891b2',
-    Jazz: '#d97706',
-    Country: '#ea580c',
-    'R&B': '#ec4899',
-    // GitHub
-    Web: '#3b82f6',
-    'ML/AI': '#8b5cf6',
-    DevOps: '#10b981',
-    Mobile: '#f59e0b',
-    Data: '#06b6d4',
-    Security: '#dc2626',
-    Blockchain: '#f7931a',
-    // NBA
-    'Point Guards': '#3b82f6',
-    'Shooting Guards': '#ef4444',
-    'Small Forwards': '#10b981',
-    'Power Forwards': '#f59e0b',
-    Centers: '#8b5cf6',
-    Shooters: '#ec4899',
-    Defenders: '#14b8a6',
-    Playmakers: '#f97316',
-    // Movies (TMDB genres)
-    Action: '#ef4444',
-    Adventure: '#f97316',
-    Animation: '#eab308',
-    Comedy: '#84cc16',
-    Crime: '#dc2626',
-    Documentary: '#6b7280',
-    Drama: '#8b5cf6',
-    Family: '#06b6d4',
-    Fantasy: '#a855f7',
-    History: '#7c3aed',
-    Horror: '#991b1b',
-    Music: '#ec4899',
-    Mystery: '#0891b2',
-    Romance: '#f43f5e',
-    'Science Fiction': '#3b82f6',
-    Thriller: '#d97706',
-    War: '#78716c',
-    Western: '#92400e',
-    Unknown: '#9ca3af',
-  }
 
-  // Group points by category — store actual TSNEPoint references so useFrame
-  // can read live (mutated) x/y/z values without stale coordinate copies.
-  // useMemo runs once (categories are fixed for a given dataset run).
-  const isMovieData = useMemo(
-    () => points.length > 0 && !!points[0].metadata?.tmdbId,
-    [points],
-  )
+  const pointKind = useMemo<'movie' | 'country' | 'default'>(() => {
+    if (points.length === 0) return 'default'
+    if (isMoviePoint(points[0])) return 'movie'
+    if (isCountryPoint(points[0])) return 'country'
+    return 'default'
+  }, [points])
 
   const pointsByCategory = useMemo(() => {
-    if (isMovieData) return {} // not needed for movie poster rendering
+    if (pointKind !== 'default') return {}
     const grouped: Record<string, TSNEState['points']> = {}
     for (const point of points) {
       const category = point.category || 'Unknown'
       if (!grouped[category]) grouped[category] = []
-      grouped[category].push(point) // push TSNEPoint reference, not a copy
+      grouped[category].push(point)
     }
     return grouped
-  }, [points, isMovieData])
+  }, [points, pointKind])
 
-  // Movie data: render individual poster billboard sprites
-  if (isMovieData) {
+  if (pointKind === 'movie') {
     return (
       <>
         {points.map((point) => (
-          <TSNEMoviePoster
+          <TSNESpriteBillboard
             key={point.originalIndex}
             point={point}
-            fallbackColor={categoryColors[point.category || 'Unknown'] || '#6b7280'}
+            kind="movie"
+            fallbackColor={CATEGORY_COLORS[point.category || 'Unknown'] || '#6b7280'}
             onHover={setHoveredPoint}
             onClick={() => onClickMovie?.(point.metadata as MovieMetadata)}
           />
@@ -279,20 +469,33 @@ function DataPoints({
     )
   }
 
-  // MNIST / other: instanced sphere rendering grouped by category
+  if (pointKind === 'country') {
+    return (
+      <>
+        {points.map((point) => (
+          <TSNESpriteBillboard
+            key={point.originalIndex}
+            point={point}
+            kind="country"
+            fallbackColor={CATEGORY_COLORS[point.category || 'Unknown'] || '#6b7280'}
+            onHover={setHoveredPoint}
+            onClick={() => onClickCountry?.(point.metadata as CountryMetadata)}
+          />
+        ))}
+        {hoveredPoint && <CountryHoverTooltip point={hoveredPoint} />}
+      </>
+    )
+  }
+
   return (
     <>
-      {Object.entries(pointsByCategory).map(([category, categoryPoints]) => {
-        const color = categoryColors[category] || '#6b7280'
-        return (
-          <CategoryPoints
-            key={`category-${category}`}
-            points={categoryPoints}
-            category={category}
-            color={color}
-          />
-        )
-      })}
+      {Object.entries(pointsByCategory).map(([category, categoryPoints]) => (
+        <CategoryPoints
+          key={`category-${category}`}
+          points={categoryPoints}
+          color={CATEGORY_COLORS[category] || '#6b7280'}
+        />
+      ))}
     </>
   )
 }
@@ -322,16 +525,13 @@ function PointLabels({
 }) {
   if (!showLabels) return null
 
-  // Only show labels for named points
-  const labeledPoints = points.filter(
-    (p) => p.label && (p.originalIndex < 30 || p.metadata?.verified)
-  )
+  const labeledPoints = points.filter((point) => point.label && (point.originalIndex < 30 || point.metadata?.verified))
 
   return (
     <>
-      {labeledPoints.map((point, idx) => (
+      {labeledPoints.map((point, index) => (
         <Text
-          key={`label-${idx}`}
+          key={`label-${index}`}
           position={[point.x, (point.z || 0) + 0.3, -point.y]}
           fontSize={0.3}
           color="#ffffff"
@@ -352,11 +552,13 @@ function Scene({
   autoRotate,
   showLabels,
   onClickMovie,
+  onClickCountry,
 }: {
   readonly state: TSNEState
   readonly autoRotate: boolean
   readonly showLabels: boolean
   readonly onClickMovie?: (meta: MovieMetadata) => void
+  readonly onClickCountry?: (meta: CountryMetadata) => void
 }) {
   const controlsRef = useRef<any>(null)
 
@@ -368,25 +570,21 @@ function Scene({
 
   return (
     <>
-      {/* Lighting */}
       <ambientLight intensity={0.6} />
       <directionalLight position={[10, 10, 5]} intensity={0.8} />
       <pointLight position={[-10, -10, -5]} intensity={0.4} />
 
-      {/* Data points */}
-      <DataPoints points={state.points} onClickMovie={onClickMovie} />
+      <DataPoints
+        points={state.points}
+        onClickMovie={onClickMovie}
+        onClickCountry={onClickCountry}
+      />
 
-      {/* Point labels */}
       <PointLabels points={state.points} showLabels={showLabels} />
-
-      {/* Axes */}
       <axesHelper args={[12]} />
       <AxisLabels />
-
-      {/* Grid */}
       <gridHelper args={[30, 30, '#444444', '#222222']} />
 
-      {/* Camera controls */}
       <OrbitControls
         ref={controlsRef}
         enablePan
@@ -405,9 +603,10 @@ function Scene({
 
 export function TSNE3DScene({ state, autoRotate = false, showLabels = false }: TSNE3DSceneProps) {
   const [selectedMovie, setSelectedMovie] = useState<MovieMetadata | null>(null)
+  const [selectedCountry, setSelectedCountry] = useState<CountryMetadata | null>(null)
 
   return (
-    <div className="w-full h-full relative">
+    <div className="relative h-full w-full">
       <Canvas
         camera={{
           position: [35, 25, 35],
@@ -421,10 +620,14 @@ export function TSNE3DScene({ state, autoRotate = false, showLabels = false }: T
           autoRotate={autoRotate}
           showLabels={showLabels}
           onClickMovie={setSelectedMovie}
+          onClickCountry={setSelectedCountry}
         />
       </Canvas>
       {selectedMovie && (
         <MovieDetailModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+      )}
+      {selectedCountry && (
+        <CountryDetailModal country={selectedCountry} onClose={() => setSelectedCountry(null)} />
       )}
     </div>
   )

@@ -9,7 +9,10 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "generate:og": "tsx scripts/generate-og-images.ts"
+    "generate:og": "tsx scripts/generate-og-images.ts",
+    "build:countries-dataset": "tsx scripts/build-countries-dataset.ts",
+    "embed:countries-dataset": "tsx scripts/generate-country-embeddings.ts data/countries.embed.json",
+    "embed:dataset": "tsx scripts/generate-country-embeddings.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -17,7 +20,7 @@
     "clsx": "^2.0.0",
     "d3": "^7.8.5",
     "framer-motion": "^12.34.0",
-    "next": "^16.1.1",
+    "next": "^16.2.9",
     "papaparse": "^5.4.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
