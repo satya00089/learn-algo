@@ -50,6 +50,15 @@ export interface TSNEConfig {
   init?: 'random' | 'pca' // PCA init matches sklearn and gives stable convergence
 }
 
+export interface TSNESnapshot {
+  config: TSNEConfig
+  state: TSNEState
+  highDimData: number[][]
+  pairwiseAffinities: number[][]
+  gains: number[][]
+  velocity: number[][]
+}
+
 /**
  * Simple t-SNE implementation optimized for web visualization
  * Uses gradient descent to minimize KL divergence between
@@ -401,6 +410,11 @@ export class TSNEEngine {
     this.simulateLiveEvents()
 
     this.state.iteration++
+
+    if (this.state.iteration >= this.config.maxIterations) {
+      this.state.phase = 'complete'
+      this.state.isConverged = true
+    }
   }
 
   /**
@@ -429,6 +443,20 @@ export class TSNEEngine {
     while (!this.state.isConverged && this.state.iteration < this.config.maxIterations) {
       this.step()
     }
+
+    if (this.state.iteration >= this.config.maxIterations) {
+      this.state.phase = 'complete'
+      this.state.isConverged = true
+    }
+  }
+
+  /**
+   * Run algorithm to completion and return the final state.
+   * Mirrors the other cluster engines' fast-forward API.
+   */
+  runToCompletion(): TSNEState {
+    this.run()
+    return this.getState()
   }
 
   /**
@@ -466,11 +494,18 @@ export class TSNEEngine {
     for (let i = 0; i < steps; i++) {
       if (this.state.iteration >= this.config.maxIterations) {
         this.state.phase = 'complete'
+        this.state.isConverged = true
         return true
       }
       this.step()
     }
-    return this.state.iteration >= this.config.maxIterations
+    if (this.state.iteration >= this.config.maxIterations) {
+      this.state.phase = 'complete'
+      this.state.isConverged = true
+      return true
+    }
+
+    return false
   }
 
   /**
@@ -478,6 +513,80 @@ export class TSNEEngine {
    */
   getState(): TSNEState {
     return { ...this.state }
+  }
+
+  /**
+   * Capture a serializable snapshot so the algorithm can be resumed in a worker.
+   */
+  createSnapshot(): TSNESnapshot {
+    return {
+      config: { ...this.config },
+      state: {
+        ...this.state,
+        points: this.state.points.map((point) => ({
+          ...point,
+          metadata:
+            point.metadata && typeof point.metadata === 'object'
+              ? { ...point.metadata }
+              : point.metadata,
+        })),
+        costHistory: [...this.state.costHistory],
+        events: this.state.events.map((event) => ({
+          ...event,
+          affectedPoints: [...event.affectedPoints],
+        })),
+      },
+      highDimData: this.highDimData.map((row) => [...row]),
+      pairwiseAffinities: this.pairwiseAffinities.map((row) => [...row]),
+      gains: this.gains.map((row) => [...row]),
+      velocity: this.velocity.map((row) => [...row]),
+    }
+  }
+
+  /**
+   * Rebuild an engine from a worker snapshot.
+   */
+  static fromSnapshot(snapshot: TSNESnapshot): TSNEEngine {
+    const engine = new TSNEEngine(
+      snapshot.config,
+      snapshot.state.points.map((point) => ({
+        ...point,
+        metadata:
+          point.metadata && typeof point.metadata === 'object'
+            ? { ...point.metadata }
+            : point.metadata,
+      })),
+      snapshot.highDimData.map((row) => [...row])
+    )
+
+    const mutableEngine = engine as unknown as {
+      state: TSNEState
+      pairwiseAffinities: number[][]
+      gains: number[][]
+      velocity: number[][]
+    }
+
+    mutableEngine.state = {
+      ...snapshot.state,
+      points: snapshot.state.points.map((point) => ({
+        ...point,
+        metadata:
+          point.metadata && typeof point.metadata === 'object'
+            ? { ...point.metadata }
+            : point.metadata,
+      })),
+      costHistory: [...snapshot.state.costHistory],
+      events: snapshot.state.events.map((event) => ({
+        ...event,
+        affectedPoints: [...event.affectedPoints],
+      })),
+    }
+
+    mutableEngine.pairwiseAffinities = snapshot.pairwiseAffinities.map((row) => [...row])
+    mutableEngine.gains = snapshot.gains.map((row) => [...row])
+    mutableEngine.velocity = snapshot.velocity.map((row) => [...row])
+
+    return engine
   }
 
   /**
