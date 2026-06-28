@@ -176,8 +176,21 @@ export default function Home() {
           <div className="h-px bg-gray-950/5 dark:bg-white/10" />
 
           {/* Hero Section */}
-          <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8 overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 z-0 hidden lg:block">
+              <Image
+                src="/icons/tree-bg.png"
+                alt=""
+                fill
+                priority={false}
+                sizes="100vw"
+                loading='lazy'
+                className="object-contain -rotate-90 opacity-95 dark:opacity-90 object -translate-x-24"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/35 to-transparent dark:from-gray-900/80 dark:via-gray-900/35 dark:to-transparent" />
+            </div>
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column */}
               <div className="lg:col-span-6 space-y-8" aria-label="hero-text">
                 {/* Trust indicators – above the ask */}
