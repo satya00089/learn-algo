@@ -12,6 +12,10 @@ import {
   getCountrySpriteDataUrl,
   type CountryMetadata,
 } from '../data/countryDataLoader'
+import {
+  getCloudSpriteDataUrl,
+  type CloudMetadata,
+} from '../data/cloudDataLoader'
 
 interface TSNE3DSceneProps {
   readonly state: TSNEState
@@ -87,10 +91,14 @@ const CATEGORY_COLORS: Record<string, string> = {
   'North America': '#8b5cf6',
   'South America': '#ec4899',
   Antarctica: '#9ca3af',
+  aws: '#f59e0b',
+  azure: '#2563eb',
+  gcp: '#34a853',
   Unknown: '#9ca3af',
 }
 
 const countryTextureCache = new Map<string, THREE.Texture>()
+const cloudTextureCache = new Map<string, THREE.Texture>()
 
 function isMoviePoint(point: TSNEPoint): boolean {
   return typeof point.metadata?.tmdbId === 'number'
@@ -98,6 +106,10 @@ function isMoviePoint(point: TSNEPoint): boolean {
 
 function isCountryPoint(point: TSNEPoint): boolean {
   return !!point.metadata?.cca3 || !!point.metadata?.cca2
+}
+
+function isCloudPoint(point: TSNEPoint): boolean {
+  return typeof point.metadata?.provider === 'string' && typeof point.metadata?.description === 'string'
 }
 
 function getCountryTextureKey(metadata: CountryMetadata): string {
@@ -129,6 +141,35 @@ async function loadCountrySpriteTexture(metadata: CountryMetadata): Promise<THRE
   })
 }
 
+function getCloudTextureKey(metadata: CloudMetadata): string {
+  return `${metadata.provider}:${metadata.label}`
+}
+
+async function loadCloudSpriteTexture(metadata: CloudMetadata): Promise<THREE.Texture | null> {
+  const cacheKey = getCloudTextureKey(metadata)
+  if (cloudTextureCache.has(cacheKey)) {
+    return cloudTextureCache.get(cacheKey) ?? null
+  }
+
+  const dataUrl = await getCloudSpriteDataUrl(metadata)
+  if (!dataUrl) return null
+
+  return new Promise((resolve) => {
+    const loader = new THREE.TextureLoader()
+    loader.load(
+      dataUrl,
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace
+        texture.needsUpdate = true
+        cloudTextureCache.set(cacheKey, texture)
+        resolve(texture)
+      },
+      undefined,
+      () => resolve(null)
+    )
+  })
+}
+
 function TSNESpriteBillboard({
   point,
   fallbackColor,
@@ -138,7 +179,7 @@ function TSNESpriteBillboard({
 }: {
   readonly point: TSNEPoint
   readonly fallbackColor: string
-  readonly kind: 'movie' | 'country'
+  readonly kind: 'movie' | 'country' | 'cloud'
   readonly onHover?: (pt: TSNEPoint | null) => void
   readonly onClick?: () => void
 }) {
@@ -154,6 +195,14 @@ function TSNESpriteBillboard({
         const tmdbId = point.metadata?.tmdbId as number | undefined
         if (!tmdbId) return
         const tex = await loadPosterTexture(tmdbId)
+        if (alive && tex) setTexture(tex)
+        return
+      }
+
+      if (kind === 'cloud') {
+        const metadata = point.metadata as CloudMetadata | undefined
+        if (!metadata) return
+        const tex = await loadCloudSpriteTexture(metadata)
         if (alive && tex) setTexture(tex)
         return
       }
@@ -180,7 +229,8 @@ function TSNESpriteBillboard({
     meshRef.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15)
   })
 
-  const geometryArgs = kind === 'movie' ? [0.8, 1.2] : [1.1, 0.7]
+  const geometryArgs =
+    kind === 'movie' ? [0.8, 1.2] : kind === 'country' ? [1.1, 0.7] : [0.8, 0.8]
 
   return (
     <mesh
@@ -290,6 +340,45 @@ function CountryHoverTooltip({ point }: { readonly point: TSNEPoint }) {
   )
 }
 
+function CloudHoverTooltip({ point }: { readonly point: TSNEPoint }) {
+  const groupRef = useRef<THREE.Group>(null)
+  const meta = point.metadata as CloudMetadata
+
+  useFrame(() => {
+    if (!groupRef.current) return
+    groupRef.current.position.set(point.x, (point.z ?? 0) + 1.4, -point.y)
+  })
+
+  return (
+    <group ref={groupRef}>
+      <Html center distanceFactor={12} style={{ pointerEvents: 'none' }}>
+        <div
+          style={{
+            background: 'rgba(0,0,0,0.88)',
+            color: '#fff',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            minWidth: '180px',
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 2 }}>{meta?.label ?? point.label ?? '-'}</div>
+          <div style={{ color: '#d1d5db', fontSize: '11px', textTransform: 'uppercase' }}>
+            {meta?.provider || 'Unknown provider'}
+          </div>
+          <div style={{ color: '#9ca3af', fontSize: '11px', marginTop: 2 }}>
+            {meta?.tags?.slice(0, 4).join(', ')}
+          </div>
+          <div style={{ color: '#6b7280', fontSize: '10px', marginTop: 2 }}>Click for details</div>
+        </div>
+      </Html>
+    </group>
+  )
+}
+
 function CountryDetailModal({
   country,
   onClose,
@@ -388,6 +477,45 @@ function CountryDetailModal({
   )
 }
 
+function CloudDetailModal({
+  item,
+  onClose,
+}: {
+  readonly item: CloudMetadata
+  readonly onClose: () => void
+}) {
+  return (
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{item.label}</h2>
+            <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">{item.provider}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-md px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            Close
+          </button>
+        </div>
+        <div className="space-y-3 text-sm">
+          <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="text-gray-500 dark:text-gray-400">Description</div>
+            <div className="font-semibold text-gray-900 dark:text-white">{item.description}</div>
+          </div>
+          {item.tags.length > 0 && (
+            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <div className="text-gray-500 dark:text-gray-400">Tags</div>
+              <div className="font-semibold text-gray-900 dark:text-white">{item.tags.join(', ')}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CategoryPoints({
   points,
   color,
@@ -426,17 +554,20 @@ function DataPoints({
   points,
   onClickMovie,
   onClickCountry,
+  onClickCloud,
 }: {
   readonly points: TSNEState['points']
   readonly onClickMovie?: (meta: MovieMetadata) => void
   readonly onClickCountry?: (meta: CountryMetadata) => void
+  readonly onClickCloud?: (meta: CloudMetadata) => void
 }) {
   const [hoveredPoint, setHoveredPoint] = useState<TSNEPoint | null>(null)
 
-  const pointKind = useMemo<'movie' | 'country' | 'default'>(() => {
+  const pointKind = useMemo<'movie' | 'country' | 'cloud' | 'default'>(() => {
     if (points.length === 0) return 'default'
     if (isMoviePoint(points[0])) return 'movie'
     if (isCountryPoint(points[0])) return 'country'
+    if (isCloudPoint(points[0])) return 'cloud'
     return 'default'
   }, [points])
 
@@ -483,6 +614,24 @@ function DataPoints({
           />
         ))}
         {hoveredPoint && <CountryHoverTooltip point={hoveredPoint} />}
+      </>
+    )
+  }
+
+  if (pointKind === 'cloud') {
+    return (
+      <>
+        {points.map((point) => (
+          <TSNESpriteBillboard
+            key={point.originalIndex}
+            point={point}
+            kind="cloud"
+            fallbackColor={CATEGORY_COLORS[point.category || 'Unknown'] || '#6b7280'}
+            onHover={setHoveredPoint}
+            onClick={() => onClickCloud?.(point.metadata as CloudMetadata)}
+          />
+        ))}
+        {hoveredPoint && <CloudHoverTooltip point={hoveredPoint} />}
       </>
     )
   }
@@ -553,12 +702,14 @@ function Scene({
   showLabels,
   onClickMovie,
   onClickCountry,
+  onClickCloud,
 }: {
   readonly state: TSNEState
   readonly autoRotate: boolean
   readonly showLabels: boolean
   readonly onClickMovie?: (meta: MovieMetadata) => void
   readonly onClickCountry?: (meta: CountryMetadata) => void
+  readonly onClickCloud?: (meta: CloudMetadata) => void
 }) {
   const controlsRef = useRef<any>(null)
 
@@ -578,6 +729,7 @@ function Scene({
         points={state.points}
         onClickMovie={onClickMovie}
         onClickCountry={onClickCountry}
+        onClickCloud={onClickCloud}
       />
 
       <PointLabels points={state.points} showLabels={showLabels} />
@@ -604,6 +756,7 @@ function Scene({
 export function TSNE3DScene({ state, autoRotate = false, showLabels = false }: TSNE3DSceneProps) {
   const [selectedMovie, setSelectedMovie] = useState<MovieMetadata | null>(null)
   const [selectedCountry, setSelectedCountry] = useState<CountryMetadata | null>(null)
+  const [selectedCloud, setSelectedCloud] = useState<CloudMetadata | null>(null)
 
   return (
     <div className="relative h-full w-full">
@@ -621,6 +774,7 @@ export function TSNE3DScene({ state, autoRotate = false, showLabels = false }: T
           showLabels={showLabels}
           onClickMovie={setSelectedMovie}
           onClickCountry={setSelectedCountry}
+          onClickCloud={setSelectedCloud}
         />
       </Canvas>
       {selectedMovie && (
@@ -628,6 +782,9 @@ export function TSNE3DScene({ state, autoRotate = false, showLabels = false }: T
       )}
       {selectedCountry && (
         <CountryDetailModal country={selectedCountry} onClose={() => setSelectedCountry(null)} />
+      )}
+      {selectedCloud && (
+        <CloudDetailModal item={selectedCloud} onClose={() => setSelectedCloud(null)} />
       )}
     </div>
   )

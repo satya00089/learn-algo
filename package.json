@@ -9,10 +9,7 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "generate:og": "tsx scripts/generate-og-images.ts",
-    "build:countries-dataset": "tsx scripts/build-countries-dataset.ts",
-    "embed:countries-dataset": "tsx scripts/generate-country-embeddings.ts data/countries.embed.json",
-    "embed:dataset": "tsx scripts/generate-country-embeddings.ts"
+    "generate:og": "tsx scripts/generate-og-images.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

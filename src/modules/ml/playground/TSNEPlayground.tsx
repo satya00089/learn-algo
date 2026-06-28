@@ -9,6 +9,7 @@ import {
   FaRedo,
   FaFilm,
   FaGlobe,
+  FaCloud,
 } from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
@@ -22,10 +23,12 @@ import type { TSNEState, TSNEConfig } from '../engines/TSNEEngine'
 import { generateTSNEDataset } from '../data/tsneDatasets'
 import { loadMoviesForTSNE, clearTSNEMoviesCache } from '../data/movieDataLoader'
 import { loadCountriesForTSNE, clearCountriesTSNECache } from '../data/countryDataLoader'
+import { loadCloudForTSNE, clearCloudTSNECache } from '../data/cloudDataLoader'
 import { drawTSNEVisualization } from '../visualizers/tsneVisualizer'
 import { TSNE3DScene } from '../visualizers/TSNE3DScene'
 import { TSNE2DMovieScene } from '../visualizers/TSNE2DMovieScene'
 import { TSNE2DCountryScene } from '../visualizers/TSNE2DCountryScene'
+import { TSNE2DCloudScene } from '../visualizers/TSNE2DCloudScene'
 
 export function TSNEPlayground() {
   const [showExplanation, setShowExplanation] = useState(
@@ -41,7 +44,7 @@ export function TSNEPlayground() {
   const [isFastForwarding, setIsFastForwarding] = useState(false)
 
   // Dataset selection
-  const [dataType, setDataType] = useState<'mnist-digits' | 'movies' | 'countries'>(
+  const [dataType, setDataType] = useState<'mnist-digits' | 'movies' | 'countries' | 'cloud'>(
     'mnist-digits'
   )
   const [isLoadingDataset, setIsLoadingDataset] = useState(false)
@@ -78,11 +81,16 @@ export function TSNEPlayground() {
       playIntervalRef.current = undefined
     }
 
-    if (dataType === 'movies' || dataType === 'countries') {
+    if (dataType === 'movies' || dataType === 'countries' || dataType === 'cloud') {
       setIsLoadingDataset(true)
       setDatasetError(null)
       try {
-        const loader = dataType === 'movies' ? loadMoviesForTSNE : loadCountriesForTSNE
+        const loader =
+          dataType === 'movies'
+            ? loadMoviesForTSNE
+            : dataType === 'countries'
+              ? loadCountriesForTSNE
+              : loadCloudForTSNE
         const { tsnePoints, highDimData } = await loader()
         // sklearn auto learning rate: max(n / (exaggeration×4), 50)
         // For 561 movies with exaggeration=12: max(11.7, 50) = 50
@@ -272,6 +280,7 @@ export function TSNEPlayground() {
     if (playIntervalRef.current) clearInterval(playIntervalRef.current)
     if (dataType === 'movies') clearTSNEMoviesCache() // force fresh PCA init on next run
     if (dataType === 'countries') clearCountriesTSNECache()
+    if (dataType === 'cloud') clearCloudTSNECache()
     initializeEngine()
   }, [initializeEngine, dataType])
 
@@ -281,7 +290,7 @@ export function TSNEPlayground() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
             <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">t-SNE</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">t-SNE (t-Distributed Stochastic Neighbor Embedding)</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -302,7 +311,9 @@ export function TSNEPlayground() {
             ? 'Dimensionality reduction: Visualize 64-dimensional handwritten digits in 2D/3D'
             : dataType === 'movies'
               ? 'Dimensionality reduction: Watch 561 movies cluster by genre as t-SNE iterates over their semantic embeddings'
-              : 'Dimensionality reduction: Watch countries cluster by region as t-SNE iterates over their semantic embeddings'}
+              : dataType === 'countries'
+                ? 'Dimensionality reduction: Watch countries cluster by region as t-SNE iterates over their semantic embeddings'
+                : 'Dimensionality reduction: Watch cloud services cluster by provider and product semantics as t-SNE iterates over their embeddings'}
         </p>
 
         <div className="flex-1 grid lg:grid-cols-4 gap-3 overflow-hidden">
@@ -453,8 +464,24 @@ export function TSNEPlayground() {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4" />
-                    <div className="text-gray-600 dark:text-gray-400">Loading movies &amp; computing affinities…</div>
-                    <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">First 50 of ~500 embedding dims · 561 movies</div>
+                    <div className="text-gray-600 dark:text-gray-400">
+                      {dataType === 'movies'
+                        ? 'Loading movies and computing affinities...'
+                        : dataType === 'countries'
+                          ? 'Loading countries and computing affinities...'
+                          : dataType === 'cloud'
+                            ? 'Loading cloud services and computing affinities...'
+                            : 'Loading digits and computing affinities...'}
+                    </div>
+                    <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                      {dataType === 'movies'
+                        ? 'Semantic movie embeddings with poster sprites'
+                        : dataType === 'countries'
+                          ? 'Country embeddings with atlas sprites'
+                          : dataType === 'cloud'
+                            ? 'Cloud service embeddings with provider icons'
+                            : 'Handwritten digit vectors in 64 dimensions'}
+                    </div>
                   </div>
                 </div>
               ) : isFastForwarding ? (
@@ -500,6 +527,8 @@ export function TSNEPlayground() {
                 <TSNE2DMovieScene state={engineState} theme={theme} />
               ) : dataType === 'countries' && engineState ? (
                 <TSNE2DCountryScene state={engineState} theme={theme} />
+              ) : dataType === 'cloud' && engineState ? (
+                <TSNE2DCloudScene state={engineState} theme={theme} />
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <canvas
@@ -524,8 +553,8 @@ export function TSNEPlayground() {
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     dataType === 'mnist-digits'
-                      ? 'bg-purple-700 text-white'
-                      : 'bg-purple-600 hover:bg-purple-700 text-white'
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                      : 'font-semibold bg-purple-100 text-purple-700 border border-purple-700'
                   }`}
                 >
                   MNIST Digits
@@ -535,11 +564,11 @@ export function TSNEPlayground() {
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                     dataType === 'movies'
-                      ? 'bg-orange-700 text-white'
-                      : 'bg-orange-600 hover:bg-orange-700 text-white'
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                      : 'font-semibold bg-orange-100 text-orange-700 border border-orange-700'
                   }`}
                 >
-                  <FaFilm size={10} />
+                  <FaFilm size={14} />
                   Movies
                 </button>
                 <button
@@ -547,12 +576,24 @@ export function TSNEPlayground() {
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                     dataType === 'countries'
-                      ? 'bg-emerald-700 text-white'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      ? 'font-bold bg-emerald-600 hover:bg-emerald-700 text-white'
+                      : 'font-semibold bg-emerald-100 text-emerald-700 border border-emerald-700'
                   }`}
                 >
-                  <FaGlobe size={10} />
+                  <FaGlobe size={14} />
                   Countries
+                </button>
+                <button
+                  onClick={() => { setDataType('cloud'); setPerplexity(20); setLearningRate(50); setMaxIterations(1000) }}
+                  disabled={isPlaying || isLoadingDataset}
+                  className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
+                    dataType === 'cloud'
+                      ? 'font-bold bg-sky-600 hover:bg-sky-700 text-white'
+                      : 'font-semibold bg-sky-100 text-sky-700 border border-sky-700'
+                  }`}
+                >
+                  <FaCloud size={14} />
+                  Public Cloud Services
                 </button>
               </div>
               <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs text-gray-600 dark:text-gray-400">
@@ -574,13 +615,22 @@ export function TSNEPlayground() {
                       Watch genre clusters form live — action, comedy, sci-fi, and horror movies drift together as t-SNE iterates.
                     </p>
                   </div>
-                ) : (
+                ) : dataType === 'countries' ? (
                   <div className="space-y-1">
                     <p>Country sprites with regional clustering</p>
                     <p>271 embedding dimensions + sprite metadata</p>
                     <p>Perplexity 15, LR 50 (sklearn auto)</p>
                     <p className="text-[10px] mt-1 text-emerald-600 dark:text-emerald-400">
                       Watch countries group by region and geography while the sprite sheet keeps the showcase visual and familiar.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p>Cloud service icons with provider clustering</p>
+                    <p>256 embedding dimensions + sprite atlas</p>
+                    <p>Perplexity 20, LR 50 (sklearn auto)</p>
+                    <p className="text-[10px] mt-1 text-sky-600 dark:text-sky-400">
+                      Watch AWS, Azure, and GCP services settle into product families while their sprite icons stay visible in 2D and 3D.
                     </p>
                   </div>
                 )}
@@ -666,48 +716,96 @@ export function TSNEPlayground() {
                   <>
                     <p>
                       <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                        • Digit clustering:
+                        Digit clustering:
                       </span>{' '}
-                      Similar digits (e.g., 3s, 8s) naturally group together
+                      Similar digits (e.g., 3s, 8s) naturally group together.
                     </p>
                     <p>
                       <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                        • Confusion zones:
+                        Confusion zones:
                       </span>{' '}
-                      Look for overlaps between similar digits like 4/9 or 3/8
+                      Look for overlaps between similar digits like 4/9 or 3/8.
                     </p>
                     <p>
                       <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                        • Handwriting variation:
+                        Handwriting variation:
                       </span>{' '}
-                      Each digit cluster shows natural writing style diversity
+                      Each digit cluster shows natural writing style diversity.
                     </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                      💡 Tip: Try different perplexity values to see how it affects local vs global structure visibility!
+                      Tip: Try different perplexity values to see how local and global structure trade off.
+                    </p>
+                  </>
+                ) : dataType === 'movies' ? (
+                  <>
+                    <p>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                        Genre clusters:
+                      </span>{' '}
+                      Action, sci-fi, horror, and comedy films group by theme.
+                    </p>
+                    <p>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                        Franchises:
+                      </span>{' '}
+                      Marvel, Harry Potter, and Pixar films should cluster tightly together.
+                    </p>
+                    <p>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                        Live formation:
+                      </span>{' '}
+                      Watch posters drift into neighborhoods each iteration.
+                    </p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
+                      Early exaggeration separates big groups first, then optimization refines their local structure.
+                    </p>
+                  </>
+                ) : dataType === 'countries' ? (
+                  <>
+                    <p>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        Regional neighborhoods:
+                      </span>{' '}
+                      Countries from the same region or subregion should drift toward each other early.
+                    </p>
+                    <p>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        Semantic overlap:
+                      </span>{' '}
+                      Large economies, island nations, and culturally similar countries may share space even across continents.
+                    </p>
+                    <p>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        Showcase readability:
+                      </span>{' '}
+                      The sprite atlas should keep country tiles recognizable enough to inspect clusters visually.
+                    </p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
+                      Regional grouping is a useful sanity check, but embeddings can also surface cross-region similarities.
                     </p>
                   </>
                 ) : (
                   <>
                     <p>
-                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
-                        • Genre clusters:
+                      <span className="text-sky-600 dark:text-sky-400 font-semibold">
+                        Provider separation:
                       </span>{' '}
-                      Action, sci-fi, horror, and comedy films group by theme
+                      AWS, Azure, and GCP services should quickly form broad neighborhoods from provider-specific language.
                     </p>
                     <p>
-                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
-                        • Franchises:
+                      <span className="text-sky-600 dark:text-sky-400 font-semibold">
+                        Product families:
                       </span>{' '}
-                      Marvel, Harry Potter, and Pixar films cluster tightly together
+                      Compute, storage, database, AI, and networking services should create tighter local clusters inside each provider.
                     </p>
                     <p>
-                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
-                        • Live formation:
+                      <span className="text-sky-600 dark:text-sky-400 font-semibold">
+                        Icon validation:
                       </span>{' '}
-                      Watch posters drift into neighbourhoods each iteration
+                      The sprite icons make it easy to check whether related services really landed together.
                     </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                      💡 Early exaggeration (0–250 iter) pushes clusters far apart; optimization refines them.
+                      If clustering looks noisy, verify the source descriptions and tags before retuning t-SNE parameters.
                     </p>
                   </>
                 )}

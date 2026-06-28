@@ -45,7 +45,7 @@ export interface TSNEConfig {
   earlyExaggeration: number // 4-12, typical value is 4
   earlyExaggerationIter: number // 250 iterations
   // Dataset
-  dataset: 'mnist-digits' | 'movies' | 'countries'
+  dataset: 'mnist-digits' | 'movies' | 'countries' | 'cloud'
   enableLiveSimulation: boolean
   init?: 'random' | 'pca' // PCA init matches sklearn and gives stable convergence
 }
