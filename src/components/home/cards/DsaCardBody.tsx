@@ -27,8 +27,8 @@ export function DsaCardBody({ hovered }: Readonly<{ hovered: boolean }>) {
         <div className="mb-5">
           <DsaIcon hovered={hovered} />
         </div>
-        <h3 className="text-xl font-bold text-orange-500 mb-2">
-          Data Structures &amp; Algorithms
+        <h3 className="text-xl uppercase tracking-widest font-bold text-orange-500 mb-2">
+          Data Structures & Algorithms
         </h3>
         <p className="text-gray-500 dark:text-gray-400 mb-5 leading-relaxed text-sm flex-1">
           Sorting, searching, trees, stacks, queues — every step visualized with full interactive

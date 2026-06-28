@@ -193,7 +193,7 @@ export default function DSAPage() {
             </Link>
             <ThemeToggle />
           </div>
-          <h1 className="text-4xl font-bold mb-2 text-orange-500">
+          <h1 className="text-4xl font-bold uppercase mb-2 text-orange-500">
             Data Structures & Algorithms
           </h1>
           <p className="text-base text-gray-600 dark:text-gray-300">
