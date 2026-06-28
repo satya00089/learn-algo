@@ -27,7 +27,7 @@ export function AiCardBody({ hovered }: Readonly<{ hovered: boolean }>) {
         <div className="mb-5">
           <AiIcon hovered={hovered} />
         </div>
-        <h3 className="text-xl font-bold text-orange-500 mb-2">Artificial Intelligence</h3>
+        <h3 className="text-xl uppercase tracking-widest font-bold text-orange-500 mb-2">Artificial Intelligence</h3>
         <p className="text-gray-500 dark:text-gray-400 mb-5 leading-relaxed text-sm flex-1">
           Search algorithms, game trees, and intelligent agents — see how AI reasons through
           decision spaces.

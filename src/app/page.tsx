@@ -152,10 +152,7 @@ export default function Home() {
               />
               <div className="space-y-0.5">
                 <div className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-                  LEARN{' '}
-                  <span className="text-orange-500">
-                    ALGO
-                  </span>
+                  LEARN <span className="text-orange-500">ALGO</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
@@ -184,10 +181,9 @@ export default function Home() {
                 fill
                 priority={false}
                 sizes="100vw"
-                loading='lazy'
-                className="object-contain -rotate-90 opacity-95 dark:opacity-90 object -translate-x-24"
+                loading="lazy"
+                className="object-contain -rotate-90 opacity-35 dark:opacity-30 object -translate-x-24"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/35 to-transparent dark:from-gray-900/80 dark:via-gray-900/35 dark:to-transparent" />
             </div>
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -333,7 +329,7 @@ export default function Home() {
           {/* Module Cards */}
           <section id="modules" className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+              <h2 className="text-2xl tracking-widest text-orange-500">
                 Choose your learning path
               </h2>
               <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -400,12 +396,87 @@ export default function Home() {
 
           <div className="h-px bg-gray-950/5 dark:bg-white/10" />
 
+          {/* Diagrammatic integration */}
+          <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
+            <div className="reveal stagger-4 relative mx-auto flex w-full max-w-5xl flex-col justify-between gap-y-6 border-y border-gray-300 bg-[radial-gradient(35%_80%_at_25%_0%,rgba(0,0,0,0.05),transparent)] px-6 py-10 dark:border-gray-800 dark:bg-[radial-gradient(35%_80%_at_25%_0%,rgba(255,255,255,0.04),transparent)]">
+              {[
+                'top-[-12px] left-[-11px]',
+                'top-[-12px] right-[-11px]',
+                'bottom-[-12px] left-[-11px]',
+                'bottom-[-12px] right-[-11px]',
+              ].map((pos) => (
+                <span
+                  key={pos}
+                  className={`pointer-events-none absolute ${pos} z-10 grid h-6 w-6 place-items-center text-gray-800 dark:text-gray-500`}
+                  aria-hidden="true"
+                >
+                  <span className="absolute h-[2px] w-4 bg-current" />
+                  <span className="absolute h-4 w-[2px] bg-current" />
+                </span>
+              ))}
+
+              <div className="pointer-events-none absolute -inset-y-6 left-0 w-px border-l border-gray-300 dark:border-gray-800" />
+              <div className="pointer-events-none absolute -inset-y-6 right-0 w-px border-r border-gray-300 dark:border-gray-800" />
+              <div className="space-y-2">
+                <h3 className="text-center text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                  Learn system design with{' '}
+                  <span className="text-orange-500 uppercase tracking-wide">Diagrammatic</span>.
+                </h3>
+                <p className="text-center text-base text-gray-500 dark:text-gray-400">
+                  Interactive playground for system design, ER diagrams, and UML — featuring
+                  AWS, Azure & GCP cloud components, cloud infrastructure problems, and AI-powered
+                  assessment
+                </p>
+              </div>
+
+              <div className="flex items-center justify-center gap-3">
+                <a
+                  href="https://diagrammatic.next-zen.dev/problems?utm_source=learn-algo&utm_medium=homepage&utm_campaign=inline-recommendation&utm_content=sales"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-300 bg-white/80 px-5 py-3 text-sm font-bold text-gray-800 shadow-[0_8px_20px_rgba(15,23,42,0.06)] transition-all hover:border-gray-400 hover:bg-white hover:text-gray-900 dark:border-gray-800 dark:bg-transparent dark:text-white dark:hover:border-gray-600 active:scale-[0.98]"
+                >
+                  Explore Problems
+                </a>
+                <a
+                  href="https://diagrammatic.next-zen.dev/?utm_source=learn-algo&utm_medium=homepage&utm_campaign=inline-recommendation"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(15,23,42,0.14)] transition-all hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white active:scale-[0.98]"
+                  onClick={() => {
+                    if (globalThis.window !== undefined && (globalThis.window as any).gtag) {
+                      ;(globalThis.window as any).gtag('event', 'click', {
+                        event_category: 'Partner CTA',
+                        event_label: 'Diagrammatic - Try',
+                      })
+                    }
+                  }}
+                >
+                  Open Diagrammatic
+                  <svg
+                    className="ml-1.5 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </section>
+
+          <div className="h-px bg-gray-950/5 dark:bg-white/10" />
+
           {/* How It Works – numbered timeline */}
           <section id="how-it-works" className="relative z-10 py-12 px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-10 text-center">
-                How it works
-              </h2>
+              <h2 className="text-2xl tracking-widest text-orange-500 text-center">How it works</h2>
               <ol className="space-y-0">
                 {(
                   [
@@ -452,7 +523,7 @@ export default function Home() {
           {/* FAQ Section */}
           <section className="relative z-10 py-12 px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 text-center">
+              <h2 className="text-2xl tracking-widest text-orange-500 text-center mb-8">
                 Frequently asked questions
               </h2>
 
@@ -502,7 +573,7 @@ export default function Home() {
                     />
                     <div>
                       <div className="text-lg font-black tracking-tight text-gray-900 dark:text-white">
-                        LEARN ALGO
+                        LEARN <span className="text-orange-500">ALGO</span>
                       </div>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="px-1.5 py-px bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
