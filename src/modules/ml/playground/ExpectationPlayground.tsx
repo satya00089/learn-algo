@@ -15,7 +15,7 @@ import {
   FaDiceSix,
 } from 'react-icons/fa'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -249,7 +249,10 @@ export function ExpectationPlayground() {
             <Breadcrumbs />
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Expectation</h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">

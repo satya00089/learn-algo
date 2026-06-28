@@ -14,6 +14,7 @@ import { TbRoute } from 'react-icons/tb'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
+import { ShareButton } from '@/core/controls'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { GMMEngine } from '../engines/GMMEngine'
@@ -496,7 +497,10 @@ export function GMMPlayground() {
               Gaussian Mixture Model
             </h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ShareButton />
+            <ThemeToggle />
+          </div>
         </div>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { KNNPlayground } from '@/modules/ml/playground'
 import { AlgorithmStructuredData } from '@/components/AlgorithmStructuredData'
 import { generateMLMetadata } from '../metadata-config'
@@ -8,7 +9,9 @@ export default function KNNPage() {
   return (
     <>
       <AlgorithmStructuredData type="ml" route="knn" />
-      <KNNPlayground />
+      <Suspense fallback={null}>
+        <KNNPlayground />
+      </Suspense>
     </>
   )
 }

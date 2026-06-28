@@ -14,10 +14,16 @@ import {
 import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
+import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { TheoryModal } from '@/components/TheoryModal'
+import {
+  useShareableQueryState,
+  createBooleanCodec,
+  createNumberCodec,
+  createStringCodec,
+} from '@/core/share/query-state'
 import { TSNEEngine } from '../engines/TSNEEngine'
 import type { TSNEState, TSNEConfig } from '../engines/TSNEEngine'
 import { generateTSNEDataset } from '../data/tsneDatasets'
@@ -59,7 +65,6 @@ export function TSNEPlayground() {
   const [learningRate, setLearningRate] = useState(200)
   const [maxIterations, setMaxIterations] = useState(1000)
   const [animationSpeed, setAnimationSpeed] = useState(10) // iterations per step
-
   // Canvas configuration
   const canvasConfig = useMemo(
     () => ({
@@ -68,6 +73,65 @@ export function TSNEPlayground() {
       padding: { top: 60, right: 60, bottom: 60, left: 60 },
     }),
     []
+  )
+
+  const isUrlReady = useShareableQueryState(
+    useMemo(
+      () => [
+        {
+          key: 'dataset',
+          value: dataType,
+          defaultValue: 'mnist-digits',
+          setValue: setDataType,
+          codec: createStringCodec({
+            allowedValues: ['mnist-digits', 'movies', 'countries', 'cloud'],
+          }),
+        },
+        {
+          key: 'view',
+          value: view3D,
+          defaultValue: false,
+          setValue: setView3D,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'rotate',
+          value: autoRotate,
+          defaultValue: true,
+          setValue: setAutoRotate,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'perplexity',
+          value: perplexity,
+          defaultValue: 30,
+          setValue: setPerplexity,
+          codec: createNumberCodec({ min: 5, max: 50, step: 5 }),
+        },
+        {
+          key: 'lr',
+          value: learningRate,
+          defaultValue: 200,
+          setValue: setLearningRate,
+          codec: createNumberCodec({ min: 10, max: 1000, step: 10 }),
+        },
+        {
+          key: 'iters',
+          value: maxIterations,
+          defaultValue: 1000,
+          setValue: setMaxIterations,
+          codec: createNumberCodec({ min: 100, max: 5000, step: 100 }),
+        },
+        {
+          key: 'speed',
+          value: animationSpeed,
+          defaultValue: 10,
+          setValue: setAnimationSpeed,
+          codec: createNumberCodec({ min: 1, max: 50, step: 1 }),
+        },
+      ],
+      [animationSpeed, autoRotate, dataType, learningRate, maxIterations, perplexity, view3D]
+    )
   )
 
   // Initialize engine
@@ -140,8 +204,9 @@ export function TSNEPlayground() {
 
   // Initialize on mount and when parameters change
   useEffect(() => {
+    if (!isUrlReady) return
     initializeEngine()
-  }, [initializeEngine])
+  }, [initializeEngine, isUrlReady])
 
   // Auto-play interval
   useEffect(() => {
@@ -293,6 +358,7 @@ export function TSNEPlayground() {
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">t-SNE (t-Distributed Stochastic Neighbor Embedding)</h1>
           </div>
           <div className="flex items-center gap-2">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"

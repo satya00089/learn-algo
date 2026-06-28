@@ -1,12 +1,10 @@
 'use client'
 
-/* eslint-disable sonarjs/cognitive-complexity */
-
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaRedo, FaLightbulb, FaPlay, FaPause, FaStepForward } from 'react-icons/fa'
 import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { Tooltip, Button } from '@/core/controls'
+import { Tooltip, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { TheoryModal } from '@/components/TheoryModal'
@@ -110,7 +108,6 @@ export function MinimaxPlayground() {
     return () => globalThis.removeEventListener('resize', measure)
   }, [])
 
-  // eslint-disable-next-line complexity, sonarjs/cognitive-complexity
   const drawBoardCanvas = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       const { width, height } = boardConfig
@@ -447,6 +444,7 @@ export function MinimaxPlayground() {
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Minimax Algorithm</h1>
           </div>
           <div className="flex items-center gap-2">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { GMMPlayground } from '@/modules/ml/playground/GMMPlayground'
 import { AlgorithmStructuredData } from '@/components/AlgorithmStructuredData'
 import { generateMLMetadata } from '../metadata-config'
@@ -8,7 +9,9 @@ export default function GMMPage() {
   return (
     <>
       <AlgorithmStructuredData type="ml" route="gmm" />
-      <GMMPlayground />
+      <Suspense fallback={null}>
+        <GMMPlayground />
+      </Suspense>
     </>
   )
 }

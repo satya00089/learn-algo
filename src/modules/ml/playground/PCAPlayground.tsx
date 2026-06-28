@@ -16,12 +16,18 @@ import {
 import { TbRotate360 } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip } from '@/core/controls'
+import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
 import { Button } from '@/core/controls/Button'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { TheoryModal } from '@/components/TheoryModal'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
+import {
+  useShareableQueryState,
+  createBooleanCodec,
+  createNumberCodec,
+  createStringCodec,
+} from '@/core/share/query-state'
 import { PCAEngine } from '../engines/PCAEngine'
 import { drawPCA } from '../visualizers/pcaVisualizer'
 import { PCA3DScene, PCA2DMovieScene } from '../visualizers/PCA3DScene'
@@ -80,6 +86,81 @@ export function PCAPlayground() {
       padding: { top: 40, right: 40, bottom: 40, left: 40 },
     }),
     []
+  )
+
+  const isUrlReady = useShareableQueryState(
+    useMemo(
+      () => [
+        {
+          key: 'dataset',
+          value: dataType,
+          defaultValue: 'iris',
+          setValue: setDataType,
+          codec: createStringCodec({
+            allowedValues: ['iris', 'wine', 'breast-cancer', 'mnist', 'movies', 'countries', 'cloud'],
+          }),
+        },
+        {
+          key: 'points',
+          value: numPoints,
+          defaultValue: 150,
+          setValue: setNumPoints,
+          codec: createNumberCodec({ min: 100, max: 500, step: 50 }),
+        },
+        {
+          key: 'components',
+          value: numComponents,
+          defaultValue: 2,
+          setValue: setNumComponents,
+          codec: createNumberCodec({ min: 1, max: 3, step: 1 }),
+        },
+        {
+          key: 'view',
+          value: view3D,
+          defaultValue: false,
+          setValue: setView3D,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'showOriginal',
+          value: showOriginal,
+          defaultValue: true,
+          setValue: setShowOriginal,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'showTransformed',
+          value: showTransformed,
+          defaultValue: true,
+          setValue: setShowTransformed,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'showComponents',
+          value: showComponents,
+          defaultValue: true,
+          setValue: setShowComponents,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'rotate',
+          value: autoRotate,
+          defaultValue: true,
+          setValue: setAutoRotate,
+          codec: createBooleanCodec(),
+        },
+      ],
+      [
+        autoRotate,
+        dataType,
+        numPoints,
+        numComponents,
+        view3D,
+        showOriginal,
+        showTransformed,
+        showComponents,
+      ]
+    )
   )
 
   // Generate sample data
@@ -286,8 +367,9 @@ export function PCAPlayground() {
 
   // Initialize on mount and when parameters change
   useEffect(() => {
+    if (!isUrlReady) return
     initializeEngine()
-  }, [initializeEngine])
+  }, [initializeEngine, isUrlReady])
 
   // Regenerate data when switching between 2D/3D view modes
   useEffect(() => {
@@ -401,6 +483,7 @@ export function PCAPlayground() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"

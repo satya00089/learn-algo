@@ -5,7 +5,7 @@ import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
+import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -13,6 +13,7 @@ import { TheoryModal } from '@/components/TheoryModal'
 import { BinarySearchEngine } from '../engines/BinarySearchEngine'
 import { useBinarySearchPlayground } from '../hooks/useBinarySearchPlayground'
 import { drawBinarySearchArray } from '../visualizers/binarySearchVisualizer'
+import { generateRandomSeed } from '@/core/utils'
 
 /**
  * Binary Search Playground
@@ -33,6 +34,8 @@ export function BinarySearchPlayground() {
     setAnimationSpeed,
     isDebugMode,
     setIsDebugMode,
+    seed,
+    setSeed,
     generateSortedArray,
   } = useBinarySearchPlayground()
 
@@ -60,7 +63,7 @@ export function BinarySearchPlayground() {
     engineRef.current = new BinarySearchEngine(initialArray, initialTarget)
     setEngineState(engineRef.current.getState())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arraySize, generateSortedArray])
+  }, [arraySize, generateSortedArray, seed])
 
   // Update target without changing array
   useEffect(() => {
@@ -190,15 +193,12 @@ export function BinarySearchPlayground() {
   }, [])
 
   const handleGenerateNewArray = () => {
-    const newArray = generateSortedArray(arraySize)
-    if (engineRef.current) {
-      engineRef.current.updateArray(newArray)
-      setEngineState(engineRef.current.getState())
-    }
     setIsPlaying(false)
     if (playIntervalRef.current) {
       clearInterval(playIntervalRef.current)
+      playIntervalRef.current = undefined
     }
+    setSeed(generateRandomSeed())
   }
 
   return (
@@ -211,6 +211,7 @@ export function BinarySearchPlayground() {
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Binary Search</h1>
           </div>
           <div className="flex items-center gap-3">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"
