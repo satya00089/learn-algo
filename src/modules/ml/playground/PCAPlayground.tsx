@@ -25,7 +25,11 @@ import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { PCAEngine } from '../engines/PCAEngine'
 import { drawPCA } from '../visualizers/pcaVisualizer'
 import { PCA3DScene, PCA2DMovieScene } from '../visualizers/PCA3DScene'
-import { loadMoviesDataset } from '../data/movieDataLoader'
+import { loadMoviesDataset, clearMoviesDatasetCache } from '../data/movieDataLoader'
+import { loadCountriesDataset, clearCountriesDatasetCache } from '../data/countryDataLoader'
+import { loadCloudDataset, clearCloudDatasetCache } from '../data/cloudDataLoader'
+import { PCA2DCountryScene } from '../visualizers/PCA2DCountryScene'
+import { PCA2DCloudScene } from '../visualizers/PCA2DCloudScene'
 import type { DataPoint } from '../types'
 
 // Gaussian random number generator
@@ -48,10 +52,12 @@ export function PCAPlayground() {
   const animationRef = useRef<NodeJS.Timeout | null>(null)
 
   // Data generation
-  const [dataType, setDataType] = useState<'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies'>('iris')
+  const [dataType, setDataType] = useState<
+    'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies' | 'countries' | 'cloud'
+  >('iris')
   const [numPoints, setNumPoints] = useState(150)
-  const [isLoadingMovies, setIsLoadingMovies] = useState(false)
-  const [moviesError, setMoviesError] = useState<string | null>(null)
+  const [isLoadingDataset, setIsLoadingDataset] = useState(false)
+  const [datasetError, setDatasetError] = useState<string | null>(null)
 
   // Algorithm parameters
   const [numComponents, setNumComponents] = useState(2)
@@ -80,9 +86,9 @@ export function PCAPlayground() {
   // NOTE: This generates simulated 2D/3D projections that represent typical PCA results
   // from the original high-dimensional datasets, not actual dimensionality reduction
   const generateData = useCallback(
-    (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies') => {
-      // Movies dataset is loaded externally, not generated
-      if (type === 'movies') return []
+    (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies' | 'countries' | 'cloud') => {
+      // Real datasets are loaded externally, not generated
+      if (type === 'movies' || type === 'countries' || type === 'cloud') return []
       
       const newPoints: DataPoint[] = []
       const use3D = view3D || numComponents >= 3
@@ -235,31 +241,46 @@ export function PCAPlayground() {
   // Initialize engine
   const initializeEngine = useCallback(async () => {
     stopAnimation()
-    // Load movies dataset asynchronously if needed
-    if (dataType === 'movies') {
-      setIsLoadingMovies(true)
-      setMoviesError(null)
-      try {
+    setDatasetError(null)
+
+    try {
+      if (dataType === 'movies') {
+        setIsLoadingDataset(true)
         const moviesData = await loadMoviesDataset()
         engineRef.current = new PCAEngine({
           points: moviesData.points,
           numComponents,
         })
-        setEngineState(engineRef.current.getState())
-      } catch (error) {
-        console.error('Failed to load movies dataset:', error)
-        setMoviesError('Failed to load movies dataset. Check console for details.')
-      } finally {
-        setIsLoadingMovies(false)
+      } else if (dataType === 'countries') {
+        setIsLoadingDataset(true)
+        const countriesData = await loadCountriesDataset()
+        engineRef.current = new PCAEngine({
+          points: countriesData.points,
+          numComponents,
+        })
+      } else if (dataType === 'cloud') {
+        setIsLoadingDataset(true)
+        const cloudData = await loadCloudDataset()
+        engineRef.current = new PCAEngine({
+          points: cloudData.points,
+          numComponents,
+        })
+      } else {
+        const points = generateData(dataType)
+        engineRef.current = new PCAEngine({
+          points,
+          numComponents,
+        })
       }
-    } else {
-      // Generate simulated data for other datasets
-      const points = generateData(dataType)
-      engineRef.current = new PCAEngine({
-        points,
-        numComponents,
-      })
+
       setEngineState(engineRef.current.getState())
+    } catch (error) {
+      console.error(`Failed to load ${dataType} dataset:`, error)
+      setDatasetError(
+        `Failed to load ${dataType} dataset. Check console for details.`
+      )
+    } finally {
+      setIsLoadingDataset(false)
     }
   }, [dataType, numComponents, generateData])
 
@@ -321,8 +342,11 @@ export function PCAPlayground() {
 
   const handleReset = useCallback(() => {
     stopAnimation()
+    if (dataType === 'movies') clearMoviesDatasetCache()
+    if (dataType === 'countries') clearCountriesDatasetCache()
+    if (dataType === 'cloud') clearCloudDatasetCache()
     initializeEngine()
-  }, [stopAnimation, initializeEngine])
+  }, [dataType, stopAnimation, initializeEngine])
 
   // Update engine when parameters change
   useEffect(() => {
@@ -566,18 +590,20 @@ export function PCAPlayground() {
 
             {/* Main Canvas */}
             <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 overflow-hidden relative">
-              {isLoadingMovies ? (
+              {isLoadingDataset ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                    <div className="text-gray-600 dark:text-gray-400">Loading movies dataset...</div>
+                    <div className="text-gray-600 dark:text-gray-400">
+                      Loading {dataType} dataset...
+                    </div>
                   </div>
                 </div>
-              ) : moviesError ? (
+              ) : datasetError ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center text-red-600 dark:text-red-400">
-                    <p className="font-semibold mb-2">Error Loading Movies</p>
-                    <p className="text-sm">{moviesError}</p>
+                    <p className="font-semibold mb-2">Error Loading Dataset</p>
+                    <p className="text-sm">{datasetError}</p>
                     <button
                       onClick={() => initializeEngine()}
                       className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
@@ -598,6 +624,10 @@ export function PCAPlayground() {
                 />
               ) : !view3D && dataType === 'movies' && engineState ? (
                 <PCA2DMovieScene state={engineState} theme={theme} />
+              ) : !view3D && dataType === 'countries' && engineState ? (
+                <PCA2DCountryScene state={engineState} theme={theme} />
+              ) : !view3D && dataType === 'cloud' && engineState ? (
+                <PCA2DCloudScene state={engineState} theme={theme} />
               ) : (
                 <canvas
                   ref={canvasRef}
@@ -675,15 +705,49 @@ export function PCAPlayground() {
                       setView3D(false)
                       if (numComponents > 2) setNumComponents(2)
                     }}
-                    disabled={isPlaying || isLoadingMovies}
+                    disabled={isPlaying || isLoadingDataset}
                     className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                       dataType === 'movies'
                         ? 'bg-orange-700 text-white'
                         : 'bg-orange-600 hover:bg-orange-700 text-white'
                     }`}
-                  >
+                    >
                     <FaFilm size={12} />
                     Movies
+                  </button>
+                </Tooltip>
+                <Tooltip text="Real country embeddings with sprites and metadata like region, population, GDP, languages, and religion">
+                  <button
+                    onClick={() => {
+                      setDataType('countries')
+                      setView3D(false)
+                      if (numComponents > 2) setNumComponents(2)
+                    }}
+                    disabled={isPlaying || isLoadingDataset}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      dataType === 'countries'
+                        ? 'bg-emerald-700 text-white'
+                        : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    }`}
+                  >
+                    Countries
+                  </button>
+                </Tooltip>
+                <Tooltip text="Real cloud service embeddings from AWS, Azure, and GCP services with sprite sheets and tags">
+                  <button
+                    onClick={() => {
+                      setDataType('cloud')
+                      setView3D(false)
+                      if (numComponents > 2) setNumComponents(2)
+                    }}
+                    disabled={isPlaying || isLoadingDataset}
+                    className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      dataType === 'cloud'
+                        ? 'bg-cyan-700 text-white'
+                        : 'bg-cyan-600 hover:bg-cyan-700 text-white'
+                    }`}
+                  >
+                    Cloud
                   </button>
                 </Tooltip>
               </div>
@@ -756,6 +820,38 @@ export function PCAPlayground() {
                     </p>
                     <p className="mt-1 text-xs">
                       💡 Hover over posters for details, click for more info
+                    </p>
+                  </div>
+                )}
+                {dataType === 'countries' && (
+                  <div>
+                    <strong>🌍 Countries Dataset (REAL DATA)</strong>
+                    <p className="mt-1">📊 Actual PCA on countries with embeddings and metadata</p>
+                    <p className="mt-1">
+                      Features: region, subregion, population, GDP, language, religion, and more
+                    </p>
+                    <p className="mt-1">Visualization: Country sprites in 2D PCA space</p>
+                    <p className="mt-1 text-emerald-600 dark:text-emerald-400">
+                      Useful for comparing geography, economy, and culture patterns
+                    </p>
+                    <p className="mt-1 text-xs">
+                      💡 Hover over sprites for details, click for more info
+                    </p>
+                  </div>
+                )}
+                {dataType === 'cloud' && (
+                  <div>
+                    <strong>☁️ Cloud Dataset (REAL DATA)</strong>
+                    <p className="mt-1">📊 Actual PCA on cloud services with embeddings</p>
+                    <p className="mt-1">
+                      Features: provider, label, description, tags, and sprite-sheet metadata
+                    </p>
+                    <p className="mt-1">Visualization: Cloud service sprites in 2D PCA space</p>
+                    <p className="mt-1 text-cyan-600 dark:text-cyan-400">
+                      Helps cluster related services like storage, compute, identity, and networking
+                    </p>
+                    <p className="mt-1 text-xs">
+                      💡 Hover over sprites for details, click for more info
                     </p>
                   </div>
                 )}
