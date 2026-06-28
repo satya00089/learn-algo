@@ -285,7 +285,7 @@ export default function MLPage() {
             </Link>
             <ThemeToggle />
           </div>
-          <h1 className="text-4xl font-bold mb-2 text-orange-500">
+          <h1 className="text-4xl uppercase tracking-widest font-bold mb-2 text-orange-500">
             Machine Learning
           </h1>
           <p className="text-base text-gray-600 dark:text-gray-300">
