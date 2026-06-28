@@ -1,6 +1,11 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
+import {
+  createBooleanCodec,
+  createNumberCodec,
+  useShareableQueryState,
+} from '@/core/share/query-state'
 import type { Point2D } from '../types'
 
 /**
@@ -13,6 +18,42 @@ export function useLinearRegressionPlayground() {
   const [maxIterations, setMaxIterations] = useState(100)
   const [showErrorLines, setShowErrorLines] = useState(true)
   const [isDebugMode, setIsDebugMode] = useState(false)
+
+  useShareableQueryState(
+    useMemo(
+      () => [
+        {
+          key: 'lr',
+          value: learningRate,
+          defaultValue: 0.01,
+          setValue: setLearningRate,
+          codec: createNumberCodec({ min: 0.001, max: 0.1, step: 0.001 }),
+        },
+        {
+          key: 'iters',
+          value: maxIterations,
+          defaultValue: 100,
+          setValue: setMaxIterations,
+          codec: createNumberCodec({ min: 10, max: 500, step: 10 }),
+        },
+        {
+          key: 'errors',
+          value: showErrorLines,
+          defaultValue: true,
+          setValue: setShowErrorLines,
+          codec: createBooleanCodec(),
+        },
+        {
+          key: 'debug',
+          value: isDebugMode,
+          defaultValue: false,
+          setValue: setIsDebugMode,
+          codec: createBooleanCodec(),
+        },
+      ],
+      [isDebugMode, learningRate, maxIterations, showErrorLines]
+    )
+  )
 
   const addPoint = useCallback((point: Point2D) => {
     setPoints((prev) => [...prev, point])

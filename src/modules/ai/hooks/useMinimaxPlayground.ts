@@ -1,18 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import {
+  createBooleanCodec,
+  useShareableQueryState,
+} from '@/core/share/query-state'
 
 export const useMinimaxPlayground = () => {
-  const [animationSpeed, setAnimationSpeed] = useState<number>(1000)
   const [isDebugMode, setIsDebugMode] = useState<boolean>(false)
-  const [showTree, setShowTree] = useState<boolean>(true)
+
+  useShareableQueryState(
+    useMemo(
+      () => [
+        {
+          key: 'debug',
+          value: isDebugMode,
+          defaultValue: false,
+          setValue: setIsDebugMode,
+          codec: createBooleanCodec(),
+        },
+      ],
+      [isDebugMode]
+    )
+  )
 
   return {
-    animationSpeed,
-    setAnimationSpeed,
     isDebugMode,
     setIsDebugMode,
-    showTree,
-    setShowTree,
   }
 }

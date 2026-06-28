@@ -7,11 +7,12 @@ import { KNNEngine } from '../engines/KNNEngine'
 import { useKNNPlayground } from '../hooks/useKNNPlayground'
 import { KNNDataPoint } from '../types'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Toggle, Button } from '@/core/controls'
+import { ControlGroup, Tooltip, Toggle, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
+import { createSeededRandom, generateRandomSeed } from '@/core/utils'
 
 // Color schemes for different classes
 const CLASS_COLORS = [
@@ -35,6 +36,8 @@ export function KNNPlayground() {
     setSelectedDataset,
     showDecisionBoundary,
     setShowDecisionBoundary,
+    seed,
+    setSeed,
     testPoint,
     setTestPoint,
   } = useKNNPlayground()
@@ -48,8 +51,9 @@ export function KNNPlayground() {
   } | null>(null)
 
   // Dataset generators
-  const generateDataset = useCallback((type: string): KNNDataPoint[] => {
+  const generateDataset = useCallback((type: string, datasetSeed: number): KNNDataPoint[] => {
     const points: KNNDataPoint[] = []
+    const random = createSeededRandom(datasetSeed)
 
     if (type === 'blobs') {
       // Three well-separated clusters
@@ -62,7 +66,7 @@ export function KNNPlayground() {
       centers.forEach((center) => {
         for (let i = 0; i < 15; i++) {
           const angle = (Math.PI * 2 * i) / 15
-          const radius = Math.random() * 1.5
+          const radius = random() * 1.5
           points.push({
             x: center.x + Math.cos(angle) * radius,
             y: center.y + Math.sin(angle) * radius,
@@ -80,8 +84,8 @@ export function KNNPlayground() {
       centers.forEach((center) => {
         for (let i = 0; i < 25; i++) {
           points.push({
-            x: center.x + (Math.random() - 0.5) * 3,
-            y: center.y + (Math.random() - 0.5) * 3,
+            x: center.x + (random() - 0.5) * 3,
+            y: center.y + (random() - 0.5) * 3,
             label: center.label,
           })
         }
@@ -89,8 +93,8 @@ export function KNNPlayground() {
     } else if (type === 'linear') {
       // Linear separable data
       for (let i = 0; i < 40; i++) {
-        const x = (Math.random() - 0.5) * 8
-        const y = (Math.random() - 0.5) * 6
+        const x = (random() - 0.5) * 8
+        const y = (random() - 0.5) * 6
 
         // Simple linear decision boundary: y = x
         const label = y > x ? 0 : 1
@@ -99,8 +103,8 @@ export function KNNPlayground() {
     } else if (type === 'complex') {
       // More complex non-linear boundary
       for (let i = 0; i < 50; i++) {
-        const x = (Math.random() - 0.5) * 8
-        const y = (Math.random() - 0.5) * 6
+        const x = (random() - 0.5) * 8
+        const y = (random() - 0.5) * 6
 
         // Circular decision boundary
         const label = x * x + y * y < 6 ? 0 : 1
@@ -113,8 +117,10 @@ export function KNNPlayground() {
 
   // Initialize with dataset
   useEffect(() => {
-    const points = generateDataset(selectedDataset)
+    const points = generateDataset(selectedDataset, seed)
     setCurrentPoints(points)
+    setTestPoint(null)
+    setClassificationResult(null)
 
     if (points.length > 0) {
       engineRef.current = new KNNEngine({
@@ -122,7 +128,7 @@ export function KNNPlayground() {
         k,
       })
     }
-  }, [selectedDataset, k, generateDataset])
+  }, [generateDataset, k, seed, selectedDataset, setTestPoint])
 
   // Update engine when k changes
   useEffect(() => {
@@ -331,6 +337,7 @@ export function KNNPlayground() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"
@@ -357,14 +364,7 @@ export function KNNPlayground() {
                   <Tooltip text="Generate New Dataset">
                     <button
                       onClick={() => {
-                        const points = generateDataset(selectedDataset)
-                        setCurrentPoints(points)
-                        setTestPoint(null)
-                        setClassificationResult(null)
-                        if (points.length > 0) {
-                          engineRef.current = new KNNEngine({ points, k })
-                        }
-                        redraw()
+                        setSeed(generateRandomSeed())
                       }}
                       className="w-8 h-8 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
                     >

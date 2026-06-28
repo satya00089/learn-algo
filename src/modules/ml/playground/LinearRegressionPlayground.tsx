@@ -16,7 +16,7 @@ import {
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
+import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -487,6 +487,7 @@ export function LinearRegressionPlayground() {
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
           </div>
           <div className="flex items-center gap-2">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"

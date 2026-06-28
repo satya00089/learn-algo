@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { StandardScalerPlayground } from '@/modules/ml/playground'
 import { AlgorithmStructuredData } from '@/components/AlgorithmStructuredData'
 import { generateMLMetadata } from '../metadata-config'
@@ -8,7 +9,9 @@ export default function StandardScalerPage() {
   return (
     <>
       <AlgorithmStructuredData type="ml" route="standard-scaler" />
-      <StandardScalerPlayground />
+      <Suspense fallback={null}>
+        <StandardScalerPlayground />
+      </Suspense>
     </>
   )
 }

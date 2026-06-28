@@ -6,7 +6,7 @@ import { VscDebugAltSmall } from 'react-icons/vsc'
 import { TbCircleDotted, TbTopologyRing } from 'react-icons/tb'
 import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
+import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle, useTheme } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -296,6 +296,7 @@ export function DBSCANPlayground() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"

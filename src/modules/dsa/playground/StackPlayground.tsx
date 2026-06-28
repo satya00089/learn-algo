@@ -18,7 +18,7 @@ import {
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Button } from '@/core/controls'
+import { ControlGroup, Button, ShareButton } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
@@ -340,6 +340,7 @@ export function StackPlayground() {
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Stack (LIFO)</h1>
           </div>
           <div className="flex items-center gap-3">
+            <ShareButton />
             <Button
               onClick={() => setShowExplanation(true)}
               variant="outline"
