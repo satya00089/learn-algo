@@ -1,225 +1,155 @@
-# Quick Sort: Fast and Efficient In-Place Sorting
+# Quick Sort
 
-## What is Quick Sort?
+## What It Is
 
-Quick Sort is a **highly efficient divide-and-conquer sorting algorithm** that works by selecting a 'pivot' element and partitioning the array around it. It's generally faster than other O(n log n) algorithms in practice, though it has a worst-case time complexity of O(n²).
+Quick sort is a divide-and-conquer sorting algorithm that chooses a **pivot**, partitions the array around that pivot, and then recursively sorts the left and right parts.
 
-**Time Complexity:**
+## Why It Matters
 
-- **Best Case**: O(n log n)
-- **Average Case**: O(n log n)
-- **Worst Case**: O(n²) - when pivot is always the smallest/largest element
+Quick sort is one of the fastest practical comparison sorts for arrays. Even though its worst case is poor, its average-case behavior and cache-friendly access pattern make it extremely popular.
 
-**Space Complexity:** O(log n) - for recursion stack
+## Intuition
 
-## How Quick Sort Works
+Instead of fully sorting the whole array at once, quick sort first places one element, the pivot, into its correct final position. Then it only needs to sort the elements on the left and right of that pivot.
 
-### Step-by-Step Example
+## How It Works
 
-Let's sort the array: `[10, 80, 30, 90, 40, 50, 70]`
+1. Choose a pivot.
+2. Rearrange the array so values smaller than the pivot go left and larger values go right.
+3. The pivot ends up in its final sorted position.
+4. Recursively apply the same process to the left and right partitions.
 
-**Step 1: Choose pivot and partition**
+## Key Formula or Rule
 
-- Choose pivot = 70
-- Partition around pivot: `[10, 30, 40, 50]` + `[70]` + `[80, 90]`
+A partition-based recurrence looks like:
 
-**Step 2: Recursively sort left subarray `[10, 30, 40, 50]`**
+$$
+T(n) = T(k) + T(n-k-1) + O(n)
+$$
 
-- Choose pivot = 50
-- Partition: `[10, 30, 40]` + `[50]` + `[]`
+The split size `k` depends on where the pivot lands, which is exactly why pivot quality matters so much.
 
-**Step 3: Recursively sort `[10, 30, 40]`**
+## Worked Example
 
-- Choose pivot = 40
-- Partition: `[10, 30]` + `[40]` + `[]`
+Sort `[9, 4, 7, 3, 10, 5]` using `5` as the pivot.
 
-**Step 4: Recursively sort `[10, 30]`**
+Partition step:
 
-- Choose pivot = 30
-- Partition: `[10]` + `[30]` + `[]`
+- Smaller than `5`: `[4, 3]`
+- Pivot: `[5]`
+- Larger than `5`: `[9, 7, 10]`
 
-**Step 5: Recursively sort right subarray `[80, 90]`**
+Now sort the left and right parts:
 
-- Choose pivot = 90
-- Partition: `[80]` + `[90]` + `[]`
+- Left becomes `[3, 4]`
+- Right becomes `[7, 9, 10]`
 
-**Final result:** `[10, 30, 40, 50, 70, 80, 90]`
+Final result:
 
-## The Partitioning Process
+- `[3, 4, 5, 7, 9, 10]`
 
-### Lomuto Partition Scheme
+## Looking Deeper
 
-```
-procedure partition(arr, low, high)
-    pivot = arr[high]
-    i = low - 1
+The heart of quick sort is the **partition invariant**:
 
-    for j from low to high-1
-        if arr[j] <= pivot
-            i++
-            swap arr[i] and arr[j]
+- values less than the pivot move left
+- values greater than the pivot move right
+- once partitioning finishes, the pivot is already in its final place
 
-    swap arr[i+1] and arr[high]
-    return i+1
-```
+This is important because quick sort does not merge sorted pieces later. It wins by solving the partitioning step well enough that the subproblems become smaller immediately.
 
-### Hoare Partition Scheme (Original)
+## Complexity
 
-```
-procedure partition(arr, low, high)
-    pivot = arr[low]
-    i = low - 1
-    j = high + 1
+| Case | Time |
+| --- | --- |
+| Best | `O(n log n)` |
+| Average | `O(n log n)` |
+| Worst | `O(n^2)` |
 
-    while true
-        do i++ while arr[i] < pivot
-        do j-- while arr[j] > pivot
+Other properties:
 
-        if i >= j
-            return j
+- Space: `O(log n)` average recursion depth
+- Stable: No, not in basic in-place implementations
 
-        swap arr[i] and arr[j]
-```
+## Pivot Choice Matters
 
-## Algorithm Pseudocode
+Good pivot choices produce balanced partitions. Poor pivot choices produce very uneven partitions.
 
-```
-procedure quickSort(arr, low, high)
-    if low < high
-        pivotIndex = partition(arr, low, high)
-        quickSort(arr, low, pivotIndex - 1)
-        quickSort(arr, pivotIndex + 1, high)
+Common strategies:
 
-procedure partition(arr, low, high)
-    pivot = arr[high]
-    i = low - 1
+- first element
+- last element
+- middle element
+- random pivot
+- median of three
 
-    for j from low to high-1
-        if arr[j] <= pivot
-            i++
-            swap arr[i] and arr[j]
+Random or median-style pivots usually reduce the chance of worst-case behavior.
 
-    swap arr[i+1] and arr[high]
-    return i+1
-```
+## Advantages
 
-## Key Characteristics
+- Very fast in practice
+- Usually in place
+- Great cache behavior on arrays
+- Widely used as a building block in real sorting libraries
 
-### Advantages
+## Limitations
 
-- **Very fast in practice** - often fastest sorting algorithm
-- **In-place sorting** - uses O(log n) extra space
-- **Cache-friendly** - good locality of reference
-- **Highly optimized** - used in many standard libraries
+- Worst-case time is `O(n^2)`
+- Not stable by default
+- Poor pivot choices can hurt performance badly
+- Recursive calls can become deep on bad inputs
 
-### Disadvantages
+## Real-Life Uses
 
-- **Unstable sort** - doesn't preserve relative order of equal elements
-- **Worst case O(n²)** - can be slow on already sorted data
-- **Not adaptive** - doesn't take advantage of existing order
+- General-purpose array sorting
+- Library sorting implementations and hybrids
+- Partition-based problems such as quickselect
 
-## Pivot Selection Strategies
+## When to Use and Avoid
 
-### First Element
+Use quick sort when:
 
-- Simple but poor for sorted arrays
-- Leads to O(n²) worst case
+- you need strong average performance
+- the data fits well in memory
+- stability is not required
 
-### Last Element
+Avoid quick sort when:
 
-- Simple and commonly used
-- Same issue with sorted arrays
+- worst-case guarantees are critical
+- you must preserve equal-element order
+- the data is often already in a pattern that breaks your pivot strategy
 
-### Middle Element
+## Under the Hood
 
-- Better choice, reduces worst case
-- Still predictable
+Real implementations often add more ideas on top of basic quick sort:
 
-### Random Element
+- randomized pivots to reduce bad patterns
+- median-of-three pivot selection
+- three-way partitioning for many duplicates
+- introsort, which falls back to heap sort if recursion gets too deep
 
-- Unpredictable, good average case
-- Adds overhead of random number generation
+This is why quick sort remains important: its simple core can be upgraded into very strong production-grade sorting strategies.
 
-### Median-of-Three
+## How to Think About It in Practice
 
-- Choose median of first, middle, and last elements
-- Good balance of simplicity and effectiveness
+- Think of quick sort when you want strong average-case in-memory performance and do not need stability.
+- Pivot quality matters, so always connect the algorithm choice back to the shape of the input.
 
-## Real-World Applications
+## Common Mistakes
 
-- **System libraries** - C's qsort(), Java's Arrays.sort()
-- **Large datasets** - excellent average performance
-- **In-memory sorting** - when space is not a major constraint
-- **Database systems** - used in query optimization
-- **Programming contests** - fast and reliable
+- Picking a consistently bad pivot
+- Forgetting to stop recursion on very small ranges
+- Confusing the partition step with full sorting
 
-## Performance Analysis
+## Compare With
 
-### Best Case
+- [Merge Sort](/dsa/merge-sort): merge sort is stable and predictable, while quick sort is often faster on average.
+- [Heap Sort](/dsa/heap-sort): heap sort keeps `O(n log n)` worst-case behavior without extra merge buffers.
 
-- **Balanced partitions** - each partition has roughly n/2 elements
-- **Time**: O(n log n)
+## Key Takeaway
 
-### Worst Case
+Quick sort is powerful because partitioning is cheap and often creates smaller problems quickly. Its speed in real life is excellent, but its pivot strategy determines how well it behaves.
 
-- **Unbalanced partitions** - one partition has n-1 elements
-- **Time**: O(n²)
-- **Occurs when**: pivot is always smallest/largest element
+## Try It Live
 
-### Average Case
-
-- **Random pivot selection**: O(n log n)
-- **Good pivot choice**: close to O(n log n)
-
-## Comparison with Other Sorting Algorithms
-
-| Algorithm      | Best       | Average    | Worst      | Stable | In-Place | Space    |
-| -------------- | ---------- | ---------- | ---------- | ------ | -------- | -------- |
-| Quick Sort     | O(n log n) | O(n log n) | O(n²)      | No     | Yes      | O(log n) |
-| Merge Sort     | O(n log n) | O(n log n) | O(n log n) | Yes    | No       | O(n)     |
-| Heap Sort      | O(n log n) | O(n log n) | O(n log n) | No     | Yes      | O(1)     |
-| Insertion Sort | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      | O(1)     |
-| Bubble Sort    | O(n)       | O(n²)      | O(n²)      | Yes    | No       | O(1)     |
-
-## Optimizations and Variants
-
-### Three-Way Partitioning
-
-Handles duplicate elements efficiently (used in Java).
-
-### Hybrid Algorithms
-
-- **IntroSort**: QuickSort + HeapSort (fallback for worst case)
-- **TimSort**: MergeSort + InsertionSort (used in Python)
-
-### Parallel QuickSort
-
-Can be parallelized for multi-core systems.
-
-## When to Use Quick Sort
-
-✅ **Use when:**
-
-- Average performance is more important than worst case
-- In-place sorting is required
-- Memory usage needs to be minimized
-- Data is randomly ordered
-
-❌ **Avoid when:**
-
-- Worst-case performance must be guaranteed
-- Stable sorting is required
-- Data is already nearly sorted
-- Memory is abundant (consider Merge Sort)
-
-## 💡 Pro Tips
-
-- **Choose good pivots** - median-of-three or random selection
-- **Use hybrid approaches** - combine with other sorts for robustness
-- **Consider three-way partitioning** - better for arrays with duplicates
-- **Monitor recursion depth** - prevent stack overflow on bad pivots
-- **Excellent in practice** - often the fastest sorting algorithm available
-
----
-
-_Quick Sort's speed and efficiency make it the go-to choice for most sorting needs, despite its theoretical worst case._
+- [Open this playground](/dsa/quick-sort)

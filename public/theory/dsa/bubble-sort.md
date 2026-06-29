@@ -1,118 +1,137 @@
-# Bubble Sort: A Simple Yet Inefficient Sorting Algorithm
+# Bubble Sort
 
-## What is Bubble Sort?
+## What It Is
 
-Bubble Sort is a **simple comparison-based sorting algorithm** that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. The algorithm gets its name because smaller elements "bubble" to the top of the list.
+Bubble sort is a simple sorting algorithm that repeatedly compares neighboring elements and swaps them if they are in the wrong order. Larger elements "bubble" toward the end of the array after each pass.
 
-**Time Complexity:**
+## Why It Matters
 
-- **Best Case**: O(n) - when array is already sorted
-- **Average Case**: O(n²)
-- **Worst Case**: O(n²)
+Bubble sort is rarely used in production, but it is useful for learning:
 
-**Space Complexity:** O(1) - in-place sorting
+- how repeated passes over an array work
+- how swaps gradually improve order
+- why algorithm efficiency matters
 
-## How Bubble Sort Works
+## How It Works
 
-### Step-by-Step Example
+1. Start at the beginning of the array.
+2. Compare each pair of neighboring elements.
+3. Swap them if the left value is greater than the right value.
+4. After one full pass, the largest unsorted value ends up in its final position.
+5. Repeat for the remaining unsorted portion.
 
-Let's sort the array: `[64, 34, 25, 12, 22, 11, 90]`
+## Key Formula or Rule
 
-**Pass 1:**
+Bubble sort repeatedly applies one rule:
 
-- Compare 64 and 34 → swap → `[34, 64, 25, 12, 22, 11, 90]`
-- Compare 64 and 25 → swap → `[34, 25, 64, 12, 22, 11, 90]`
-- Compare 64 and 12 → swap → `[34, 25, 12, 64, 22, 11, 90]`
-- Compare 64 and 22 → swap → `[34, 25, 12, 22, 64, 11, 90]`
-- Compare 64 and 11 → swap → `[34, 25, 12, 22, 11, 64, 90]`
-- Compare 64 and 90 → no swap → `[34, 25, 12, 22, 11, 64, 90]`
+$$
+\text{if } a[j] > a[j+1] \text{ then swap}
+$$
 
-**Pass 2:**
+That tiny comparison-and-swap rule is what gradually pushes large values toward the end.
 
-- Compare 34 and 25 → swap → `[25, 34, 12, 22, 11, 64, 90]`
-- Compare 34 and 12 → swap → `[25, 12, 34, 22, 11, 64, 90]`
-- Compare 34 and 22 → swap → `[25, 12, 22, 34, 11, 64, 90]`
-- Compare 34 and 11 → swap → `[25, 12, 22, 11, 34, 64, 90]`
-- Compare 34 and 64 → no swap → `[25, 12, 22, 11, 34, 64, 90]`
+## Worked Example
 
-...and so on until the array is sorted.
+Sort `[5, 1, 4, 2]`
 
-## Algorithm Pseudocode
+Pass 1:
 
-```
-procedure bubbleSort(arr)
-    n = length(arr)
-    for i from 0 to n-1
-        for j from 0 to n-i-1
-            if arr[j] > arr[j+1]
-                swap arr[j] and arr[j+1]
-```
+- Compare `5` and `1` -> swap -> `[1, 5, 4, 2]`
+- Compare `5` and `4` -> swap -> `[1, 4, 5, 2]`
+- Compare `5` and `2` -> swap -> `[1, 4, 2, 5]`
 
-## Key Characteristics
+Pass 2:
 
-### Advantages
+- Compare `1` and `4` -> no swap
+- Compare `4` and `2` -> swap -> `[1, 2, 4, 5]`
 
-- **Simple to understand and implement**
-- **Stable sort** - maintains relative order of equal elements
-- **In-place sorting** - uses constant extra space
-- **Adaptive** - performs well on nearly sorted arrays
+Pass 3:
 
-### Disadvantages
+- Compare `1` and `2` -> no swap
+- No swaps needed, so the array is sorted
 
-- **Very slow** for large datasets (O(n²))
-- **Inefficient** compared to other sorting algorithms
-- **Makes many unnecessary comparisons**
+## Looking Deeper
 
-## Real-World Applications
+After each pass, bubble sort guarantees that the largest unsorted element has reached its final position.
 
-- **Educational purposes** - great for learning sorting concepts
-- **Small datasets** - acceptable performance for n < 1000
-- **Nearly sorted data** - performs well when data is almost sorted
-- **Systems with limited memory** - in-place nature is beneficial
+That means:
 
-## Comparison with Other Sorting Algorithms
+- the sorted portion grows from right to left
+- the next pass can ignore the final element
 
-| Algorithm      | Best       | Average    | Worst      | Stable | In-Place |
-| -------------- | ---------- | ---------- | ---------- | ------ | -------- |
-| Bubble Sort    | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      |
-| Selection Sort | O(n²)      | O(n²)      | O(n²)      | No     | Yes      |
-| Insertion Sort | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      |
-| Merge Sort     | O(n log n) | O(n log n) | O(n log n) | Yes    | No       |
-| Quick Sort     | O(n log n) | O(n log n) | O(n²)      | No     | Yes      |
+This also explains why the early-stop optimization works. If an entire pass finishes with no swaps, the array is already sorted and the algorithm can stop immediately.
 
-## Optimizations
+## Complexity
 
-### Early Termination
+| Property | Value |
+| --- | --- |
+| Best time | `O(n)` with early-stop optimization |
+| Average time | `O(n^2)` |
+| Worst time | `O(n^2)` |
+| Space | `O(1)` |
+| Stable | Yes |
 
-Stop the algorithm if no swaps occur in a pass (array is already sorted).
+## Advantages
 
-### Cocktail Shaker Sort
+- Very easy to understand and implement
+- Sorts in place
+- Stable, so equal elements keep their original order
+- Good for teaching loops, swaps, and invariants
 
-A bidirectional bubble sort that alternates directions.
+## Limitations
 
-## When to Use Bubble Sort
+- Too slow for large datasets
+- Performs many unnecessary comparisons
+- Usually worse than insertion sort for small real inputs
 
-✅ **Use when:**
+## Real-Life Uses
 
-- Learning sorting algorithms
-- Data is nearly sorted
-- Dataset is very small
-- Stability is important
-- Memory is limited
+Bubble sort is mostly used in:
 
-❌ **Avoid when:**
+- education and visual demos
+- small toy problems
+- situations where code clarity matters more than speed
 
-- Large datasets (> 1000 elements)
-- Performance is critical
-- Data is randomly ordered
+## When to Use and Avoid
 
-## 💡 Pro Tips
+Use bubble sort when:
 
-- **Consider alternatives** like insertion sort for small arrays
-- **Use early termination** optimization for nearly sorted data
-- **Combine with other algorithms** for hybrid sorting approaches
-- **Monitor swap counts** to detect already sorted arrays
+- you are learning sorting basics
+- the input is tiny
+- you want a very visual step-by-step algorithm
 
----
+Avoid bubble sort when:
 
-_Bubble Sort may be slow, but its simplicity makes it perfect for understanding the fundamentals of sorting algorithms._
+- performance matters
+- the array can grow beyond a few elements
+- better simple choices like insertion sort are available
+
+## Under the Hood
+
+At a deeper level, bubble sort is useful for understanding **inversions** in an array. Each swap removes at least one inversion, which helps explain both why the algorithm works and why nearly sorted arrays can finish quickly.
+
+Even so, bubble sort is rarely chosen in real systems because other algorithms offer much better performance without much more implementation cost.
+
+## How to Think About It in Practice
+
+- Think of bubble sort as a learning tool for repeated passes, swaps, and invariants rather than as a production sorting choice.
+- If you are solving a real sorting problem, use the page mainly to build intuition before moving to stronger algorithms.
+
+## Common Mistakes
+
+- Forgetting that one pass is not enough
+- Not shrinking the unsorted portion after each pass
+- Missing the early-stop optimization when the array becomes sorted
+
+## Compare With
+
+- [Insertion Sort](/dsa/insertion-sort): both are simple and stable, but insertion sort usually wins on nearly sorted data.
+- [Selection Sort](/dsa/selection-sort): selection sort minimizes swaps, while bubble sort repeatedly moves large values upward.
+
+## Key Takeaway
+
+Bubble sort is a teaching algorithm, not a practical default. Its main value is helping you build intuition about how sorting gradually improves an array.
+
+## Try It Live
+
+- [Open this playground](/dsa/bubble-sort)
