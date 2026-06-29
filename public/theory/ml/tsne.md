@@ -1,722 +1,232 @@
-# t-SNE (t-Distributed Stochastic Neighbor Embedding)
+# t-SNE
 
-**t-SNE** is a powerful non-linear dimensionality reduction technique primarily used for **data visualization**. It excels at revealing local structure and natural clusters in high-dimensional data by mapping it to 2D or 3D space while preserving neighborhood relationships.
+## What It Is
 
-## How t-SNE Works
+t-SNE, short for **t-distributed stochastic neighbor embedding**, is a non-linear dimensionality reduction technique used mainly for **visualization**.
 
-t-SNE operates through a two-step probability distribution mapping:
+Its usual goal is not prediction. Its goal is to turn complex high-dimensional data into a 2D or 3D picture that helps humans notice local groups.
 
-### Step 1: High-Dimensional Affinities
+## What t-SNE Is Good At
 
-For each pair of points in the original high-dimensional space, compute similarity using a Gaussian kernel:
+t-SNE is especially good at preserving **local neighborhoods**.
+
+That means:
+
+- points that are close in the original space tend to stay close in the visualization
+- small clusters often become easy to see
+- dense regions and local structure become much easier to inspect visually
+
+## What t-SNE Is Not For
+
+t-SNE is usually not the right tool for:
+
+- training a predictive model directly
+- measuring exact distances between far-apart clusters
+- proving exact global geometry with precision
+
+It is a visualization tool first.
+
+## Core Intuition
+
+t-SNE tries to keep "who is near whom" consistent.
+
+Very roughly:
+
+1. Measure how likely points are to be neighbors in high-dimensional space.
+2. Place points in 2D or 3D.
+3. Move them until nearby relationships are preserved as well as possible.
+
+## Important Parameters
+
+### Perplexity
+
+Controls how many neighbors each point pays attention to.
+
+- lower perplexity focuses on very local structure
+- higher perplexity pays attention to broader neighborhoods
+
+You can think of perplexity as an effective neighborhood size.
 
 $$
-p_{j|i} = \frac{\exp(-||x_i - x_j||^2 / 2\sigma_i^2)}{\sum_{k \neq i} \exp(-||x_i - x_k||^2 / 2\sigma_i^2)}
+\mathrm{Perplexity}(P_i) = 2^{H(P_i)}
 $$
 
-The variance $\sigma_i$ is chosen such that the perplexity (effective number of neighbors) matches a user-specified value (typically 30).
+Here `H(P_i)` is the entropy of the neighbor-probability distribution around point `i`.
 
-### Step 2: Low-Dimensional Affinities
+### Learning Rate
 
-In the low-dimensional space (2D or 3D), use Student's t-distribution with 1 degree of freedom:
+Controls how large the optimization steps are.
+
+- too small can make optimization slow
+- too large can make the layout unstable
+
+### Number of Iterations
+
+The layout improves gradually, so enough optimization steps are needed.
+
+## Worked Example
+
+Imagine each document in a dataset is described by thousands of word features.
+
+You cannot look at that space directly.
+
+After applying t-SNE, the plot might show:
+
+- sports documents close together
+- finance documents close together
+- mixed or unusual documents between clusters
+
+That does not mean the cluster spacing is mathematically exact. It means local similarity became visible.
+
+## Looking Deeper
+
+The key idea is that t-SNE does not try to preserve raw coordinates. It tries to preserve **neighbor relationships**.
+
+That is why:
+
+- local structure is usually more trustworthy than global spacing
+- parameter choices can change the picture significantly
+- the exact distance between far-apart groups should be interpreted carefully
+
+This is also why many workflows run PCA first, then t-SNE, especially when the original feature space is very large or noisy.
+
+## The Core Equations
+
+### Similarity in the Original Space
+
+For each point `x_i`, t-SNE measures how likely another point `x_j` is to be its neighbor.
 
 $$
-q_{ij} = \frac{(1 + ||y_i - y_j||^2)^{-1}}{\sum_{k \neq l} (1 + ||y_k - y_l||^2)^{-1}}
+p(j|i) = \frac{\exp\left(-\|x_i - x_j\|^2 / \left(2\sigma_i^2\right)\right)}{\sum_{k \ne i} \exp\left(-\|x_i - x_k\|^2 / \left(2\sigma_i^2\right)\right)}
 $$
 
-The heavy-tailed t-distribution helps prevent crowding in the center of the visualization.
+What this means:
 
-### Step 3: Optimization
+- `x_i` and `x_j` are points in the original high-dimensional space
+- `||x_i - x_j||` is the distance between those points
+- `sigma_i` controls how wide the neighborhood is around `x_i`
+- closer points get larger probability values
 
-Minimize the **Kullback-Leibler (KL) divergence** between P and Q:
+Each point gets its own `sigma_i`, which helps t-SNE adapt to dense and sparse regions differently.
+
+t-SNE then turns those conditional probabilities into a symmetric pairwise similarity:
 
 $$
-C = KL(P||Q) = \sum_i \sum_j p_{ij} \log \frac{p_{ij}}{q_{ij}}
+p(i,j) = \frac{p(j|i) + p(i|j)}{2n}
 $$
 
-This is done using gradient descent with momentum:
+Here `n` is the number of data points, and `p(i,j)` is the final similarity used in the optimization.
+
+### Similarity in the Reduced Space
+
+After the points move into a 2D or 3D map as `y_i` and `y_j`, t-SNE defines a second similarity:
 
 $$
-\frac{\partial C}{\partial y_i} = 4 \sum_j (p_{ij} - q_{ij})(y_i - y_j)(1 + ||y_i - y_j||^2)^{-1}
+q(i,j) = \frac{\left(1 + \|y_i - y_j\|^2\right)^{-1}}{\sum_{k \ne l} \left(1 + \|y_k - y_l\|^2\right)^{-1}}
 $$
 
-## Key Parameters
+This looks different for an important reason:
 
-### Perplexity (5-50)
+- the reduced space uses a **Student t-distribution**
+- its heavier tail gives distant points more room
+- that helps reduce the **crowding problem** that appears when many dimensions are compressed into two
 
-- **Balance** between preserving local vs. global structure
-- **Low perplexity**: focuses on very local patterns (small clusters)
-- **High perplexity**: considers broader neighborhoods (global structure)
-- Recommended: 5-50, start with 30
+### What the Algorithm Optimizes
 
-### Learning Rate (10-1000)
+t-SNE tries to make the reduced-space similarities `q(i,j)` match the original-space similarities `p(i,j)`.
 
-- **Step size** for gradient descent
-- **Too low**: slow convergence, may get stuck
-- **Too high**: unstable, chaotic movement
-- Recommended: 100-1000, start with 200
+It does that by minimizing the KL divergence:
 
-### Early Exaggeration
+$$
+\mathrm{KL}(P \parallel Q) = \sum_i \sum_j p(i,j)\,\log\left(\frac{p(i,j)}{q(i,j)}\right)
+$$
 
-- **Multiplier** applied to P values in first ~250 iterations (typically 4×)
-- Helps **separate clusters** early by increasing attraction between similar points
-- Creates more **compact, well-separated** clusters in the final embedding
+How to read this:
 
-## Implementation Stages
+- if two points are close in the original space, `p(i,j)` is large
+- if the map places them far apart, `q(i,j)` becomes small
+- that creates a large penalty
 
-### 1. Initialization (Iteration 0)
+So the optimization strongly encourages true neighbors to stay close in the final visualization.
 
-- Points randomly initialized in low-dimensional space with very small random values
-- Prevents artificial structure from initialization
+## Strengths
 
-### 2. Early Exaggeration (Iterations 1-250)
-
-- P values multiplied by 4 to strengthen cluster formation
-- Large gradients help points rapidly move toward their neighborhoods
-- Momentum starts low (0.5) to allow aggressive initial movement
-
-### 3. Main Optimization (Iterations 251-1000)
-
-- Remove exaggeration, use actual P values
-- Increase momentum (0.8) for smoother convergence
-- Adaptive learning rates (gains) help individual points escape poor local minima
-
-### 4. Convergence
-
-- Cost (KL divergence) decreases and stabilizes
-- Points settle into final positions
-- Local neighborhoods preserved, clusters visible
-
-## Why Student's t-Distribution?
-
-The **Student's t-distribution** (vs. Gaussian) in low dimensions solves two critical problems:
-
-1. **Crowding problem**: In high dimensions, there's exponentially more volume far from the center. A Gaussian would force all points toward the center in 2D/3D.
-
-2. **Heavy tails**: The t-distribution with 1 degree of freedom has much heavier tails than a Gaussian, allowing **dissimilar points** to spread out while keeping **similar points** close.
-
-## Applications
-
-### Biology & Medicine
-
-- Single-cell RNA sequencing (scRNA-seq) visualization
-- Protein structure clustering
-- Drug discovery compound space exploration
-
-### Natural Language Processing
-
-- Word embedding visualization (Word2Vec, GloVe)
-- Document clustering
-- Semantic similarity analysis
-
-### Computer Vision
-
-- Image feature space visualization
-- Facial recognition systems
-- Transfer learning visualization
-
-### Recommender Systems
-
-- User preference clustering
-- Product similarity mapping
-- Content-based filtering
+- Excellent for visualizing local clusters
+- Helpful for exploring embeddings and high-dimensional feature spaces
+- Often reveals patterns that PCA cannot separate clearly
 
 ## Limitations
 
-1. **Computational Complexity**: O(n²) for exact computation, O(n log n) with approximations
-2. **Non-deterministic**: Different runs produce different results (random initialization)
-3. **No Inverse Transform**: Cannot map new points into existing embedding
-4. **Parameter Sensitive**: Results vary significantly with perplexity and learning rate
-5. **Interpretability**: Distances between clusters have limited meaning (only local structure preserved)
+- Different runs can produce different layouts
+- Global distances are not always meaningful
+- Parameter choices affect the picture
+- It can be slow on large datasets
+- It does not naturally provide an inverse transform for new points
 
-## Best Practices
+## Under the Hood
 
-### Choosing Perplexity
+Practical t-SNE work often focuses on scalability and reproducibility.
 
-- **Small datasets** (< 500 points): try 5-15
-- **Medium datasets** (500-5000): try 20-50
-- **Large datasets** (> 5000): try 30-100
-- Run multiple times with different perplexities
+Important ideas include:
 
-### Interpreting Results
+- running PCA first to reduce noise and dimensionality
+- using **early exaggeration** to separate neighborhoods early in training
+- Barnes-Hut or FFT-based accelerations
+- fixing random seeds for more stable comparisons
+- comparing results against PCA or UMAP instead of trusting one view blindly
 
-- **Cluster separation** is meaningful
-- **Within-cluster structure** is meaningful
-- **Distance between clusters** may not be meaningful
-- **Cluster size** doesn't indicate importance
+Experts also remember that t-SNE is excellent at storytelling for local structure, but dangerous when used as proof of exact cluster distance, cluster size meaning, or true global topology.
 
-### Avoiding Pitfalls
+## Practical Interpretation Rules
 
-- Don't over-interpret global structure
-- Check results are stable across multiple runs
-- Validate clusters with domain knowledge
-- Consider using UMAP for alternative perspectives
+When reading a t-SNE plot:
 
-## Comparison with Other Methods
+- trust local neighborhoods more than global spacing
+- do not over-interpret the exact distance between clusters
+- compare multiple runs and parameter settings before drawing strong conclusions
 
-### PCA (Principal Component Analysis)
+## Real-Life Uses
 
-- **Linear** dimensionality reduction
-- **Preserves global structure** (variance explained)
-- Fast, deterministic
-- Not good for complex, non-linear manifolds
+- Visualizing word embeddings
+- Exploring image feature spaces
+- Inspecting biological data such as single-cell measurements
+- Understanding whether a dataset contains distinct local groups
 
-### UMAP (Uniform Manifold Approximation and Projection)
-
-- Faster than t-SNE
-- Better preserves **global structure**
-- Can embed new points
-- Similar visualization quality
-
-### Autoencoders
-
-- Neural network-based
-- Can learn **inverse transform**
-- More complex to train
-- Can handle very large datasets
-
-## Mathematical Properties
-
-### Symmetrization
-
-The conditional probabilities are symmetrized:
-
-$$
-p_{ij} = \frac{p_{j|i} + p_{i|j}}{2n}
-$$
-
-This ensures the cost function is symmetric and helps gradient computation.
-
-### Gradient Computation
-
-The gradient has two key components:
-
-1. **Attractive forces**: pull similar points together (p_ij > q_ij)
-2. **Repulsive forces**: push dissimilar points apart (p_ij < q_ij)
-
-The $(1 + ||y_i - y_j||^2)^{-1}$ term gives the repulsive force a **long-range** effect.
-
-## Advanced Techniques
-
-### Barnes-Hut Approximation
-
-- Reduces complexity from O(n²) to O(n log n)
-- Uses space-partitioning trees to approximate repulsive forces
-- Enables t-SNE on datasets with millions of points
-
-### Multicore t-SNE
-
-- Parallelizes pairwise distance and gradient computations
-- Significant speedup on multi-core systems
-
-### Parametric t-SNE
-
-- Learns a neural network to map high-dimensional → low-dimensional
-- Allows embedding of new points
-- Useful for out-of-sample prediction
-
-## Real-World Example: Single-Cell RNA-seq
-
-In genomics, researchers use t-SNE to visualize thousands of cells, each measured across 20,000+ genes:
-
-1. **Input**: Gene expression matrix (cells × genes)
-2. **Preprocessing**: Log normalization, PCA to reduce to ~50 dimensions
-3. **t-SNE**: Map to 2D with perplexity=30
-4. **Result**: Cells cluster by cell type, revealing distinct populations
-
-This has revolutionized our understanding of tissue composition and cellular heterogeneity.
-
-## Conclusion
-
-t-SNE is an invaluable tool for **exploring and visualizing** high-dimensional data. While it has limitations (computational cost, non-determinism, local focus), its ability to reveal natural clusters makes it indispensable in fields from biology to NLP. Understanding its parameters and interpreting results carefully unlocks its full potential.
-
-# Tab: Python
+## Simple Python Example
 
 ```python
-import numpy as np
 from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
 
-# Generate sample high-dimensional data
-np.random.seed(42)
-X = np.random.randn(500, 100)  # 500 samples, 100 dimensions
-
-# Create clusters in high-dimensional space
-X[:100] += [5, 5] + [0] * 98   # Cluster 1
-X[100:200] += [-5, -5] + [0] * 98  # Cluster 2
-X[200:300] += [5, -5] + [0] * 98  # Cluster 3
-X[300:400] += [-5, 5] + [0] * 98  # Cluster 4
-
-# Apply t-SNE
-tsne = TSNE(
-    n_components=2,
-    perplexity=30,
-    learning_rate=200,
-    n_iter=1000,
-    random_state=42
-)
-
-X_embedded = tsne.fit_transform(X)
-
-# Visualize
-plt.figure(figsize=(10, 8))
-colors = ['red'] * 100 + ['blue'] * 100 + ['green'] * 100 + ['orange'] * 100 + ['purple'] * 100
-plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=colors, alpha=0.6, s=50)
-plt.title('t-SNE Visualization of High-Dimensional Clusters')
-plt.xlabel('t-SNE Component 1')
-plt.ylabel('t-SNE Component 2')
-plt.show()
-
-# Check cost (KL divergence)
-print(f"Final KL divergence: {tsne.kl_divergence_:.4f}")
+embedding = TSNE(n_components=2, perplexity=30, learning_rate=200)
+X_2d = embedding.fit_transform(X)
 ```
 
-# Tab: JavaScript
+## When to Use and Avoid
 
-```javascript
-// Using ml-tsne library for t-SNE in JavaScript
-import { TSNE } from 'ml-tsne'
+Use t-SNE when:
 
-// Sample high-dimensional data (100 samples, 50 dimensions)
-const data = Array.from({ length: 100 }, () => Array.from({ length: 50 }, () => Math.random() * 10))
+- you want a human-friendly visualization of complex data
+- local cluster structure matters most
 
-// Create t-SNE instance
-const model = new TSNE({
-  dim: 2, // Output dimensions
-  perplexity: 30, // Balance local vs global
-  learningRate: 200, // Gradient descent step size
-  nIter: 1000, // Maximum iterations
-  metric: 'euclidean', // Distance metric
-})
+Avoid t-SNE when:
 
-// Compute embedding
-model.init({
-  data: data,
-  type: 'dense',
-})
+- you need a stable, exact global map
+- you need a dimensionality reduction method mainly for downstream modeling
 
-// Run optimization
-for (let i = 0; i < 1000; i++) {
-  model.step()
+## Common Mistakes
 
-  // Log progress every 250 iterations
-  if (i % 250 === 0) {
-    const cost = model.cost()
-    console.log(`Iteration ${i}, Cost: ${cost.toFixed(4)}`)
-  }
-}
+- Over-interpreting the global spacing between clusters or the exact size of a group.
+- Using t-SNE as a downstream feature reducer or comparing runs without checking parameters and random seeds.
 
-// Get final embedding
-const embedding = model.getOutputScaled()
+## Compare With
 
-console.log('Final 2D embedding:', embedding)
+- [PCA](/ml/pca): PCA preserves global variance structure, while t-SNE preserves local neighborhoods for visualization.
+- [K-Means Clustering](/ml/k-means): k-means assigns cluster labels, while t-SNE only builds a visual embedding.
 
-// Visualize using D3.js or Canvas
-function visualize(embedding) {
-  const canvas = document.getElementById('tsne-canvas')
-  const ctx = canvas.getContext('2d')
+## Key Takeaway
 
-  // Find bounds
-  let xMin = Infinity,
-    xMax = -Infinity
-  let yMin = Infinity,
-    yMax = -Infinity
+t-SNE is powerful because it can make local structure visible in high-dimensional data. The safest way to use it is as an exploratory visualization tool, not as proof of exact global geometry.
 
-  embedding.forEach(([x, y]) => {
-    xMin = Math.min(xMin, x)
-    xMax = Math.max(xMax, x)
-    yMin = Math.min(yMin, y)
-    yMax = Math.max(yMax, y)
-  })
+## Try It Live
 
-  // Draw points
-  embedding.forEach(([x, y]) => {
-    const px = ((x - xMin) / (xMax - xMin)) * canvas.width
-    const py = ((y - yMin) / (yMax - yMin)) * canvas.height
-
-    ctx.beginPath()
-    ctx.arc(px, py, 5, 0, Math.PI * 2)
-    ctx.fillStyle = 'rgba(59, 130, 246, 0.6)'
-    ctx.fill()
-  })
-}
-
-visualize(embedding)
-```
-
-# Tab: R
-
-```r
-library(Rtsne)
-library(ggplot2)
-
-# Generate sample data with clusters
-set.seed(42)
-n_samples <- 500
-n_features <- 100
-
-# Create high-dimensional data
-X <- matrix(rnorm(n_samples * n_features), nrow = n_samples)
-
-# Add cluster structure
-X[1:100, 1:2] <- X[1:100, 1:2] + 5    # Cluster 1
-X[101:200, 1:2] <- X[101:200, 1:2] - 5  # Cluster 2
-X[201:300, 1:2] <- X[201:300, 1:2] + c(5, -5)  # Cluster 3
-X[301:400, 1:2] <- X[301:400, 1:2] + c(-5, 5)  # Cluster 4
-
-# Create labels for coloring
-labels <- factor(c(rep("Cluster 1", 100),
-                   rep("Cluster 2", 100),
-                   rep("Cluster 3", 100),
-                   rep("Cluster 4", 100),
-                   rep("Noise", 100)))
-
-# Run t-SNE
-tsne_result <- Rtsne(
-  X,
-  dims = 2,                # Output dimensions
-  perplexity = 30,         # Perplexity parameter
-  max_iter = 1000,         # Maximum iterations
-  theta = 0.5,             # Barnes-Hut approximation parameter
-  check_duplicates = FALSE
-)
-
-# Create data frame for plotting
-df <- data.frame(
-  x = tsne_result$Y[, 1],
-  y = tsne_result$Y[, 2],
-  cluster = labels
-)
-
-# Visualize with ggplot2
-ggplot(df, aes(x = x, y = y, color = cluster)) +
-  geom_point(alpha = 0.6, size = 3) +
-  labs(
-    title = "t-SNE Visualization of High-Dimensional Clusters",
-    x = "t-SNE Dimension 1",
-    y = "t-SNE Dimension 2",
-    color = "Cluster"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    legend.position = "right"
-  )
-
-# Print final KL divergence
-cat(sprintf("Final KL divergence: %.4f\n", tail(tsne_result$costs, 1)))
-
-# Try different perplexities to compare
-perplexities <- c(5, 15, 30, 50)
-results_list <- list()
-
-for (perp in perplexities) {
-  tsne_temp <- Rtsne(X, perplexity = perp, max_iter = 500)
-  results_list[[as.character(perp)]] <- data.frame(
-    x = tsne_temp$Y[, 1],
-    y = tsne_temp$Y[, 2],
-    cluster = labels,
-    perplexity = paste("Perplexity =", perp)
-  )
-}
-
-# Combine results
-df_combined <- do.call(rbind, results_list)
-
-# Plot comparison
-ggplot(df_combined, aes(x = x, y = y, color = cluster)) +
-  geom_point(alpha = 0.5, size = 2) +
-  facet_wrap(~ perplexity, scales = "free") +
-  labs(title = "t-SNE with Different Perplexity Values") +
-  theme_minimal()
-```
-
-# Tab: C++
-
-```cpp
-#include <vector>
-#include <random>
-#include <cmath>
-#include <algorithm>
-#include <iostream>
-
-class TSNE {
-private:
-    int n_samples;
-    int n_features;
-    int n_components;
-    double perplexity;
-    double learning_rate;
-    int max_iter;
-    double momentum;
-    double early_exaggeration;
-
-    std::vector<std::vector<double>> X;  // Input data
-    std::vector<std::vector<double>> Y;  // Output embedding
-    std::vector<std::vector<double>> P;  // High-dim affinities
-    std::vector<std::vector<double>> dY; // Gradient
-    std::vector<std::vector<double>> uY; // Momentum velocity
-    std::vector<std::vector<double>> gains; // Adaptive learning rates
-
-public:
-    TSNE(int n_comp = 2, double perp = 30.0, double lr = 200.0,
-         int max_it = 1000, double mom = 0.8, double early_ex = 4.0)
-        : n_components(n_comp), perplexity(perp), learning_rate(lr),
-          max_iter(max_it), momentum(mom), early_exaggeration(early_ex) {}
-
-    // Compute pairwise Euclidean distances
-    std::vector<std::vector<double>> computeDistances(
-        const std::vector<std::vector<double>>& data
-    ) {
-        int n = data.size();
-        std::vector<std::vector<double>> distances(n, std::vector<double>(n, 0.0));
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                double dist = 0.0;
-                for (size_t d = 0; d < data[i].size(); d++) {
-                    double diff = data[i][d] - data[j][d];
-                    dist += diff * diff;
-                }
-                distances[i][j] = distances[j][i] = dist;
-            }
-        }
-        return distances;
-    }
-
-    // Compute high-dimensional affinities with perplexity
-    void computeAffinities(const std::vector<std::vector<double>>& distances) {
-        int n = distances.size();
-        P.assign(n, std::vector<double>(n, 0.0));
-
-        double target_entropy = log(perplexity);
-
-        for (int i = 0; i < n; i++) {
-            // Binary search for appropriate sigma
-            double beta = 1.0;
-            double min_beta = -INFINITY;
-            double max_beta = INFINITY;
-
-            for (int iter = 0; iter < 50; iter++) {
-                // Compute P_j|i with current beta
-                std::vector<double> P_row(n, 0.0);
-                double sum_P = 0.0;
-
-                for (int j = 0; j < n; j++) {
-                    if (i != j) {
-                        P_row[j] = exp(-distances[i][j] * beta);
-                        sum_P += P_row[j];
-                    }
-                }
-
-                // Normalize
-                for (int j = 0; j < n; j++) {
-                    P_row[j] /= sum_P;
-                }
-
-                // Compute entropy
-                double H = 0.0;
-                for (int j = 0; j < n; j++) {
-                    if (i != j && P_row[j] > 1e-12) {
-                        H -= P_row[j] * log(P_row[j]);
-                    }
-                }
-
-                // Adjust beta
-                double H_diff = H - target_entropy;
-                if (fabs(H_diff) < 1e-5) break;
-
-                if (H_diff > 0) {
-                    min_beta = beta;
-                    beta = (max_beta == INFINITY) ? beta * 2 : (beta + max_beta) / 2;
-                } else {
-                    max_beta = beta;
-                    beta = (min_beta == -INFINITY) ? beta / 2 : (beta + min_beta) / 2;
-                }
-            }
-        }
-
-        // Symmetrize
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                P[i][j] = P[j][i] = (P[i][j] + P[j][i]) / (2.0 * n);
-            }
-        }
-    }
-
-    // Initialize embedding randomly
-    void initializeEmbedding(int n) {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::normal_distribution<> dist(0.0, 1e-4);
-
-        Y.assign(n, std::vector<double>(n_components, 0.0));
-        dY.assign(n, std::vector<double>(n_components, 0.0));
-        uY.assign(n, std::vector<double>(n_components, 0.0));
-        gains.assign(n, std::vector<double>(n_components, 1.0));
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n_components; j++) {
-                Y[i][j] = dist(gen);
-            }
-        }
-    }
-
-    // Single optimization step
-    double step(int iter) {
-        int n = Y.size();
-        double exaggeration = (iter < 250) ? early_exaggeration : 1.0;
-        double mom = (iter < 250) ? 0.5 : momentum;
-
-        // Compute Q (low-dimensional affinities)
-        std::vector<std::vector<double>> Q(n, std::vector<double>(n, 0.0));
-        double sum_Q = 0.0;
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                double d = 0.0;
-                for (int k = 0; k < n_components; k++) {
-                    double diff = Y[i][k] - Y[j][k];
-                    d += diff * diff;
-                }
-                double q = 1.0 / (1.0 + d);
-                Q[i][j] = Q[j][i] = q;
-                sum_Q += 2.0 * q;
-            }
-        }
-
-        // Normalize Q
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                Q[i][j] = std::max(Q[i][j] / sum_Q, 1e-12);
-            }
-        }
-
-        // Compute gradient
-        for (int i = 0; i < n; i++) {
-            for (int k = 0; k < n_components; k++) {
-                dY[i][k] = 0.0;
-                for (int j = 0; j < n; j++) {
-                    if (i != j) {
-                        double pq = P[i][j] * exaggeration - Q[i][j];
-                        double d = 0.0;
-                        for (int d_idx = 0; d_idx < n_components; d_idx++) {
-                            double diff = Y[i][d_idx] - Y[j][d_idx];
-                            d += diff * diff;
-                        }
-                        double mult = pq / (1.0 + d);
-                        dY[i][k] += 4.0 * mult * (Y[i][k] - Y[j][k]);
-                    }
-                }
-            }
-        }
-
-        // Update embedding with momentum and adaptive learning rates
-        for (int i = 0; i < n; i++) {
-            for (int k = 0; k < n_components; k++) {
-                // Adaptive gains
-                if ((dY[i][k] > 0) != (uY[i][k] > 0)) {
-                    gains[i][k] += 0.2;
-                } else {
-                    gains[i][k] *= 0.8;
-                }
-                gains[i][k] = std::max(gains[i][k], 0.01);
-
-                // Update with momentum
-                uY[i][k] = mom * uY[i][k] - learning_rate * gains[i][k] * dY[i][k];
-                Y[i][k] += uY[i][k];
-            }
-        }
-
-        // Zero-mean embedding
-
-
-        for (int k = 0; k < n_components; k++) {
-            double mean = 0.0;
-            for (int i = 0; i < n; i++) {
-                mean += Y[i][k];
-            }
-            mean /= n;
-            for (int i = 0; i < n; i++) {
-                Y[i][k] -= mean;
-            }
-        }
-
-        // Compute KL divergence (cost)
-        double cost = 0.0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i != j && P[i][j] > 1e-12) {
-                    cost += P[i][j] * log(P[i][j] / Q[i][j]);
-                }
-            }
-        }
-
-        return cost;
-    }
-
-    // Fit the model
-    std::vector<std::vector<double>> fit_transform(
-        const std::vector<std::vector<double>>& data
-    ) {
-        n_samples = data.size();
-        n_features = data[0].size();
-        X = data;
-
-        // Compute distances and affinities
-        auto distances = computeDistances(X);
-        computeAffinities(distances);
-
-        // Initialize embedding
-        initializeEmbedding(n_samples);
-
-        // Optimize
-        for (int iter = 0; iter < max_iter; iter++) {
-            double cost = step(iter);
-
-            if (iter % 250 == 0) {
-                std::cout << "Iteration " << iter << ", Cost: " << cost << std::endl;
-            }
-        }
-
-        return Y;
-    }
-};
-
-// Example usage
-int main() {
-    // Generate sample data
-    std::vector<std::vector<double>> data;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<> dist(0.0, 1.0);
-
-    // Create 4 clusters
-    for (int cluster = 0; cluster < 4; cluster++) {
-        for (int i = 0; i < 50; i++) {
-            std::vector<double> point(100);
-            for (int j = 0; j < 100; j++) {
-                point[j] = dist(gen);
-            }
-            // Add cluster offset
-            point[0] += cluster * 5.0;
-            point[1] += (cluster % 2) * 5.0;
-            data.push_back(point);
-        }
-    }
-
-    // Run t-SNE
-    TSNE tsne(2, 30.0, 200.0, 1000);
-    auto embedding = tsne.fit_transform(data);
-
-    // Print results
-    std::cout << "\nFinal 2D embedding (first 10 points):\n";
-    for (int i = 0; i < std::min(10, (int)embedding.size()); i++) {
-        std::cout << "Point " << i << ": ("
-                  << embedding[i][0] << ", "
-                  << embedding[i][1] << ")\n";
-    }
-
-    return 0;
-}
-```
+- [Open t-SNE playground](/ml/tsne)

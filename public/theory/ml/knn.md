@@ -1,151 +1,162 @@
-# K-Nearest Neighbors (KNN)
+# K-Nearest Neighbors
 
-## Overview
+## What It Is
 
-K-Nearest Neighbors is a simple, non-parametric, lazy learning algorithm used for both classification and regression. It makes predictions based on the k closest training examples in the feature space.
+K-nearest neighbors, or KNN, is a supervised learning algorithm that predicts a label by looking at the `k` training points closest to a new point.
+
+It can be used for:
+
+- **classification**: choose the most common nearby class
+- **regression**: average the nearby target values
+
+## Core Intuition
+
+KNN follows a very human idea:
+
+- points that look alike often behave alike
+
+If a new point sits near many red points and very few blue points, KNN will likely predict red.
 
 ## How It Works
 
-### 1. Training Phase
+1. Store the training data.
+2. Choose `k`, the number of neighbors to inspect.
+3. Measure the distance from the new point to every training point.
+4. Pick the `k` closest ones.
+5. Use their labels to make the prediction.
 
-- Simply stores the training data
-- No actual "training" occurs (lazy learning)
+## Key Formula or Rule
 
-### 2. Prediction Phase
+A common distance choice is Euclidean distance:
 
-- Calculate distance to all training points
-- Find k nearest neighbors
-- Make prediction based on neighbors
+$$
+d(x,z) = \sqrt{\sum_{j=1}^{m} (x_j - z_j)^2}
+$$
 
-## Distance Metrics
+After computing distances, the algorithm looks at the nearest `k` points and lets them vote or average.
 
-### Euclidean Distance (most common)
+## Worked Example
 
-```
-d(p,q) = √Σᵢ(pᵢ - qᵢ)²
-```
+Suppose `k = 3` and a new point has these nearest labeled neighbors:
 
-### Manhattan Distance
+- Neighbor 1: class A
+- Neighbor 2: class A
+- Neighbor 3: class B
 
-```
-d(p,q) = Σᵢ|pᵢ - qᵢ|
-```
+Majority vote:
 
-### Minkowski Distance
+- class A wins 2 to 1
+- prediction = class A
 
-```
-d(p,q) = (Σᵢ|pᵢ - qᵢ|^p)^(1/p)
-```
+For regression, you would average the neighbor values instead of voting.
 
-### Hamming Distance (for categorical data)
+## Looking Deeper
 
-```
-d(p,q) = number of positions where pᵢ ≠ qᵢ
-```
+KNN is a **lazy learner**. That means training is mostly just storing the data, while the real computation happens during prediction.
 
-## Choosing K
+This creates a trade-off:
 
-### Small K (e.g., 1, 3)
+- training is cheap
+- prediction can be expensive
 
-- **Pros**: Low bias, captures local patterns
-- **Cons**: High variance, sensitive to noise
+The value of `k` also controls the bias-variance balance. Small `k` reacts strongly to local detail, while large `k` smooths the decision boundary.
 
-### Large K (e.g., 10, 20)
+## Why Feature Scaling Matters
 
-- **Pros**: More stable, less sensitive to noise
-- **Cons**: Higher bias, may miss local patterns
+KNN depends heavily on distance.
 
-### Optimal K Selection
+If one feature ranges from `0` to `1` and another ranges from `0` to `100000`, the larger-scale feature can dominate the distance calculation.
 
-- Use cross-validation
-- Odd numbers for binary classification (avoid ties)
-- Square root of n (number of samples) as starting point
+That is why scaling is often essential before using KNN.
 
-## Classification vs Regression
+## Choosing `k`
 
-### Classification
+Small `k`:
 
-- Majority voting among k neighbors
-- Can use weighted voting (closer neighbors have more influence)
+- more sensitive to noise
+- more flexible
+- can overfit
 
-### Regression
+Large `k`:
 
-- Average of k neighbors' target values
-- Can use weighted average
+- smoother decisions
+- less sensitive to noise
+- can underfit
 
-## Curse of Dimensionality
+A common approach is to try several values and validate performance.
 
-As dimensions increase:
+## Common Distance Metrics
 
-- Distance calculations become less meaningful
-- All points become equally distant
-- Performance degrades
+- **Euclidean distance**: common for continuous numeric features
+- **Manhattan distance**: useful when axis-aligned differences matter
+- **Hamming distance**: useful for binary or categorical style comparisons
 
-### Solutions
+## Strengths
 
-- Feature selection
-- Dimensionality reduction (PCA)
-- Use distance metrics appropriate for high dimensions
-
-## Advantages
-
-- Simple and intuitive
-- No assumptions about data distribution
-- Can handle multi-class problems
-- Naturally handles non-linear relationships
-- Easy to implement
+- Easy to understand
+- No training phase in the usual sense; it stores the data
+- Can model complex decision boundaries
+- Works for both classification and regression
 
 ## Limitations
 
-- Computationally expensive for large datasets
-- Sensitive to irrelevant features
-- Requires good distance metric
-- Doesn't work well in high dimensions
-- Memory intensive
+- Prediction can be slow on large datasets
+- Needs careful feature scaling
+- Sensitive to noisy or irrelevant features
+- Performance drops in very high dimensions
 
-## Optimization Techniques
+## Under the Hood
 
-### 1. KD-Trees
+As datasets grow, practical implementations avoid checking every point directly.
 
-- Efficient data structure for low-dimensional data
-- Reduces search time from O(n) to O(log n)
+Common ideas include:
 
-### 2. Ball Trees
+- KD-trees or Ball Trees for structured search
+- approximate nearest neighbor methods for speed
+- distance-weighted voting so closer neighbors matter more
 
-- Better for high-dimensional data
-- Uses hyperspheres instead of hyperrectangles
+KNN also suffers from the **curse of dimensionality**. In very high dimensions, many points start to feel similarly far apart, which makes â€œnearestâ€ much less meaningful.
 
-### 3. Approximate Nearest Neighbors
+## Real-Life Uses
 
-- Sacrifices accuracy for speed
-- Useful for very large datasets
+- Basic recommendation systems
+- Similar-item search
+- Pattern recognition
+- Medical or sensor classification prototypes
 
-## Applications
+## When to Use and Avoid
 
-- Recommendation systems
-- Image recognition
-- Handwriting recognition
-- Medical diagnosis
-- Financial forecasting
+Use KNN when:
 
-## Evaluation
+- the dataset is not huge
+- local similarity is meaningful
+- you want a simple baseline model
 
-### Classification Metrics
+Avoid KNN when:
 
-- Accuracy, Precision, Recall, F1-Score
-- Confusion Matrix
+- fast prediction at scale is required
+- there are many irrelevant features
+- the data lives in very high-dimensional space
 
-### Regression Metrics
+## How to Think About It in Practice
 
-- Mean Squared Error (MSE)
-- Mean Absolute Error (MAE)
-- R² Score
+- Think of k-NN when local similarity should drive the prediction and you are comfortable storing the training examples directly.
+- It is often a strong baseline when the dataset is not too large and distance makes domain sense.
 
-## Best Practices
+## Common Mistakes
 
-1. Scale features (normalization/standardization)
-2. Remove outliers
-3. Handle missing values
-4. Choose appropriate distance metric
-5. Use cross-validation for k selection
-6. Consider dimensionality reduction for high-D data
+- Forgetting to scale features, which can let one dimension dominate the distance calculation.
+- Picking `k` without checking how sensitive the result is to noise or class imbalance.
+
+## Compare With
+
+- [Logistic Regression](/ml/logistic-regression): k-NN stores examples and votes locally, while logistic regression learns one global boundary.
+- [Decision Tree](/ml/decision-tree): both can model non-linear patterns, but trees learn rules and k-NN compares distances.
+
+## Key Takeaway
+
+KNN is simple because it does not try to build a global model. It makes a decision by asking, "What do the nearby examples look like?"
+
+## Try It Live
+
+- [Open this playground](/ml/knn)

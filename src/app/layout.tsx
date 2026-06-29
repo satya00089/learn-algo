@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
+import 'katex/dist/katex.min.css'
 import { Providers } from './providers'
 import Script from 'next/script'
 import { PWARegister } from '@/components/PWARegister'

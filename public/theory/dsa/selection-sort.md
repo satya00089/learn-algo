@@ -1,123 +1,149 @@
-# Selection Sort: Finding Minimums Repeatedly
+# Selection Sort
 
-## What is Selection Sort?
+## What It Is
 
-Selection Sort is an **in-place comparison sorting algorithm** that divides the input list into two parts: a sorted sublist and an unsorted sublist. It repeatedly finds the minimum element from the unsorted portion and places it at the end of the sorted portion.
+Selection sort repeatedly finds the smallest element in the unsorted part of the array and places it at the next correct position in the sorted part.
 
-**Time Complexity:**
+## Why It Matters
 
-- **Best Case**: O(n²)
-- **Average Case**: O(n²)
-- **Worst Case**: O(n²)
+Selection sort is helpful because it separates sorting into a very clear idea:
 
-**Space Complexity:** O(1) - in-place sorting
+- find the minimum
+- place it where it belongs
+- repeat
 
-## How Selection Sort Works
+That makes it easy to reason about, even though it is not very fast.
 
-### Step-by-Step Example
+## How It Works
 
-Let's sort the array: `[64, 25, 12, 22, 11]`
+1. Treat the array as two parts: sorted and unsorted.
+2. Find the smallest value in the unsorted part.
+3. Swap it with the first unsorted element.
+4. Expand the sorted part by one position.
+5. Repeat until the array is fully sorted.
 
-**Pass 1:** Find minimum in entire array
+## Key Formula or Rule
 
-- Minimum is 11 at index 4
-- Swap 11 with first element → `[11, 25, 12, 22, 64]`
+At step `i`, selection sort chooses:
 
-**Pass 2:** Find minimum in remaining unsorted array `[25, 12, 22, 64]`
+$$
+minIndex = \arg\min_{j \ge i} a[j]
+$$
 
-- Minimum is 12 at index 2
-- Swap 12 with second element → `[11, 12, 25, 22, 64]`
+In plain language, it finds the smallest value in the remaining unsorted region and places it next.
 
-**Pass 3:** Find minimum in remaining unsorted array `[25, 22, 64]`
+## Worked Example
 
-- Minimum is 22 at index 3
-- Swap 22 with third element → `[11, 12, 22, 25, 64]`
+Sort `[29, 10, 14, 37, 13]`
 
-**Pass 4:** Find minimum in remaining unsorted array `[25, 64]`
+Round 1:
 
-- Minimum is 25 at index 3
-- Swap 25 with fourth element → `[11, 12, 22, 25, 64]`
+- Smallest value is `10`
+- Swap with first element
+- Array becomes `[10, 29, 14, 37, 13]`
 
-**Result:** Array is now sorted!
+Round 2:
 
-## Algorithm Pseudocode
+- Search remaining part `[29, 14, 37, 13]`
+- Smallest value is `13`
+- Swap with index 1
+- Array becomes `[10, 13, 14, 37, 29]`
 
-```
-procedure selectionSort(arr)
-    n = length(arr)
-    for i from 0 to n-2
-        minIndex = i
-        for j from i+1 to n-1
-            if arr[j] < arr[minIndex]
-                minIndex = j
-        swap arr[i] and arr[minIndex]
-```
+Round 3:
 
-## Key Characteristics
+- Search remaining part `[14, 37, 29]`
+- Smallest value is already `14`
+- No useful change
 
-### Advantages
+Round 4:
 
-- **Simple to understand and implement**
-- **In-place sorting** - uses constant extra space
-- **Performs well in terms of memory writes** - makes at most n-1 swaps
+- Search remaining part `[37, 29]`
+- Smallest value is `29`
+- Swap
+- Array becomes `[10, 13, 14, 29, 37]`
 
-### Disadvantages
+## Looking Deeper
 
-- **Always O(n²)** - even for already sorted arrays
-- **Unstable sort** - doesn't preserve relative order of equal elements
-- **Inefficient** for large datasets
+Selection sort keeps a clean invariant:
 
-## Real-World Applications
+- the left side is already sorted
+- the right side is still unsorted
 
-- **Small datasets** - acceptable for n < 1000
-- **Memory-constrained systems** - minimal extra space usage
-- **Educational purposes** - clear demonstration of sorting concepts
-- **Systems where swap operations are expensive** - minimizes swaps
+Unlike bubble sort or insertion sort, it does not benefit much from partially sorted input. It still scans the remaining unsorted region to prove where the next minimum belongs.
 
-## Comparison with Other Sorting Algorithms
+Its main algorithmic advantage is not speed. It is the low number of swaps.
 
-| Algorithm      | Best       | Average    | Worst      | Stable | In-Place | Swaps |
-| -------------- | ---------- | ---------- | ---------- | ------ | -------- | ----- |
-| Selection Sort | O(n²)      | O(n²)      | O(n²)      | No     | Yes      | O(n)  |
-| Bubble Sort    | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      | O(n²) |
-| Insertion Sort | O(n)       | O(n²)      | O(n²)      | Yes    | Yes      | O(n²) |
-| Merge Sort     | O(n log n) | O(n log n) | O(n log n) | Yes    | No       | O(n)  |
-| Quick Sort     | O(n log n) | O(n log n) | O(n²)      | No     | Yes      | O(n)  |
+## Complexity
 
-## Performance Analysis
+| Property | Value |
+| --- | --- |
+| Best time | `O(n^2)` |
+| Average time | `O(n^2)` |
+| Worst time | `O(n^2)` |
+| Space | `O(1)` |
+| Stable | No, not in its basic form |
 
-### Number of Comparisons
+## Advantages
 
-- **Total comparisons**: n(n-1)/2
-- **Always the same** regardless of input order
+- Easy to implement
+- Uses only constant extra space
+- Performs fewer swaps than bubble sort
+- Useful when writes or swaps are expensive
 
-### Number of Swaps
+## Limitations
 
-- **Minimum**: 0 (already sorted)
-- **Maximum**: n-1 (reverse sorted)
+- Still makes many comparisons
+- Not adaptive, so nearly sorted data does not help much
+- Too slow for large datasets
 
-## When to Use Selection Sort
+## Real-Life Uses
 
-✅ **Use when:**
+Selection sort is mostly seen in:
 
-- Memory usage is critical
-- Swap operations are expensive
-- Dataset is small
-- Simplicity is preferred over performance
+- teaching and interview discussions
+- tiny embedded-style tasks where memory is tight
+- cases where minimizing swaps matters more than minimizing comparisons
 
-❌ **Avoid when:**
+## When to Use and Avoid
 
-- Large datasets
-- Stability is required
-- Performance is critical
+Use selection sort when:
 
-## 💡 Pro Tips
+- the dataset is very small
+- you want a simple in-place algorithm
+- swap cost matters more than comparison cost
 
-- **Consider stability requirements** - use insertion sort if stability matters
-- **Good for small arrays** - often used in hybrid sorting algorithms
-- **Monitor swap counts** - can indicate how sorted the data was originally
-- **Combine with other sorts** - selection sort can be part of more complex algorithms
+Avoid selection sort when:
 
----
+- the input is medium or large
+- stability matters
+- the data is nearly sorted and insertion sort would do better
 
-_Selection Sort may not be the fastest, but its minimal memory usage and bounded swaps make it valuable in constrained environments._
+## Under the Hood
+
+Selection sort becomes more interesting in environments where writes are expensive, such as memory-constrained devices or storage systems with limited rewrite budgets.
+
+There are also stable variants of selection sort, but they usually need extra shifting work. That removes some of the simplicity that makes the basic version appealing in the first place.
+
+## How to Think About It in Practice
+
+- Think of selection sort mainly when teaching the idea of growing a sorted prefix or when swap count matters more than comparison count.
+- For most practical data, it is better used as a contrast case that explains why stronger sorts exist.
+
+## Common Mistakes
+
+- Swapping too early before the full minimum is found
+- Assuming it becomes fast on nearly sorted data
+- Forgetting that basic selection sort is not stable
+
+## Compare With
+
+- [Insertion Sort](/dsa/insertion-sort): insertion sort is often more useful on nearly sorted input.
+- [Bubble Sort](/dsa/bubble-sort): bubble sort repeatedly swaps neighbors, while selection sort minimizes the number of swaps.
+
+## Key Takeaway
+
+Selection sort is easy to reason about because each round places exactly one value in its final position. That clarity is its strength, even though its speed is limited.
+
+## Try It Live
+
+- [Open this playground](/dsa/selection-sort)
