@@ -1,0 +1,5 @@
+interface:
+  display_name: "Learn-Algo Site"
+  short_description: "Shared site shell, SEO, and PWA tasks"
+  default_prompt: "Use $learn-algo-site to update shared site structure, SEO, and OG generation."
+  brand_color: "#F59E0B"

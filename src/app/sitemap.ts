@@ -251,6 +251,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'Principal Component Analysis - Dimensionality reduction using principal components, eigenvalues, eigenvectors, and variance explained',
     },
     {
+      url: '/ml/time-series-forecasting',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Time-Series Forecasting - interactive preprocessing, seasonal analysis, and model comparison using mean, naive, smoothing, Holt, and Holt-Winters forecasts',
+    },
+    {
       url: '/ai',
       priority: 0.9,
       changeFrequency: 'weekly' as const,

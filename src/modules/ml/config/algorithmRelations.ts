@@ -18,6 +18,8 @@ export type MLRoute =
   | 'standard-scaler'
   | 'regularization'
   | 'pca'
+  | 'tsne'
+  | 'time-series-forecasting'
 
 export interface RelatedAlgorithm {
   name: string
@@ -352,6 +354,40 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       name: 'Anomaly Detection',
       route: 'anomaly-detection',
       category: 'Outlier Detection',
+    },
+  ],
+  tsne: [
+    {
+      name: 'Principal Component Analysis',
+      route: 'pca',
+      category: 'Dimensionality Reduction',
+    },
+    {
+      name: 'K-Means',
+      route: 'k-means',
+      category: 'Clustering',
+    },
+    {
+      name: 'DBSCAN',
+      route: 'dbscan',
+      category: 'Clustering',
+    },
+  ],
+  'time-series-forecasting': [
+    {
+      name: 'Linear Regression',
+      route: 'linear-regression',
+      category: 'Regression',
+    },
+    {
+      name: 'Anomaly Detection',
+      route: 'anomaly-detection',
+      category: 'Outlier Detection',
+    },
+    {
+      name: 'Gradient Descent',
+      route: 'gradient-descent',
+      category: 'Optimization',
     },
   ],
 }

@@ -193,6 +193,16 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Dimensionality reduction with principal components',
     category: 'Dimensionality Reduction',
   },
+  tsne: {
+    title: 't-SNE',
+    description: 'Non-linear dimensionality reduction for embedding visualization',
+    category: 'Dimensionality Reduction',
+  },
+  'time-series-forecasting': {
+    title: 'Time-Series Forecasting',
+    description: 'Forecast future values from seasonal and trending historical data',
+    category: 'Forecasting',
+  },
 }
 
 export function RelatedAlgorithms({ route, type, compact = false }: RelatedAlgorithmsProps) {

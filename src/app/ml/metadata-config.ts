@@ -603,6 +603,35 @@ export const mlMetadata = {
     ],
     ogImage: ['/og/og-ml-tsne.png', '/og/og-ml-tsne-1.png'],
   },
+  'time-series-forecasting': {
+    title:
+      'Time-Series Forecasting - Seasonal Baselines, Smoothing & Trend Analysis | Interactive Visualization',
+    description:
+      'Learn time-series forecasting through interactive preprocessing, trend analysis, seasonal intuition, and model comparison. Explore mean, naive, seasonal naive, moving average, exponential smoothing, Holt, and Holt-Winters forecasting on realistic monthly and daily datasets.',
+    keywords: [
+      'time-series forecasting',
+      'forecasting',
+      'time series',
+      'seasonality',
+      'trend analysis',
+      'moving average forecast',
+      'simple exponential smoothing',
+      'holt linear trend',
+      'holt winters additive',
+      'forecast evaluation',
+      'mape',
+      'mae',
+      'rmse',
+      'seasonal naive forecast',
+      'demand forecasting',
+      'visitor forecasting',
+      'interactive forecasting',
+      'machine learning forecasting',
+      'time-series visualization',
+      'forecasting playground',
+    ],
+    ogImage: '/og/og-ml.png',
+  },
 }
 
 export type MLRoute = keyof typeof mlMetadata

@@ -115,3 +115,74 @@ export interface KNNNeighbor {
   distance: number
   index: number
 }
+
+// Time Series Types
+export type TimeSeriesFrequency = 'daily' | 'monthly'
+
+export interface TimeSeriesPoint {
+  timestamp: string
+  value: number | null
+  label?: string
+  isHoliday?: boolean
+  isWeekend?: boolean
+}
+
+export interface TimeSeriesDataset {
+  id: string
+  name: string
+  description: string
+  frequency: TimeSeriesFrequency
+  defaultSeasonLength: number
+  points: TimeSeriesPoint[]
+}
+
+export type TimeSeriesForecastModelId =
+  | 'mean'
+  | 'naive'
+  | 'seasonal-naive'
+  | 'moving-average'
+  | 'simple-exponential-smoothing'
+  | 'holt-linear'
+  | 'holt-winters-additive'
+
+export type TimeSeriesMissingValueStrategy = 'linear-interpolate' | 'forward-fill' | 'drop'
+
+export interface TimeSeriesCleanConfig {
+  missingValueStrategy: TimeSeriesMissingValueStrategy
+  outlierClipPercent: number
+  rollingWindow: number
+  seasonalPeriod: number
+  forecastHorizon: number
+  alpha: number
+  beta: number
+  gamma: number
+}
+
+export interface TimeSeriesForecastMetrics {
+  mae: number
+  rmse: number
+  mape: number
+}
+
+export interface TimeSeriesForecastResult {
+  modelId: TimeSeriesForecastModelId
+  predictions: number[]
+  fitted: Array<number | null>
+  lowerBand: Array<number | null>
+  upperBand: Array<number | null>
+  metrics: TimeSeriesForecastMetrics
+  notes: string[]
+}
+
+export interface TimeSeriesEngineState {
+  sourceSeries: TimeSeriesPoint[]
+  cleanedSeries: TimeSeriesPoint[]
+  trainSeries: TimeSeriesPoint[]
+  testSeries: TimeSeriesPoint[]
+  trendSeries: Array<number | null>
+  seasonalSeries: Array<number | null>
+  residualSeries: Array<number | null>
+  forecast: TimeSeriesForecastResult
+  config: TimeSeriesCleanConfig & { modelId: TimeSeriesForecastModelId }
+  notes: string[]
+}
