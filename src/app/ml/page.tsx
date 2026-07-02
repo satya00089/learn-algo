@@ -270,6 +270,19 @@ export default function MLPage() {
       comingSoon: false,
       category: 'Dimensionality Reduction',
     },
+    {
+      title: 'Time-Series Forecasting',
+      description:
+        'Compare baselines, smoothing, and seasonal models with preprocessing and holdout evaluation',
+      href: '/ml/time-series-forecasting',
+      icon: '/icons/ml/hypothesis.png',
+      iconType: 'image' as const,
+      color: 'text-amber-600 dark:text-amber-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Intermediate',
+      comingSoon: true,
+      category: 'Forecasting',
+    },
   ]
 
   return (

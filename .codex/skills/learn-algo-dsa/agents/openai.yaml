@@ -1,0 +1,5 @@
+interface:
+  display_name: "Learn-Algo DSA"
+  short_description: "DSA playgrounds and algorithm engines"
+  default_prompt: "Use $learn-algo-dsa to update DSA playgrounds, engines, and visualizations."
+  brand_color: "#2563EB"

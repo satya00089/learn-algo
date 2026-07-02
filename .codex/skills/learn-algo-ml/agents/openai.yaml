@@ -1,0 +1,5 @@
+interface:
+  display_name: "Learn-Algo ML"
+  short_description: "ML playgrounds, datasets, and visualizers"
+  default_prompt: "Use $learn-algo-ml to update ML playgrounds, datasets, and visualizers."
+  brand_color: "#10B981"
