@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { useTour } from '@/components/tour/TourProvider'
 
 export function PWAInstallPrompt() {
+  const { isActive: isTourActive } = useTour()
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
 
@@ -59,7 +61,7 @@ export function PWAInstallPrompt() {
     }
   }, [])
 
-  if (!showInstallPrompt) return null
+  if (!showInstallPrompt || isTourActive) return null
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-5 duration-500">

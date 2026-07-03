@@ -27,6 +27,7 @@ export function Canvas({ canvasRef, config, className = '' }: Readonly<CanvasPro
         backgroundColor: config?.backgroundColor ?? 'transparent',
       }}
       data-grid-enabled={config?.gridEnabled ? '1' : '0'}
+      data-tour="playground-visualization"
     />
   )
 }

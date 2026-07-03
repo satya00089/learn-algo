@@ -509,7 +509,10 @@ export function LinearRegressionPlayground() {
           {/* Left Side: Canvas with Controls on Top */}
           <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0 overflow-visible">
             {/* Controls Above Canvas - Single Line */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3"
+              data-tour="playground-controls"
+            >
               <div className="flex flex-wrap items-center gap-3">
                 {/* Execution Buttons with Icons */}
                 <div className="flex gap-1">
@@ -552,7 +555,7 @@ export function LinearRegressionPlayground() {
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
                 {/* Learning Rate with Text Input */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5" data-tour="playground-parameters">
                   <Tooltip text="Learning Rate">
                     <span className="text-xs text-gray-600 dark:text-gray-400">
                       Learning Rate (α):
@@ -673,13 +676,19 @@ export function LinearRegressionPlayground() {
             </div>
 
             {/* Canvas */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-center justify-center min-h-0">
+            <div
+              className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-center justify-center min-h-0"
+              data-tour="playground-visualization"
+            >
               <Canvas canvasRef={canvasRef} config={canvasConfig} className="w-full h-full" />
             </div>
           </div>
 
           {/* Right Side: Information Panels */}
-          <div className="space-y-3 overflow-y-auto min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
+          <div
+            className="space-y-3 overflow-y-auto min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500"
+            data-tour="playground-insights"
+          >
             {/* State Display - Compact */}
             {engineState && (
               <ControlGroup title="Current State">
@@ -985,6 +994,8 @@ export function LinearRegressionPlayground() {
             <button
               onClick={() => setIsRelatedOpen(!isRelatedOpen)}
               className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Toggle related algorithms"
+              data-tour="playground-related"
             >
               <span className="text-sm font-semibold text-gray-800 dark:text-white">
                 Related Algorithms

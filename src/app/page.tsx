@@ -188,7 +188,7 @@ export default function Home() {
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column */}
-              <div className="lg:col-span-6 space-y-8" aria-label="hero-text">
+              <div className="lg:col-span-6 space-y-8" aria-label="hero-text" data-tour="home-hero">
                 {/* Trust indicators – above the ask */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400 animate-fade-slide-up stagger-1">
                   <div className="flex items-center gap-1.5">
@@ -286,7 +286,7 @@ export default function Home() {
               </div>
 
               {/* Right Column – Real visualization */}
-              <div className="lg:col-span-6 animate-scale-in stagger-2">
+              <div className="lg:col-span-6 animate-scale-in stagger-2" data-tour="home-demo">
                 <BubbleSortViz />
               </div>
             </div>
@@ -327,7 +327,11 @@ export default function Home() {
           <div className="h-px bg-gray-950/5 dark:bg-white/10" />
 
           {/* Module Cards */}
-          <section id="modules" className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
+          <section
+            id="modules"
+            className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8"
+            data-tour="home-modules"
+          >
             <div className="mb-8 text-center">
               <h2 className="text-2xl tracking-widest text-orange-500">
                 Choose your learning path
@@ -423,8 +427,8 @@ export default function Home() {
                   <span className="text-orange-500 uppercase tracking-wide">Diagrammatic</span>.
                 </h3>
                 <p className="text-center text-base text-gray-500 dark:text-gray-400">
-                  Interactive playground for system design, ER diagrams, and UML — featuring
-                  AWS, Azure & GCP cloud components, cloud infrastructure problems, and AI-powered
+                  Interactive playground for system design, ER diagrams, and UML — featuring AWS,
+                  Azure & GCP cloud components, cloud infrastructure problems, and AI-powered
                   assessment
                 </p>
               </div>

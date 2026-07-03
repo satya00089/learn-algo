@@ -53,6 +53,89 @@
   }
 }
 
+/* Driver.js onboarding theme */
+.driver-popover.learn-algo-tour {
+  max-width: min(22rem, calc(100vw - 2rem));
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.875rem;
+  background: rgba(255, 255, 255, 0.98);
+  color: rgb(31 41 55);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  font-family: inherit;
+  padding: 1rem;
+}
+
+.driver-popover.learn-algo-tour .driver-popover-title {
+  color: rgb(17 24 39);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.driver-popover.learn-algo-tour .driver-popover-description {
+  color: rgb(75 85 99);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.driver-popover.learn-algo-tour .driver-popover-progress-text {
+  color: rgb(107 114 128);
+}
+
+.driver-popover.learn-algo-tour button {
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+.driver-popover.learn-algo-tour .driver-popover-next-btn {
+  border-color: rgb(249 115 22);
+  background: rgb(249 115 22);
+  color: white;
+}
+
+.driver-popover.learn-algo-tour .driver-popover-prev-btn {
+  border-color: rgb(209 213 219);
+  background: white;
+  color: rgb(55 65 81);
+}
+
+.driver-popover.learn-algo-tour .driver-popover-close-btn {
+  min-width: 2.5rem;
+  color: rgb(75 85 99);
+}
+
+.dark .driver-popover.learn-algo-tour {
+  border-color: rgb(55 65 81);
+  background: rgba(17, 24, 39, 0.98);
+  color: rgb(243 244 246);
+}
+
+.dark .driver-popover.learn-algo-tour .driver-popover-title {
+  color: white;
+}
+
+.dark .driver-popover.learn-algo-tour .driver-popover-description,
+.dark .driver-popover.learn-algo-tour .driver-popover-progress-text,
+.dark .driver-popover.learn-algo-tour .driver-popover-close-btn {
+  color: rgb(209 213 219);
+}
+
+.dark .driver-popover.learn-algo-tour .driver-popover-prev-btn {
+  border-color: rgb(75 85 99);
+  background: rgb(31 41 55);
+  color: rgb(243 244 246);
+}
+
+@media (max-width: 640px) {
+  .driver-popover.learn-algo-tour {
+    padding: 0.875rem;
+  }
+}
+
 @keyframes sortBounce {
   0%,
   100% {
@@ -64,11 +147,21 @@
 }
 
 @keyframes sortedPop {
-  0%   { transform: scaleY(1); }
-  35%  { transform: scaleY(1.16); }
-  62%  { transform: scaleY(0.92); }
-  82%  { transform: scaleY(1.05); }
-  100% { transform: scaleY(1); }
+  0% {
+    transform: scaleY(1);
+  }
+  35% {
+    transform: scaleY(1.16);
+  }
+  62% {
+    transform: scaleY(0.92);
+  }
+  82% {
+    transform: scaleY(1.05);
+  }
+  100% {
+    transform: scaleY(1);
+  }
 }
 
 /* ─── Entrance / reveal animations ─── */
@@ -85,8 +178,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
@@ -128,11 +225,26 @@
 }
 
 /* Stagger delays for child elements */
-.stagger-1  { animation-delay: 0.05s; transition-delay: 0.05s;  }
-.stagger-2  { animation-delay: 0.12s; transition-delay: 0.12s; }
-.stagger-3  { animation-delay: 0.19s; transition-delay: 0.19s; }
-.stagger-4  { animation-delay: 0.26s; transition-delay: 0.26s; }
-.stagger-5  { animation-delay: 0.33s; transition-delay: 0.33s; }
+.stagger-1 {
+  animation-delay: 0.05s;
+  transition-delay: 0.05s;
+}
+.stagger-2 {
+  animation-delay: 0.12s;
+  transition-delay: 0.12s;
+}
+.stagger-3 {
+  animation-delay: 0.19s;
+  transition-delay: 0.19s;
+}
+.stagger-4 {
+  animation-delay: 0.26s;
+  transition-delay: 0.26s;
+}
+.stagger-5 {
+  animation-delay: 0.33s;
+  transition-delay: 0.33s;
+}
 
 /* Respect user's motion preference */
 @media (prefers-reduced-motion: reduce) {
@@ -153,10 +265,16 @@
 
 /* ─── View Transitions ─── */
 @keyframes vt-old-root {
-  to { opacity: 0; transform: scale(0.97) translateY(-10px); }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(-10px);
+  }
 }
 @keyframes vt-new-root {
-  from { opacity: 0; transform: scale(1.02) translateY(10px); }
+  from {
+    opacity: 0;
+    transform: scale(1.02) translateY(10px);
+  }
 }
 
 ::view-transition-old(root) {
@@ -174,8 +292,12 @@
     animation-range: entry 5% cover 55%;
   }
   @keyframes how-num-reveal {
-    from { filter: blur(5px) saturate(0.2); }
-    to   { filter: blur(0px) saturate(1);   }
+    from {
+      filter: blur(5px) saturate(0.2);
+    }
+    to {
+      filter: blur(0px) saturate(1);
+    }
   }
 }
 

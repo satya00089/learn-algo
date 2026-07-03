@@ -235,7 +235,7 @@ export function RelatedAlgorithms({ route, type, compact = false }: RelatedAlgor
 
   if (compact) {
     return (
-      <div className="mt-2">
+      <div className="mt-2" data-tour="playground-related">
         <div className="flex flex-col gap-3">
           {relatedAlgorithms.map((algo) => (
             <Link
@@ -263,7 +263,10 @@ export function RelatedAlgorithms({ route, type, compact = false }: RelatedAlgor
   }
 
   return (
-    <section className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <section
+      className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+      data-tour="playground-related"
+    >
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Related Algorithms</h2>
       <div className="grid md:grid-cols-3 gap-4">
         {relatedAlgorithms.map((algo) => (

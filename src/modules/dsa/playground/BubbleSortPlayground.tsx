@@ -225,7 +225,10 @@ export function BubbleSortPlayground() {
           {/* Left Side: Canvas with Controls on Top */}
           <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0 overflow-visible">
             {/* Controls Above Canvas */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3"
+              data-tour="playground-controls"
+            >
               <div className="flex flex-wrap items-center gap-3">
                 {/* Execution Buttons */}
                 <div className="flex gap-1">
@@ -269,7 +272,7 @@ export function BubbleSortPlayground() {
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
                 {/* Array Size Slider */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5" data-tour="playground-parameters">
                   <Tooltip text="Array Size">
                     <span className="text-xs text-gray-600 dark:text-gray-400">Size:</span>
                   </Tooltip>
