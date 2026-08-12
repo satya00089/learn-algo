@@ -182,7 +182,7 @@ export default function Home() {
                 priority={false}
                 sizes="100vw"
                 loading="lazy"
-                className="object-contain -rotate-90 opacity-35 dark:opacity-30 object -translate-x-24"
+                className="object-contain -rotate-90 opacity-15 dark:opacity-10 object -translate-x-24"
               />
             </div>
 

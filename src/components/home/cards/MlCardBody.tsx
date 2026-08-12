@@ -15,7 +15,7 @@ export function MlCardBody({ hovered }: Readonly<{ hovered: boolean }>) {
           alt=""
           fill
           sizes="960px"
-          className="object-fill object-[right_top] invert dark:invert-0"
+          className="object-fill object-[right_top] invert dark:invert-0 opacity-55 dark:opacity-50"
           style={{
             WebkitMaskImage: 'linear-gradient(to left, transparent 0%, black 22%, black 100%)',
             maskImage: 'linear-gradient(to left, transparent 0%, black 22%, black 100%)',

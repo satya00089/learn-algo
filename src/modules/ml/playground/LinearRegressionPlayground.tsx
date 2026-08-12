@@ -88,6 +88,17 @@ export function LinearRegressionPlayground() {
     []
   )
 
+  // Helper function to map values (defined inline since it's used in draw)
+  const mapToCanvas = (
+    value: number,
+    fromMin: number,
+    fromMax: number,
+    toMin: number,
+    toMax: number
+  ): number => {
+    return ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin) + toMin
+  }
+
   // Data bounds for visualization
   const xMin = -15
   const xMax = 15
@@ -358,17 +369,6 @@ export function LinearRegressionPlayground() {
       yMax,
     ]
   )
-
-  // Helper function to map values (defined inline since it's used in draw)
-  const mapToCanvas = (
-    value: number,
-    fromMin: number,
-    fromMax: number,
-    toMin: number,
-    toMax: number
-  ): number => {
-    return ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin) + toMin
-  }
 
   const { canvasRef, redraw } = useCanvas({
     config: canvasConfig,
