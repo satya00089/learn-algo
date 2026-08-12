@@ -695,8 +695,8 @@ export function MinimaxPlayground() {
               <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                 <li>• Click cells on the board to play as X (human)</li>
                 <li>• AI (O) automatically plays after your move</li>
-                <li>• Click "AI Move" button to force AI move when it&apos;s AI&apos;s turn</li>
-                <li>• Click "Hint" button to see the best move suggestion</li>
+                <li>• Click &quot;AI Move&quot; button to force AI move when it&apos;s AI&apos;s turn</li>
+                <li>• Click &quot;Hint&quot; button to see the best move suggestion</li>
                 <li>
                   • <strong>Switch to Tree View</strong> to see algorithm exploration
                 </li>
@@ -718,7 +718,7 @@ export function MinimaxPlayground() {
               <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                 Minimax is a decision-making algorithm for adversarial games. It explores all
                 possible moves, assuming both players play optimally. Alpha-Beta Pruning optimizes
-                by eliminating branches that won't affect the final decision, significantly reducing
+                by eliminating branches that won&apos;t affect the final decision, significantly reducing
                 computation.
               </p>
             </div>

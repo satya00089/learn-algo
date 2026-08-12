@@ -60,7 +60,7 @@ export function FaqItem({ q, a }: Readonly<{ q: string; a: string }>) {
         type="button"
         aria-expanded={open}
         onClick={toggle}
-        className="w-full flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors text-left"
+        className="w-full flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-800/60 dark:active:bg-gray-800 transition-colors text-left"
       >
         <span className="font-semibold text-gray-900 dark:text-white pr-4">{q}</span>
         <svg

@@ -140,37 +140,40 @@ export default function Home() {
             }}
           />
 
-          {/* Header */}
-          <header className="relative max-w-7xl mx-auto z-10 flex justify-between items-center py-6 px-6 lg:px-8">
-            <div className="flex items-center space-x-3 animate-fade-in">
-              <Image
-                src="/logo/logo.png"
-                alt="Learn Algo Logo"
-                width={48}
-                height={48}
-                className="rounded-lg dark:invert"
-              />
-              <div className="space-y-0.5">
-                <div className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-                  LEARN <span className="text-orange-500">ALGO</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
-                    DSA
-                  </span>
-                  <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded text-xs font-bold">
-                    ML
-                  </span>
-                  <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs font-bold">
-                    AI
-                  </span>
+          {/* Header — sticky translucent material; content scrolls underneath it,
+              not behind a fixed opaque strip. The hairline border is the only
+              divider here since it's doing double duty as both chrome edge and
+              section rhythm. */}
+          <div className="sticky top-0 z-40 glass-surface border-b border-gray-950/5 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
+            <header className="relative max-w-7xl mx-auto flex justify-between items-center py-4 px-6 lg:px-8">
+              <div className="flex items-center space-x-3 animate-fade-in">
+                <Image
+                  src="/logo/logo.png"
+                  alt="Learn Algo Logo"
+                  width={48}
+                  height={48}
+                  className="rounded-lg dark:invert"
+                />
+                <div className="space-y-0.5">
+                  <div className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
+                    LEARN <span className="text-orange-500">ALGO</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
+                      DSA
+                    </span>
+                    <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded text-xs font-bold">
+                      ML
+                    </span>
+                    <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs font-bold">
+                      AI
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <ThemeToggle />
-          </header>
-
-          <div className="h-px bg-gray-950/5 dark:bg-white/10" />
+              <ThemeToggle />
+            </header>
+          </div>
 
           {/* Hero Section */}
           <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8 overflow-hidden">
@@ -345,7 +348,7 @@ export default function Home() {
               {/* DSA Card */}
               <ViewTransitionLink
                 href="/dsa"
-                className="group reveal stagger-1"
+                className="group reveal stagger-1 transition-transform duration-150 active:scale-[0.98]"
                 onMouseEnter={() => setDsaHov(true)}
                 onMouseLeave={() => setDsaHov(false)}
                 onClick={() => {
@@ -363,7 +366,7 @@ export default function Home() {
               {/* ML Card */}
               <ViewTransitionLink
                 href="/ml"
-                className="group reveal stagger-2"
+                className="group reveal stagger-2 transition-transform duration-150 active:scale-[0.98]"
                 onMouseEnter={() => setMlHov(true)}
                 onMouseLeave={() => setMlHov(false)}
                 onClick={() => {
@@ -381,7 +384,7 @@ export default function Home() {
               {/* AI Card */}
               <ViewTransitionLink
                 href="/ai"
-                className="group reveal stagger-3"
+                className="group reveal stagger-3 transition-transform duration-150 active:scale-[0.98]"
                 onMouseEnter={() => setAiHov(true)}
                 onMouseLeave={() => setAiHov(false)}
                 onClick={() => {
