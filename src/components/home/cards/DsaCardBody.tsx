@@ -15,7 +15,7 @@ export function DsaCardBody({ hovered }: Readonly<{ hovered: boolean }>) {
           alt=""
           fill
           sizes="960px"
-          className="object-fill object-right"
+          className="object-fill object-right opacity-35 dark:opacity-30"
           style={{
             WebkitMaskImage: 'linear-gradient(to left, transparent 0%, black 28%, black 100%)',
             maskImage: 'linear-gradient(to left, transparent 0%, black 28%, black 100%)',

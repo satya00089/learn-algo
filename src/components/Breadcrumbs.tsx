@@ -57,7 +57,7 @@ export function Breadcrumbs() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
       />
-      <nav aria-label="Breadcrumb">
+      <nav aria-label="Breadcrumb" data-tour="playground-breadcrumbs">
         <ol className="flex items-center text-sm text-gray-600 dark:text-gray-400">
           {displayBreadcrumbs.map((crumb, index) => (
             <li key={crumb.href} className="flex items-center">

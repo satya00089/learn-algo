@@ -4,11 +4,10 @@ import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
-import { ThemeToggle, useTheme } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip } from '@/core/controls'
+import { useTheme } from '@/core/theme'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { KMeansClusteringEngine } from '../engines/KMeansClusteringEngine'
@@ -769,24 +768,10 @@ export function KMeansClusteringPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">K-Means Clustering</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover className="w-4 h-4" />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader
+          title="K-Means Clustering"
+          onOpenTheory={() => setShowExplanation(true)}
+        />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Unsupervised learning: group similar data points into clusters

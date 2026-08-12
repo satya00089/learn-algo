@@ -35,13 +35,7 @@ export interface TSNE2DMovieSceneProps {
   readonly theme: 'light' | 'dark'
 }
 
-function MovieDetailModalAdapter({
-  item,
-  onClose,
-}: {
-  item: MovieMetadata
-  onClose: () => void
-}) {
+function MovieDetailModalAdapter({ item, onClose }: { item: MovieMetadata; onClose: () => void }) {
   return <MovieDetailModal movie={item} onClose={onClose} />
 }
 

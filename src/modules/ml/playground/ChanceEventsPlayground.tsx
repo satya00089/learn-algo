@@ -13,8 +13,7 @@ import {
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { ChanceEventsEngine, type DebugMetrics } from '../engines/ChanceEventsEngine'
 import { useChanceEventsPlayground } from '../hooks/useChanceEventsPlayground'
@@ -273,17 +272,9 @@ export function ChanceEventsPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Chance Events</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Chance Events">
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Explore random events through coin flips. Watch how observed frequencies converge to true

@@ -57,14 +57,17 @@ export function useBinarySearchPlayground() {
     )
   )
 
-  const generateSortedArray = useCallback((size: number): number[] => {
-    const random = createSeededRandom(seed)
-    const arr: number[] = []
-    for (let i = 0; i < size; i++) {
-      arr.push(Math.floor(random() * 100) + 1)
-    }
-    return arr.sort((a, b) => a - b)
-  }, [seed])
+  const generateSortedArray = useCallback(
+    (size: number): number[] => {
+      const random = createSeededRandom(seed)
+      const arr: number[] = []
+      for (let i = 0; i < size; i++) {
+        arr.push(Math.floor(random() * 100) + 1)
+      }
+      return arr.sort((a, b) => a - b)
+    },
+    [seed]
+  )
 
   return {
     arraySize,

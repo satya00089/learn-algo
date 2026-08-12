@@ -83,7 +83,9 @@ async function fetchAndParseCountriesDataset(): Promise<CountriesDataset> {
   try {
     const response = await fetch(csvUrl)
     if (!response.ok) {
-      throw new Error(`Failed to fetch countries dataset: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `Failed to fetch countries dataset: ${response.status} ${response.statusText}`
+      )
     }
 
     const csvText = await response.text()
@@ -309,7 +311,9 @@ function loadSheetImage(sheetUrl: string): Promise<HTMLImageElement> {
   })
 }
 
-export async function getCountrySpriteBitmap(metadata: CountryMetadata): Promise<ImageBitmap | null> {
+export async function getCountrySpriteBitmap(
+  metadata: CountryMetadata
+): Promise<ImageBitmap | null> {
   const cacheKey = getCountrySpriteKey(metadata)
   if (countrySpriteBitmapCache.has(cacheKey)) {
     return countrySpriteBitmapCache.get(cacheKey)!

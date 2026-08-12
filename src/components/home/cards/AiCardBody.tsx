@@ -15,7 +15,7 @@ export function AiCardBody({ hovered }: Readonly<{ hovered: boolean }>) {
           alt=""
           fill
           sizes="960px"
-          className="object-contain object-[right_top] brightness-90 contrast-125"
+          className="object-contain object-[right_top] brightness-90 contrast-125 opacity-35 dark:opacity-30"
           style={{
             WebkitMaskImage: 'linear-gradient(to left, transparent 0%, black 8%, black 100%)',
             maskImage: 'linear-gradient(to left, transparent 0%, black 8%, black 100%)',

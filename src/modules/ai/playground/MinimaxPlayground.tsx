@@ -2,11 +2,9 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaRedo, FaLightbulb, FaPlay, FaPause, FaStepForward } from 'react-icons/fa'
-import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { Tooltip, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { Tooltip, ShareButton } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { TheoryModal } from '@/components/TheoryModal'
 import { MinimaxEngine } from '../engines/MinimaxEngine'
 import { useMinimaxPlayground } from '../hooks/useMinimaxPlayground'
@@ -50,7 +48,8 @@ export function MinimaxPlayground() {
     if (typeof globalThis !== 'undefined' && globalThis.window && globalThis.window.matchMedia) {
       const mq = globalThis.window.matchMedia('(prefers-color-scheme: dark)')
       setIsDark(mq.matches)
-      const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsDark((e as MediaQueryList).matches)
+      const handler = (e: MediaQueryListEvent | MediaQueryList) =>
+        setIsDark((e as MediaQueryList).matches)
       if ('addEventListener' in mq) mq.addEventListener('change', handler as any)
       else (mq as any).addListener?.(handler)
 
@@ -78,19 +77,31 @@ export function MinimaxPlayground() {
 
   const [topNodesCount, setTopNodesCount] = useState<number | 'all'>(10)
 
-  const boardConfig = useMemo(() => ({ ...canvasConfig, width: boardDims.width, height: boardDims.height }), [canvasConfig, boardDims])
-  const treeConfig = useMemo(() => ({ ...canvasConfig, width: treeDims.width, height: treeDims.height }), [canvasConfig, treeDims])
+  const boardConfig = useMemo(
+    () => ({ ...canvasConfig, width: boardDims.width, height: boardDims.height }),
+    [canvasConfig, boardDims]
+  )
+  const treeConfig = useMemo(
+    () => ({ ...canvasConfig, width: treeDims.width, height: treeDims.height }),
+    [canvasConfig, treeDims]
+  )
 
   useEffect(() => {
     const measure = () => {
       // Measure final container dimensions (Tailwind CSS handles sizing)
       if (boardContainerRef.current) {
         const r = boardContainerRef.current.getBoundingClientRect()
-        setBoardDims({ width: Math.max(200, Math.floor(r.width)), height: Math.max(200, Math.floor(r.height)) })
+        setBoardDims({
+          width: Math.max(200, Math.floor(r.width)),
+          height: Math.max(200, Math.floor(r.height)),
+        })
       }
       if (treeContainerRef.current) {
         const r = treeContainerRef.current.getBoundingClientRect()
-        setTreeDims({ width: Math.max(200, Math.floor(r.width)), height: Math.max(200, Math.floor(r.height)) })
+        setTreeDims({
+          width: Math.max(200, Math.floor(r.width)),
+          height: Math.max(200, Math.floor(r.height)),
+        })
       }
     }
 
@@ -136,7 +147,10 @@ export function MinimaxPlayground() {
 
       // Draw game over overlay on board canvas if ended
       if (engineState.winner) {
-        const message = engineState.winner === 'Draw' ? 'Game Over: Draw!' : `Game Over: ${engineState.winner} Wins!`
+        const message =
+          engineState.winner === 'Draw'
+            ? 'Game Over: Draw!'
+            : `Game Over: ${engineState.winner} Wins!`
         ctx.fillStyle = isDark ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.85)'
         ctx.fillRect(width / 2 - 180, height / 2 - 60, 360, 120)
         let borderColor = '#9CA3AF'
@@ -188,23 +202,49 @@ export function MinimaxPlayground() {
         })
       }
 
-      const visibleNodes = engineState.isAnimating ? engineState.tree.slice(0, engineState.animationStep + 1) : engineState.tree
+      const visibleNodes = engineState.isAnimating
+        ? engineState.tree.slice(0, engineState.animationStep + 1)
+        : engineState.tree
       // If highlighting a subset, compute layout only for the highlighted nodes so they are centered
       let layoutNodes = visibleNodes
       if (highlightIds !== null) {
         layoutNodes = visibleNodes.filter((n: any) => highlightIds.has(n.id))
       }
       const layout = calculateTreeLayout(layoutNodes, width, height - 80)
-      drawTree(ctx, visibleNodes, layout, isDark, engineState.currentNode, engineState.selectedNodeId, highlightIds, true)
+      drawTree(
+        ctx,
+        visibleNodes,
+        layout,
+        isDark,
+        engineState.currentNode,
+        engineState.selectedNodeId,
+        highlightIds,
+        true
+      )
 
       // Draw statistics at bottom
-      drawStatistics(ctx, engineState.nodesEvaluated, engineState.nodesPruned, 10, height - 40, isDark)
+      drawStatistics(
+        ctx,
+        engineState.nodesEvaluated,
+        engineState.nodesPruned,
+        10,
+        height - 40,
+        isDark
+      )
     },
     [treeConfig, engineState, isDark, topNodesCount]
   )
 
-  const { canvasRef: boardCanvasRef, redraw: redrawBoard } = useCanvas({ config: boardConfig, draw: drawBoardCanvas, animate: false })
-  const { canvasRef: treeCanvasRef, redraw: redrawTree } = useCanvas({ config: treeConfig, draw: drawTreeCanvas, animate: false })
+  const { canvasRef: boardCanvasRef, redraw: redrawBoard } = useCanvas({
+    config: boardConfig,
+    draw: drawBoardCanvas,
+    animate: false,
+  })
+  const { canvasRef: treeCanvasRef, redraw: redrawTree } = useCanvas({
+    config: treeConfig,
+    draw: drawTreeCanvas,
+    animate: false,
+  })
 
   // Redraw both canvases when state changes
   useEffect(() => {
@@ -247,7 +287,7 @@ export function MinimaxPlayground() {
     // Use the already-generated tree to get best move
     // Don't regenerate tree - keep showing AI's thinking
     const currentState = engineRef.current.getState()
-    
+
     if (currentState.bestMove !== null) {
       setTimeout(() => {
         if (engineRef.current) {
@@ -255,14 +295,14 @@ export function MinimaxPlayground() {
           if (bestMove !== null) {
             // Preserve the tree before making the move
             const treeBeforeMove = engineRef.current.getState().tree
-            
+
             engineRef.current.makeMove(bestMove, 'O')
             const newState = engineRef.current.getState()
-            
+
             // Restore the tree so it remains visible
             setEngineState({
               ...newState,
-              tree: treeBeforeMove
+              tree: treeBeforeMove,
             })
           }
         }
@@ -279,7 +319,7 @@ export function MinimaxPlayground() {
 
     if (engineState.currentPlayer === 'X') {
       engineRef.current.makeMove(index, 'X')
-      
+
       // Generate tree after user move to show AI's thinking
       engineRef.current.findBestMove()
       const newState = engineRef.current.getState()
@@ -437,26 +477,9 @@ export function MinimaxPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Minimax Algorithm</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover className="w-4 h-4" />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Minimax Algorithm" onOpenTheory={() => setShowExplanation(true)}>
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           AI decision-making for Tic-Tac-Toe using Minimax with Alpha-Beta Pruning optimization
@@ -466,14 +489,19 @@ export function MinimaxPlayground() {
           {/* Left Side: Canvas with Controls */}
           <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0">
             {/* Controls Above Canvas */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3"
+              data-tour="playground-controls"
+            >
               <div className="flex flex-wrap items-center gap-3">
                 {/* Algorithm selection */}
                 <div className="flex items-center gap-2">
                   <select
                     aria-label="Algorithm selection"
                     value={engineState?.algorithm || 'minimax'}
-                    onChange={(e) => handleAlgorithmChange(e.target.value as 'minimax' | 'alpha-beta')}
+                    onChange={(e) =>
+                      handleAlgorithmChange(e.target.value as 'minimax' | 'alpha-beta')
+                    }
                     className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="minimax">Minimax</option>
@@ -522,7 +550,6 @@ export function MinimaxPlayground() {
                       <FaRedo size={12} />
                     </button>
                   </Tooltip>
-
                 </div>
 
                 {/* Animation Controls (only show when tree exists) */}
@@ -576,7 +603,11 @@ export function MinimaxPlayground() {
                 onClick={handleBoardClick}
                 aria-label="Tic Tac Toe board - click to play"
               >
-                <Canvas canvasRef={boardCanvasRef} config={boardConfig} className="cursor-pointer" />
+                <Canvas
+                  canvasRef={boardCanvasRef}
+                  config={boardConfig}
+                  className="cursor-pointer"
+                />
               </button>
 
               {/* Tree (right) - 60% */}
@@ -593,7 +624,7 @@ export function MinimaxPlayground() {
           </div>
 
           {/* Right Side: Info Panel */}
-          <div className="space-y-3 overflow-y-auto">
+          <div className="space-y-3 overflow-y-auto" data-tour="playground-insights">
             {/* Statistics */}
             {engineState && (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
@@ -664,8 +695,8 @@ export function MinimaxPlayground() {
               <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                 <li>• Click cells on the board to play as X (human)</li>
                 <li>• AI (O) automatically plays after your move</li>
-                <li>• Click "AI Move" button to force AI move when it&apos;s AI&apos;s turn</li>
-                <li>• Click "Hint" button to see the best move suggestion</li>
+                <li>• Click &quot;AI Move&quot; button to force AI move when it&apos;s AI&apos;s turn</li>
+                <li>• Click &quot;Hint&quot; button to see the best move suggestion</li>
                 <li>
                   • <strong>Switch to Tree View</strong> to see algorithm exploration
                 </li>
@@ -687,7 +718,7 @@ export function MinimaxPlayground() {
               <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                 Minimax is a decision-making algorithm for adversarial games. It explores all
                 possible moves, assuming both players play optimally. Alpha-Beta Pruning optimizes
-                by eliminating branches that won't affect the final decision, significantly reducing
+                by eliminating branches that won&apos;t affect the final decision, significantly reducing
                 computation.
               </p>
             </div>

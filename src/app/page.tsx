@@ -140,37 +140,40 @@ export default function Home() {
             }}
           />
 
-          {/* Header */}
-          <header className="relative max-w-7xl mx-auto z-10 flex justify-between items-center py-6 px-6 lg:px-8">
-            <div className="flex items-center space-x-3 animate-fade-in">
-              <Image
-                src="/logo/logo.png"
-                alt="Learn Algo Logo"
-                width={48}
-                height={48}
-                className="rounded-lg dark:invert"
-              />
-              <div className="space-y-0.5">
-                <div className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-                  LEARN <span className="text-orange-500">ALGO</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
-                    DSA
-                  </span>
-                  <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded text-xs font-bold">
-                    ML
-                  </span>
-                  <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs font-bold">
-                    AI
-                  </span>
+          {/* Header — sticky translucent material; content scrolls underneath it,
+              not behind a fixed opaque strip. The hairline border is the only
+              divider here since it's doing double duty as both chrome edge and
+              section rhythm. */}
+          <div className="sticky top-0 z-40 glass-surface border-b border-gray-950/5 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/70">
+            <header className="relative max-w-7xl mx-auto flex justify-between items-center py-4 px-6 lg:px-8">
+              <div className="flex items-center space-x-3 animate-fade-in">
+                <Image
+                  src="/logo/logo.png"
+                  alt="Learn Algo Logo"
+                  width={48}
+                  height={48}
+                  className="rounded-lg dark:invert"
+                />
+                <div className="space-y-0.5">
+                  <div className="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
+                    LEARN <span className="text-orange-500">ALGO</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-bold">
+                      DSA
+                    </span>
+                    <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded text-xs font-bold">
+                      ML
+                    </span>
+                    <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded text-xs font-bold">
+                      AI
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <ThemeToggle />
-          </header>
-
-          <div className="h-px bg-gray-950/5 dark:bg-white/10" />
+              <ThemeToggle />
+            </header>
+          </div>
 
           {/* Hero Section */}
           <section className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8 overflow-hidden">
@@ -182,13 +185,13 @@ export default function Home() {
                 priority={false}
                 sizes="100vw"
                 loading="lazy"
-                className="object-contain -rotate-90 opacity-35 dark:opacity-30 object -translate-x-24"
+                className="object-contain -rotate-90 opacity-15 dark:opacity-10 object -translate-x-24"
               />
             </div>
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column */}
-              <div className="lg:col-span-6 space-y-8" aria-label="hero-text">
+              <div className="lg:col-span-6 space-y-8" aria-label="hero-text" data-tour="home-hero">
                 {/* Trust indicators – above the ask */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400 animate-fade-slide-up stagger-1">
                   <div className="flex items-center gap-1.5">
@@ -286,7 +289,7 @@ export default function Home() {
               </div>
 
               {/* Right Column – Real visualization */}
-              <div className="lg:col-span-6 animate-scale-in stagger-2">
+              <div className="lg:col-span-6 animate-scale-in stagger-2" data-tour="home-demo">
                 <BubbleSortViz />
               </div>
             </div>
@@ -327,7 +330,11 @@ export default function Home() {
           <div className="h-px bg-gray-950/5 dark:bg-white/10" />
 
           {/* Module Cards */}
-          <section id="modules" className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8">
+          <section
+            id="modules"
+            className="relative max-w-7xl mx-auto z-10 py-12 px-6 lg:px-8"
+            data-tour="home-modules"
+          >
             <div className="mb-8 text-center">
               <h2 className="text-2xl tracking-widest text-orange-500">
                 Choose your learning path
@@ -341,7 +348,7 @@ export default function Home() {
               {/* DSA Card */}
               <ViewTransitionLink
                 href="/dsa"
-                className="group reveal stagger-1"
+                className="group reveal stagger-1 transition-transform duration-150 active:scale-[0.98]"
                 onMouseEnter={() => setDsaHov(true)}
                 onMouseLeave={() => setDsaHov(false)}
                 onClick={() => {
@@ -359,7 +366,7 @@ export default function Home() {
               {/* ML Card */}
               <ViewTransitionLink
                 href="/ml"
-                className="group reveal stagger-2"
+                className="group reveal stagger-2 transition-transform duration-150 active:scale-[0.98]"
                 onMouseEnter={() => setMlHov(true)}
                 onMouseLeave={() => setMlHov(false)}
                 onClick={() => {
@@ -377,7 +384,7 @@ export default function Home() {
               {/* AI Card */}
               <ViewTransitionLink
                 href="/ai"
-                className="group reveal stagger-3"
+                className="group reveal stagger-3 transition-transform duration-150 active:scale-[0.98]"
                 onMouseEnter={() => setAiHov(true)}
                 onMouseLeave={() => setAiHov(false)}
                 onClick={() => {
@@ -423,8 +430,8 @@ export default function Home() {
                   <span className="text-orange-500 uppercase tracking-wide">Diagrammatic</span>.
                 </h3>
                 <p className="text-center text-base text-gray-500 dark:text-gray-400">
-                  Interactive playground for system design, ER diagrams, and UML — featuring
-                  AWS, Azure & GCP cloud components, cloud infrastructure problems, and AI-powered
+                  Interactive playground for system design, ER diagrams, and UML — featuring AWS,
+                  Azure & GCP cloud components, cloud infrastructure problems, and AI-powered
                   assessment
                 </p>
               </div>
@@ -632,6 +639,32 @@ export default function Home() {
                   <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                     <li>Free &amp; open source</li>
                     <li>Built for developers, by developers</li>
+                    <li>
+                      <a
+                        href="https://github.com/satya00089/learn-algo"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                        Star on GitHub
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://github.com/satya00089/learn-algo/issues/new"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                        Report an Issue
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </div>

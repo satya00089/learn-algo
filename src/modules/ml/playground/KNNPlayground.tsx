@@ -2,14 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FaRedo, FaRandom } from 'react-icons/fa'
-import { GiBookCover } from 'react-icons/gi'
 import { KNNEngine } from '../engines/KNNEngine'
 import { useKNNPlayground } from '../hooks/useKNNPlayground'
 import { KNNDataPoint } from '../types'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Toggle, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip, Toggle, ShareButton } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { createSeededRandom, generateRandomSeed } from '@/core/utils'
@@ -329,27 +327,9 @@ export function KNNPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              K-Nearest Neighbors
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="K-Nearest Neighbors" onOpenTheory={() => setShowExplanation(true)}>
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Interactive classification using K-nearest neighbors algorithm

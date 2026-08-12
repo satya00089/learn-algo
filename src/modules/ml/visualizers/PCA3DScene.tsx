@@ -34,16 +34,19 @@ interface SpriteEntry {
 }
 
 // Module-level singletons — survive re-renders and HMR
-const spriteManifest = new Map<string, SpriteEntry>()        // tmdbId str → entry
-const sheetImageCache = new Map<string, HTMLImageElement>()  // sheet_url  → img
-const posterTextureCache = new Map<number, THREE.Texture>()  // tmdbId num → texture
+const spriteManifest = new Map<string, SpriteEntry>() // tmdbId str → entry
+const sheetImageCache = new Map<string, HTMLImageElement>() // sheet_url  → img
+const posterTextureCache = new Map<number, THREE.Texture>() // tmdbId num → texture
 
 let manifestPromise: Promise<void> | null = null
 
 export function loadManifest(): Promise<void> {
   if (manifestPromise) return manifestPromise
   const url = process.env.NEXT_PUBLIC_SPRITE_MANIFEST_URL
-  if (!url) { manifestPromise = Promise.resolve(); return manifestPromise }
+  if (!url) {
+    manifestPromise = Promise.resolve()
+    return manifestPromise
+  }
   manifestPromise = fetch(url)
     .then((r) => r.json())
     .then((data: Record<string, SpriteEntry>) => {
@@ -116,7 +119,9 @@ function MoviePosterSprite({
     loadPosterTexture(tmdbId).then((tex) => {
       if (!cancelled && tex) setTexture(tex)
     })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [tmdbId])
 
   // Billboard effect - always face camera
@@ -251,11 +256,20 @@ function MoviePosterPoints({
       })}
       {/* Tooltip for hovered poster */}
       {hoveredIndex !== null && visiblePoints[hoveredIndex]?.metadata && (
-        <Html position={[visiblePoints[hoveredIndex].x, visiblePoints[hoveredIndex].z || 0, -visiblePoints[hoveredIndex].y]}>
+        <Html
+          position={[
+            visiblePoints[hoveredIndex].x,
+            visiblePoints[hoveredIndex].z || 0,
+            -visiblePoints[hoveredIndex].y,
+          ]}
+        >
           <div className="pointer-events-none bg-black/90 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-xl transform -translate-y-16">
-            <div className="font-semibold">{(visiblePoints[hoveredIndex].metadata as MovieMetadata).title}</div>
+            <div className="font-semibold">
+              {(visiblePoints[hoveredIndex].metadata as MovieMetadata).title}
+            </div>
             <div className="text-xs text-gray-300 mt-1">
-              {(visiblePoints[hoveredIndex].metadata as MovieMetadata).year} · {(visiblePoints[hoveredIndex].metadata as MovieMetadata).genre}
+              {(visiblePoints[hoveredIndex].metadata as MovieMetadata).year} ·{' '}
+              {(visiblePoints[hoveredIndex].metadata as MovieMetadata).genre}
             </div>
             <div className="text-xs text-gray-400">
               ⭐ {(visiblePoints[hoveredIndex].metadata as MovieMetadata).rating.toFixed(1)} · 💰 $
@@ -559,8 +573,7 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
       const bitmap = p.metadata?.tmdbId ? bitmapCache.get(p.metadata.tmdbId) : undefined
       if (bitmap) {
         ctx.drawImage(bitmap, sx, sy, THUMB_W, THUMB_H)
-        ctx.strokeStyle =
-          theme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)'
+        ctx.strokeStyle = theme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)'
         ctx.lineWidth = 1
         ctx.strokeRect(sx, sy, THUMB_W, THUMB_H)
       } else {
@@ -690,7 +703,13 @@ export function PCA2DMovieScene({ state, theme }: PCA2DMovieSceneProps) {
 }
 
 // Modal that crops the poster from the sprite sheet (same source as 3D sprites)
-export function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onClose: () => void }) {
+export function MovieDetailModal({
+  movie,
+  onClose,
+}: {
+  movie: MovieMetadata
+  onClose: () => void
+}) {
   const [posterSrc, setPosterSrc] = useState<string | null>(null)
 
   useEffect(() => {
@@ -710,7 +729,9 @@ export function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onC
         setPosterSrc(canvas.toDataURL('image/jpeg', 0.92))
       })
     })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [movie.tmdbId])
 
   return (
@@ -724,7 +745,11 @@ export function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onC
       >
         <div className="flex gap-4">
           {posterSrc ? (
-            <img src={posterSrc} alt={movie.title} className="w-24 h-36 object-cover rounded flex-shrink-0" />
+            <img
+              src={posterSrc}
+              alt={movie.title}
+              className="w-24 h-36 object-cover rounded flex-shrink-0"
+            />
           ) : (
             <div className="w-24 h-36 bg-gray-200 dark:bg-gray-700 rounded flex-shrink-0 animate-pulse" />
           )}
@@ -735,8 +760,12 @@ export function MovieDetailModal({ movie, onClose }: { movie: MovieMetadata; onC
             </p>
             <div className="mt-3 space-y-1 text-sm">
               <p className="text-gray-700 dark:text-gray-200">⭐ Rating: {movie.rating}/10</p>
-              <p className="text-gray-700 dark:text-gray-200">💰 Box Office: ${movie.boxOffice.toFixed(0)}M</p>
-              <p className="text-gray-700 dark:text-gray-200">💵 Budget: ${movie.budget.toFixed(0)}M</p>
+              <p className="text-gray-700 dark:text-gray-200">
+                💰 Box Office: ${movie.boxOffice.toFixed(0)}M
+              </p>
+              <p className="text-gray-700 dark:text-gray-200">
+                💵 Budget: ${movie.budget.toFixed(0)}M
+              </p>
               <p className="text-gray-700 dark:text-gray-200">⏱️ Runtime: {movie.runtime} min</p>
             </div>
           </div>

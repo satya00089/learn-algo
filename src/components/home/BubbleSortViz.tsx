@@ -57,7 +57,11 @@ const BUBBLE_STEPS = computeBubbleSortSteps(DEMO_BARS)
 
 export function BubbleSortViz() {
   const [stepIdx, setStepIdx] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
+  // Default to paused for users who've asked for less motion; they can still
+  // step through manually via the transport controls below.
+  const [isPlaying, setIsPlaying] = useState(
+    () => !globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  )
   const [speed, setSpeed] = useState<number>(480) // ms per step
 
   useEffect(() => {
@@ -164,7 +168,7 @@ export function BubbleSortViz() {
           <div className="flex items-center gap-2">
             <button
               aria-label="Previous step"
-              className="grid place-items-center w-5 h-5 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="grid place-items-center w-5 h-5 rounded transition-transform hover:bg-gray-100 active:scale-90 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700"
               onClick={() => setStepIdx((i) => (i - 1 + BUBBLE_STEPS.length) % BUBBLE_STEPS.length)}
             >
               <svg
@@ -185,7 +189,7 @@ export function BubbleSortViz() {
             <button
               aria-pressed={isPlaying}
               aria-label={isPlaying ? 'Pause' : 'Play'}
-              className="grid place-items-center w-7 h-7 rounded bg-gray-100 dark:bg-gray-800 hover:scale-105"
+              className="grid place-items-center w-7 h-7 rounded bg-gray-100 dark:bg-gray-800 transition-transform hover:scale-105 active:scale-90"
               onClick={() => setIsPlaying((v) => !v)}
             >
               {isPlaying ? (
@@ -221,7 +225,7 @@ export function BubbleSortViz() {
 
             <button
               aria-label="Next step"
-              className="grid place-items-center w-5 h-5 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="grid place-items-center w-5 h-5 rounded transition-transform hover:bg-gray-100 active:scale-90 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700"
               onClick={() => setStepIdx((i) => (i + 1) % BUBBLE_STEPS.length)}
             >
               <svg

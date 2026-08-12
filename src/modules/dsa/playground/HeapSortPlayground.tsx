@@ -3,11 +3,9 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Button } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { HeapSortEngine } from '../engines/HeapSortEngine'
@@ -226,25 +224,7 @@ export function HeapSortPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header with Back Button and Theme Toggle */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1 flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Heap Sort</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Heap Sort" onOpenTheory={() => setShowExplanation(true)} />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Build a max heap, then repeatedly extract the maximum element to sort the array

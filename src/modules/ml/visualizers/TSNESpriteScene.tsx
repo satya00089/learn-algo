@@ -281,9 +281,7 @@ export function TSNESpriteScene<TMetadata>({
         {clickHint}
       </div>
       {selectedItem && <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
-      <div className="pointer-events-none absolute left-3 top-2 text-xs text-gray-400">
-        {title}
-      </div>
+      <div className="pointer-events-none absolute left-3 top-2 text-xs text-gray-400">{title}</div>
     </div>
   )
 }

@@ -2,13 +2,17 @@ import type { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import 'katex/dist/katex.min.css'
+import 'driver.js/dist/driver.css'
 import { Providers } from './providers'
 import Script from 'next/script'
 import { PWARegister } from '@/components/PWARegister'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 import { StructuredData } from '@/components/StructuredData'
 
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] })
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.learn-algo.com'),
@@ -30,7 +34,7 @@ export const metadata: Metadata = {
     'algorithm animations',
     'learn algorithms online',
     'free algorithm visualizer',
-    
+
     // Data Structures & Algorithms
     'data structures tutorial',
     'DSA learning',
@@ -54,7 +58,7 @@ export const metadata: Metadata = {
     'insertion sort',
     'selection sort',
     'bubble sort',
-    
+
     // Machine Learning
     'machine learning visualization',
     'ML algorithms',
@@ -89,14 +93,14 @@ export const metadata: Metadata = {
     'decision tree',
     'decision trees',
     't-SNE visualization',
-    
+
     // Artificial Intelligence
     'AI algorithms',
     'neural networks',
     'minimax algorithm',
     'game theory',
     'search algorithms',
-    
+
     // Education & Learning
     'algorithm education',
     'programming education',
@@ -108,7 +112,7 @@ export const metadata: Metadata = {
     'STEM education',
     'learn coding',
     'visual programming',
-    
+
     // Interview Preparation
     'coding interview prep',
     'technical interview practice',
@@ -121,7 +125,7 @@ export const metadata: Metadata = {
     'hackerrank practice',
     'coding challenges',
     'algorithm problems',
-    
+
     // Technical Concepts
     'algorithm complexity',
     'time complexity visualization',
@@ -130,7 +134,7 @@ export const metadata: Metadata = {
     'big O notation',
     'algorithm optimization',
     'data structure visualization',
-    
+
     // Professional Development
     'software engineering',
     'software development',
@@ -154,9 +158,7 @@ export const metadata: Metadata = {
       { url: '/favicon.ico', sizes: 'any' },
     ],
     shortcut: '/logo/logo.png',
-    apple: [
-      { url: '/logo/logo.png', sizes: '180x180', type: 'image/png' },
-    ],
+    apple: [{ url: '/logo/logo.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
     type: 'website',

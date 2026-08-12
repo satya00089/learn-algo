@@ -9,6 +9,7 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
+    "test:tour": "node src/components/tour/tour-state.test.ts",
     "generate:og": "tsx scripts/generate-og-images.ts"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
     "@react-three/fiber": "^9.5.0",
     "clsx": "^2.0.0",
     "d3": "^7.8.5",
+    "driver.js": "^1.6.0",
     "framer-motion": "^12.34.0",
     "katex": "^0.17.0",
     "next": "^16.2.9",

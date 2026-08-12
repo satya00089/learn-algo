@@ -16,8 +16,7 @@ import {
 } from 'react-icons/fa'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { ExpectationEngine, type DiceDistribution } from '../engines/ExpectationEngine'
 import { useExpectationPlayground } from '../hooks/useExpectationPlayground'
@@ -243,17 +242,9 @@ export function ExpectationPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Expectation</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Expectation">
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Watch how the running mean converges to the expected value E[X] as you roll the die.

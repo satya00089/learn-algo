@@ -8,14 +8,8 @@ import * as THREE from 'three'
 import type { TSNEState, TSNEPoint } from '../engines/TSNEEngine'
 import { loadPosterTexture, MovieDetailModal } from './PCA3DScene'
 import type { MovieMetadata } from '../data/movieDataLoader'
-import {
-  getCountrySpriteDataUrl,
-  type CountryMetadata,
-} from '../data/countryDataLoader'
-import {
-  getCloudSpriteDataUrl,
-  type CloudMetadata,
-} from '../data/cloudDataLoader'
+import { getCountrySpriteDataUrl, type CountryMetadata } from '../data/countryDataLoader'
+import { getCloudSpriteDataUrl, type CloudMetadata } from '../data/cloudDataLoader'
 
 interface TSNE3DSceneProps {
   readonly state: TSNEState
@@ -109,7 +103,9 @@ function isCountryPoint(point: TSNEPoint): boolean {
 }
 
 function isCloudPoint(point: TSNEPoint): boolean {
-  return typeof point.metadata?.provider === 'string' && typeof point.metadata?.description === 'string'
+  return (
+    typeof point.metadata?.provider === 'string' && typeof point.metadata?.description === 'string'
+  )
 }
 
 function getCountryTextureKey(metadata: CountryMetadata): string {
@@ -229,8 +225,7 @@ function TSNESpriteBillboard({
     meshRef.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15)
   })
 
-  const geometryArgs =
-    kind === 'movie' ? [0.8, 1.2] : kind === 'country' ? [1.1, 0.7] : [0.8, 0.8]
+  const geometryArgs = kind === 'movie' ? [0.8, 1.2] : kind === 'country' ? [1.1, 0.7] : [0.8, 0.8]
 
   return (
     <mesh
@@ -365,7 +360,9 @@ function CloudHoverTooltip({ point }: { readonly point: TSNEPoint }) {
             minWidth: '180px',
           }}
         >
-          <div style={{ fontWeight: 700, marginBottom: 2 }}>{meta?.label ?? point.label ?? '-'}</div>
+          <div style={{ fontWeight: 700, marginBottom: 2 }}>
+            {meta?.label ?? point.label ?? '-'}
+          </div>
           <div style={{ color: '#d1d5db', fontSize: '11px', textTransform: 'uppercase' }}>
             {meta?.provider || 'Unknown provider'}
           </div>
@@ -417,19 +414,27 @@ function CountryDetailModal({
           )}
           <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div className="text-gray-500 dark:text-gray-400">CCA2</div>
-            <div className="font-semibold text-gray-900 dark:text-white">{country.cca2 || '--'}</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {country.cca2 || '--'}
+            </div>
           </div>
           <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div className="text-gray-500 dark:text-gray-400">CCA3</div>
-            <div className="font-semibold text-gray-900 dark:text-white">{country.cca3 || '---'}</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {country.cca3 || '---'}
+            </div>
           </div>
           <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div className="text-gray-500 dark:text-gray-400">Region</div>
-            <div className="font-semibold text-gray-900 dark:text-white">{country.region || 'Unknown'}</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {country.region || 'Unknown'}
+            </div>
           </div>
           <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div className="text-gray-500 dark:text-gray-400">Subregion</div>
-            <div className="font-semibold text-gray-900 dark:text-white">{country.subregion || 'Unknown'}</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {country.subregion || 'Unknown'}
+            </div>
           </div>
           <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div className="text-gray-500 dark:text-gray-400">Latitude</div>
@@ -490,7 +495,9 @@ function CloudDetailModal({
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{item.label}</h2>
-            <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">{item.provider}</p>
+            <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              {item.provider}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -507,7 +514,9 @@ function CloudDetailModal({
           {item.tags.length > 0 && (
             <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
               <div className="text-gray-500 dark:text-gray-400">Tags</div>
-              <div className="font-semibold text-gray-900 dark:text-white">{item.tags.join(', ')}</div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                {item.tags.join(', ')}
+              </div>
             </div>
           )}
         </div>
@@ -674,7 +683,9 @@ function PointLabels({
 }) {
   if (!showLabels) return null
 
-  const labeledPoints = points.filter((point) => point.label && (point.originalIndex < 30 || point.metadata?.verified))
+  const labeledPoints = points.filter(
+    (point) => point.label && (point.originalIndex < 30 || point.metadata?.verified)
+  )
 
   return (
     <>

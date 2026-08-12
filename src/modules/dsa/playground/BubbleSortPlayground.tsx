@@ -4,11 +4,9 @@ import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo, FaRandom } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { MdVibration } from 'react-icons/md'
-import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { BubbleSortEngine } from '../engines/BubbleSortEngine'
@@ -197,25 +195,7 @@ export function BubbleSortPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header with Back Button and Theme Toggle */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1 flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Bubble Sort</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Bubble Sort" onOpenTheory={() => setShowExplanation(true)} />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Watch elements bubble to their correct positions through comparison and swapping
@@ -225,7 +205,10 @@ export function BubbleSortPlayground() {
           {/* Left Side: Canvas with Controls on Top */}
           <div className="lg:col-span-3 flex flex-col space-y-3 min-h-0 overflow-visible">
             {/* Controls Above Canvas */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3"
+              data-tour="playground-controls"
+            >
               <div className="flex flex-wrap items-center gap-3">
                 {/* Execution Buttons */}
                 <div className="flex gap-1">
@@ -269,7 +252,7 @@ export function BubbleSortPlayground() {
                 <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
                 {/* Array Size Slider */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5" data-tour="playground-parameters">
                   <Tooltip text="Array Size">
                     <span className="text-xs text-gray-600 dark:text-gray-400">Size:</span>
                   </Tooltip>

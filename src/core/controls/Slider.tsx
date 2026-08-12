@@ -39,7 +39,7 @@ export function Slider({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         disabled={disabled}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="themed-range w-full h-2 bg-gray-200 rounded-lg cursor-pointer dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
       />
     </div>
   )

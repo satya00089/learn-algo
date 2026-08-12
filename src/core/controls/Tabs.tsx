@@ -1,11 +1,13 @@
 'use client'
 
-import React, { createContext, useContext, useState, useMemo } from 'react'
+import React, { createContext, useContext, useId, useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '@/core/utils'
 
 interface TabsContextType {
   value: string
   onValueChange: (value: string) => void
+  groupId: string
 }
 
 const TabsContext = createContext<TabsContextType | null>(null)
@@ -26,13 +28,14 @@ export function Tabs({
   className,
 }: TabsProps) {
   const [internalValue, setInternalValue] = useState(defaultValue || '')
+  const groupId = useId()
 
   const value = controlledValue ?? internalValue
   const handleValueChange = onValueChange ?? setInternalValue
 
   const contextValue = useMemo(
-    () => ({ value, onValueChange: handleValueChange }),
-    [value, handleValueChange]
+    () => ({ value, onValueChange: handleValueChange, groupId }),
+    [value, handleValueChange, groupId]
   )
 
   return (
@@ -123,14 +126,21 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
       tabIndex={isActive ? 0 : -1}
       onClick={() => context.onValueChange(value)}
       className={cn(
-        'px-4 py-2 text-sm font-medium transition-colors border-b-2',
+        'relative px-4 py-2 text-sm font-medium transition-colors',
         isActive
-          ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400 bg-white dark:bg-gray-900'
-          : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600',
+          ? 'text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-900'
+          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200',
         className
       )}
     >
       {children}
+      {isActive && (
+        <motion.span
+          layoutId={`${context.groupId}-active-tab-indicator`}
+          className="absolute inset-x-0 -bottom-[2px] h-0.5 bg-indigo-600 dark:bg-indigo-400"
+          transition={{ type: 'spring', bounce: 0, duration: 0.35 }}
+        />
+      )}
     </button>
   )
 }

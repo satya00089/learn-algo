@@ -13,8 +13,7 @@ function createMonthlySalesDataset(): TimeSeriesDataset {
     const yearOffset = Math.floor(monthIndex / 12)
 
     const base = 6800 + yearOffset * 420
-    const seasonality =
-      [0, -180, 120, 280, 460, 720, 860, 810, 430, 250, 520, 1180][month] ?? 0
+    const seasonality = [0, -180, 120, 280, 460, 720, 860, 810, 430, 250, 520, 1180][month] ?? 0
     const cyclic = Math.sin(monthIndex / 3) * 140 + Math.cos(monthIndex / 5) * 90
 
     let value = Math.round(base + seasonality + cyclic)
@@ -82,7 +81,8 @@ function createDailyVisitorsDataset(): TimeSeriesDataset {
   return {
     id: 'daily-visitors',
     name: 'Daily Store Visitors',
-    description: 'Roughly five months of daily visitors with weekly seasonality and holiday markers.',
+    description:
+      'Roughly five months of daily visitors with weekly seasonality and holiday markers.',
     frequency: 'daily',
     defaultSeasonLength: 7,
     points,

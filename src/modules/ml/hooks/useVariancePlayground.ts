@@ -5,7 +5,12 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import type { CardDeck } from '../engines/VarianceEngine'
-import { createBooleanCodec, createNumberCodec, useShareableQueryState, type QueryCodec } from '@/core/share/query-state'
+import {
+  createBooleanCodec,
+  createNumberCodec,
+  useShareableQueryState,
+  type QueryCodec,
+} from '@/core/share/query-state'
 
 export function useVariancePlayground() {
   // Default deck: all cards included (1-10)

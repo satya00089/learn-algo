@@ -28,18 +28,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Apply theme to document
+  // Apply theme to document, easing the color swap instead of snapping it
   useEffect(() => {
     if (!mounted) return
 
     const root = document.documentElement
-    if (theme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
+    const prefersReducedMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+    if (prefersReducedMotion) {
+      root.classList.toggle('dark', theme === 'dark')
+      localStorage.setItem('theme', theme)
+      return
     }
+
+    root.classList.add('theme-transition')
+    root.classList.toggle('dark', theme === 'dark')
     localStorage.setItem('theme', theme)
-    console.log('Theme changed to:', theme)
+
+    const timeout = setTimeout(() => root.classList.remove('theme-transition'), 300)
+    return () => clearTimeout(timeout)
   }, [theme, mounted])
 
   const toggleTheme = useCallback(() => {

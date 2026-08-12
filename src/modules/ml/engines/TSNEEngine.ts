@@ -173,7 +173,7 @@ export class TSNEEngine {
 
     // Project onto top-k PCs and scale to 1e-4 / std(PC1)
     const projections = eigenvectors.map((v) =>
-      X.map((row) => row.reduce((s, xi, j) => s + xi * v[j], 0)),
+      X.map((row) => row.reduce((s, xi, j) => s + xi * v[j], 0))
     )
     const std0 = Math.sqrt(projections[0].reduce((s, xi) => s + xi * xi, 0) / n) || 1
     const scale = 1e-4 / std0
@@ -361,7 +361,7 @@ export class TSNEEngine {
         const sameSign = grad[i][d] * this.velocity[i][d] >= 0
         this.gains[i][d] = Math.max(
           0.01,
-          sameSign ? this.gains[i][d] * 0.8 : this.gains[i][d] + 0.2,
+          sameSign ? this.gains[i][d] * 0.8 : this.gains[i][d] + 0.2
         )
 
         // Update velocity

@@ -288,10 +288,11 @@ export default function MLPage() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="mb-3">
+        <div className="mb-3" data-tour="catalog-header">
           <div className="flex items-center justify-between mb-3">
             <Link
               href="/"
+              data-tour="catalog-back"
               className="px-3 py-1.5 flex items-center gap-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
             >
               <span>←</span> Back to Home
@@ -307,7 +308,10 @@ export default function MLPage() {
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden px-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500"
+          data-tour="catalog-grid"
+        >
           {/* Mathematics Fundamentals Section */}
           <div className="mb-6 max-w-full">
             <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
@@ -407,6 +411,9 @@ export default function MLPage() {
               <Link
                 key={algo.href}
                 href={algo.comingSoon ? '#' : algo.href}
+                data-tour={
+                  algo.href === '/ml/linear-regression' ? 'linear-regression-card' : undefined
+                }
                 className={`group ${algo.comingSoon ? 'pointer-events-none' : ''}`}
               >
                 <div

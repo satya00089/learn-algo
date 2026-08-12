@@ -2,11 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
-import { GiBookCover } from 'react-icons/gi'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { TheoryModal } from '@/components/TheoryModal'
-import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
+import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
 import { getTimeSeriesDataset, timeSeriesDatasets } from '../data/timeSeriesDatasets'
 import { TimeSeriesForecastEngine } from '../engines/TimeSeriesForecastEngine'
 import type {
@@ -36,7 +34,11 @@ const MODEL_OPTIONS: Array<{ id: TimeSeriesForecastModelId; label: string; note:
   { id: 'mean', label: 'Mean', note: 'A flat baseline around the training average.' },
   { id: 'naive', label: 'Naive', note: 'Repeats the latest observed value.' },
   { id: 'seasonal-naive', label: 'Seasonal Naive', note: 'Repeats the last matching season.' },
-  { id: 'moving-average', label: 'Moving Average', note: 'Smooths recent history into a forecast.' },
+  {
+    id: 'moving-average',
+    label: 'Moving Average',
+    note: 'Smooths recent history into a forecast.',
+  },
   {
     id: 'simple-exponential-smoothing',
     label: 'SES',
@@ -121,7 +123,9 @@ function buildPath(
     const x = index * xStep
     const ratio = (value - minValue) / (safeMax - minValue)
     const y = height - ratio * height
-    path += segmentOpen ? ` L ${x.toFixed(2)} ${y.toFixed(2)}` : ` M ${x.toFixed(2)} ${y.toFixed(2)}`
+    path += segmentOpen
+      ? ` L ${x.toFixed(2)} ${y.toFixed(2)}`
+      : ` M ${x.toFixed(2)} ${y.toFixed(2)}`
     segmentOpen = true
   })
 
@@ -212,7 +216,9 @@ function ForecastChart({
 }) {
   const width = 1120
   const height = 420
-  const numericValues = lines.flatMap((line) => line.values.filter((value): value is number => value != null))
+  const numericValues = lines.flatMap((line) =>
+    line.values.filter((value): value is number => value != null)
+  )
   const minValue = numericValues.length > 0 ? Math.min(...numericValues) : 0
   const maxValue = numericValues.length > 0 ? Math.max(...numericValues) : 1
   const xStep = labels.length <= 1 ? width : width / (labels.length - 1)
@@ -228,7 +234,10 @@ function ForecastChart({
           <div className="flex flex-wrap gap-3 text-[11px] text-gray-600 dark:text-gray-400">
             {lines.map((line) => (
               <span key={line.label} className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: line.color }} />
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: line.color }}
+                />
                 {line.label}
               </span>
             ))}
@@ -236,7 +245,11 @@ function ForecastChart({
         </div>
 
         <div className="min-h-0 flex-1">
-          <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full" preserveAspectRatio="none">
+          <svg
+            viewBox={`0 0 ${width} ${height}`}
+            className="h-full w-full"
+            preserveAspectRatio="none"
+          >
             {[0, 0.25, 0.5, 0.75, 1].map((tick) => {
               const y = height - tick * height
               const label = minValue + (maxValue - minValue) * tick
@@ -423,7 +436,9 @@ export function TimeSeriesForecastingPlayground() {
       return {
         title: stage.title,
         subtitle: 'Cleaned series after interpolation and optional clipping.',
-        lines: [{ label: 'cleaned', values: cleanedValues, color: '#3b82f6', width: 2.5 }] as PlotLine[],
+        lines: [
+          { label: 'cleaned', values: cleanedValues, color: '#3b82f6', width: 2.5 },
+        ] as PlotLine[],
       }
     }
 
@@ -433,7 +448,13 @@ export function TimeSeriesForecastingPlayground() {
         subtitle: 'Observed series plus the centered rolling trend estimate.',
         lines: [
           { label: 'cleaned', values: cleanedValues, color: '#3b82f6', width: 2.5, opacity: 0.6 },
-          { label: 'trend', values: engineState.trendSeries, color: '#f97316', width: 3, dash: '8 5' },
+          {
+            label: 'trend',
+            values: engineState.trendSeries,
+            color: '#f97316',
+            width: 3,
+            dash: '8 5',
+          },
         ] as PlotLine[],
       }
     }
@@ -456,8 +477,22 @@ export function TimeSeriesForecastingPlayground() {
         { label: 'cleaned', values: cleanedValues, color: '#3b82f6', width: 2.5 },
         ...(showConfidenceBands
           ? [
-              { label: 'lower band', values: lowerBandSeries, color: '#fdba74', width: 1.5, dash: '4 4', opacity: 0.8 },
-              { label: 'upper band', values: upperBandSeries, color: '#fdba74', width: 1.5, dash: '4 4', opacity: 0.8 },
+              {
+                label: 'lower band',
+                values: lowerBandSeries,
+                color: '#fdba74',
+                width: 1.5,
+                dash: '4 4',
+                opacity: 0.8,
+              },
+              {
+                label: 'upper band',
+                values: upperBandSeries,
+                color: '#fdba74',
+                width: 1.5,
+                dash: '4 4',
+                opacity: 0.8,
+              },
             ]
           : []),
         { label: 'forecast', values: predictionSeries, color: '#f97316', width: 3 },
@@ -525,33 +560,20 @@ export function TimeSeriesForecastingPlayground() {
     return () => stopPlayback()
   }, [])
 
-  const sourceMissingCount = datasetResult.dataset.points.filter((point) => point.value == null).length
+  const sourceMissingCount = datasetResult.dataset.points.filter(
+    (point) => point.value == null
+  ).length
   const currentWalkthrough = WALKTHROUGH[currentStage]
 
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Time-Series Forecasting
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover className="w-4 h-4" />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader
+          title="Time-Series Forecasting"
+          onOpenTheory={() => setShowExplanation(true)}
+        >
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Forecasting: clean a real-world signal, inspect trend and seasonality, then compare
@@ -609,7 +631,9 @@ export function TimeSeriesForecastingPlayground() {
                     min={250}
                     max={3000}
                     step={100}
-                    onChange={(event) => setAnimationSpeed(Number.parseInt(event.target.value) || 700)}
+                    onChange={(event) =>
+                      setAnimationSpeed(Number.parseInt(event.target.value) || 700)
+                    }
                     className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                   <span className="text-xs text-gray-600 dark:text-gray-400">ms/stage</span>
@@ -644,9 +668,12 @@ export function TimeSeriesForecastingPlayground() {
               labels={labels}
               lines={stageChart.lines}
               splitIndex={currentStage >= 4 ? engineState.trainSeries.length : undefined}
-              markers={currentStage === 0 || currentStage === 1 || currentStage === 4 ? chartMarkers : undefined}
+              markers={
+                currentStage === 0 || currentStage === 1 || currentStage === 4
+                  ? chartMarkers
+                  : undefined
+              }
             />
-
           </div>
 
           <div className="space-y-3 overflow-y-auto min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-200 dark:[&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-500 dark:[&::-webkit-scrollbar-thumb]:hover:bg-gray-500">
@@ -696,7 +723,8 @@ export function TimeSeriesForecastingPlayground() {
               <div className="p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs text-gray-600 dark:text-gray-400">
                 {datasetResult.dataset.description}
                 <div className="mt-2 font-medium text-gray-700 dark:text-gray-300">
-                  Source points: {datasetResult.dataset.points.length} | Missing values: {sourceMissingCount}
+                  Source points: {datasetResult.dataset.points.length} | Missing values:{' '}
+                  {sourceMissingCount}
                 </div>
               </div>
 
@@ -819,7 +847,9 @@ export function TimeSeriesForecastingPlayground() {
                 </div>
 
                 <div>
-                  <label className="text-gray-600 dark:text-gray-400">Rolling window: {rollingWindow}</label>
+                  <label className="text-gray-600 dark:text-gray-400">
+                    Rolling window: {rollingWindow}
+                  </label>
                   <input
                     type="range"
                     min="2"
@@ -925,10 +955,7 @@ export function TimeSeriesForecastingPlayground() {
             <ControlGroup title="Current Notes">
               <div className="space-y-2 text-[11px] text-gray-600 dark:text-gray-400">
                 {engineState.notes.slice(0, 4).map((note, index) => (
-                  <div
-                    key={`${note}-${index}`}
-                    className="rounded bg-gray-50 p-2 dark:bg-gray-900"
-                  >
+                  <div key={`${note}-${index}`} className="rounded bg-gray-50 p-2 dark:bg-gray-900">
                     {note}
                   </div>
                 ))}
@@ -936,7 +963,6 @@ export function TimeSeriesForecastingPlayground() {
             </ControlGroup>
           </div>
         </div>
-
       </div>
 
       <TheoryModal

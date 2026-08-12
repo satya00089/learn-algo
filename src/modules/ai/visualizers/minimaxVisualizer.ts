@@ -137,7 +137,11 @@ export function drawTree(
   // Draw connections first
   nodes.forEach((node) => {
     // If highlightIds provided, only draw connections where both parent and child are highlighted
-    if (highlightIds && (!highlightIds.has(node.id) || !node.parent || !highlightIds.has(node.parent))) return
+    if (
+      highlightIds &&
+      (!highlightIds.has(node.id) || !node.parent || !highlightIds.has(node.parent))
+    )
+      return
 
     const nodePos = layout.get(node.id)
     if (!nodePos || !node.parent) return
