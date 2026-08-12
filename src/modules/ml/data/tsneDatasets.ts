@@ -41,7 +41,7 @@ export function generateMNISTStyleData(numPoints: number = 300): {
   const highDimData: number[][] = []
   const dims = 64 // 8x8 image = 64 pixels
   const digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-  
+
   // Create realistic digit templates with characteristic features
   const digitTemplates: Record<string, number[]> = {
     '0': createCircularPattern(),
@@ -55,12 +55,12 @@ export function generateMNISTStyleData(numPoints: number = 300): {
     '8': createFigureEightPattern(),
     '9': createInvertedSixPattern(),
   }
-  
+
   // Generate samples for each digit with natural variation
   digits.forEach((digit) => {
     const template = digitTemplates[digit]
     const samplesPerDigit = Math.floor(numPoints / digits.length)
-    
+
     for (let i = 0; i < samplesPerDigit; i++) {
       // Add natural handwriting variation (reduced variance for better clustering)
       const variance = 0.08 + Math.random() * 0.04 // 8-12% variance
@@ -68,13 +68,13 @@ export function generateMNISTStyleData(numPoints: number = 300): {
         const noise = (Math.random() - 0.5) * variance
         return Math.max(0, Math.min(1, val + noise))
       })
-      
+
       // Add occasional random noise to 1-2 pixels (very sparse)
       if (Math.random() < 0.1) {
         const idx = Math.floor(Math.random() * dims)
         highDim[idx] = Math.random() * 0.2
       }
-      
+
       highDimData.push(highDim)
       points.push({
         x: 0,
@@ -90,7 +90,7 @@ export function generateMNISTStyleData(numPoints: number = 300): {
       })
     }
   })
-  
+
   return { points, highDimData }
 }
 
@@ -98,14 +98,9 @@ export function generateMNISTStyleData(numPoints: number = 300): {
 function createCircularPattern(): number[] {
   // Digit 0: circular/oval shape (more binary)
   const pattern = [
-    0, 0, 0.9, 1, 1, 0.9, 0, 0,
-    0, 0.9, 1, 0, 0, 1, 0.9, 0,
-    0.9, 1, 0, 0, 0, 0, 1, 0.9,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    0.9, 1, 0, 0, 0, 0, 1, 0.9,
-    0, 0.9, 1, 0, 0, 1, 0.9, 0,
-    0, 0, 0.9, 1, 1, 0.9, 0, 0,
+    0, 0, 0.9, 1, 1, 0.9, 0, 0, 0, 0.9, 1, 0, 0, 1, 0.9, 0, 0.9, 1, 0, 0, 0, 0, 1, 0.9, 1, 0, 0, 0,
+    0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0.9, 1, 0, 0, 0, 0, 1, 0.9, 0, 0.9, 1, 0, 0, 1, 0.9, 0, 0,
+    0, 0.9, 1, 1, 0.9, 0, 0,
   ]
   return pattern
 }
@@ -113,14 +108,8 @@ function createCircularPattern(): number[] {
 function createVerticalPattern(): number[] {
   // Digit 1: vertical line with slight angle (more binary)
   const pattern = [
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0,
+    0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0,
   ]
   return pattern
 }
@@ -128,14 +117,8 @@ function createVerticalPattern(): number[] {
 function createSPattern(): number[] {
   // Digit 2: S-shaped curve (more binary)
   const pattern = [
-    0, 0, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 1, 1, 1, 0, 0,
-    0, 0, 1, 1, 0, 0, 0, 0,
-    0, 1, 1, 0, 0, 0, 0, 0,
-    1, 1, 0, 0, 0, 1, 1, 0,
-    0, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0,
+    0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0,
   ]
   return pattern
 }
@@ -143,14 +126,8 @@ function createSPattern(): number[] {
 function createCurvedPattern(): number[] {
   // Digit 3: two curves stacked (more binary)
   const pattern = [
-    0, 0, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 1, 1, 1, 0, 0,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    0, 0, 1, 1, 1, 1, 0, 0,
+    0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0,
+    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0,
   ]
   return pattern
 }
@@ -158,14 +135,8 @@ function createCurvedPattern(): number[] {
 function createAngularPattern(): number[] {
   // Digit 4: angular, crossing lines (more binary)
   const pattern = [
-    0, 0, 0, 0, 1, 1, 0, 0,
-    0, 0, 0, 1, 1, 1, 0, 0,
-    0, 0, 1, 1, 0, 1, 0, 0,
-    0, 1, 1, 0, 0, 1, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 1, 0, 0,
-    0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
   ]
   return pattern
 }
@@ -173,14 +144,8 @@ function createAngularPattern(): number[] {
 function createTopHeavyPattern(): number[] {
   // Digit 5: horizontal top, curved bottom (more binary)
   const pattern = [
-    1, 1, 1, 1, 1, 1, 1, 0,
-    1, 1, 0, 0, 0, 0, 0, 0,
-    1, 1, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 0, 0, 0,
-    0, 0, 0, 0, 1, 1, 0, 0,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    1, 1, 0, 0, 0, 1, 1, 0,
-    0, 1, 1, 1, 1, 1, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
+    0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0,
   ]
   return pattern
 }
@@ -188,14 +153,8 @@ function createTopHeavyPattern(): number[] {
 function createBottomHeavyPattern(): number[] {
   // Digit 6: circular bottom, small top (more binary)
   const pattern = [
-    0, 0, 0, 1, 1, 1, 0, 0,
-    0, 0, 1, 1, 0, 0, 0, 0,
-    0, 1, 1, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 0, 0, 0,
-    1, 1, 0, 0, 0, 1, 1, 0,
-    1, 1, 0, 0, 0, 1, 1, 0,
-    1, 1, 0, 0, 0, 1, 1, 0,
-    0, 1, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0,
   ]
   return pattern
 }
@@ -203,14 +162,8 @@ function createBottomHeavyPattern(): number[] {
 function createDiagonalPattern(): number[] {
   // Digit 7: horizontal top, diagonal line (more binary)
   const pattern = [
-    1, 1, 1, 1, 1, 1, 1, 0,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 1, 1, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 1, 1, 0, 0, 0, 0,
-    0, 0, 1, 1, 0, 0, 0, 0,
-    0, 1, 1, 0, 0, 0, 0, 0,
-    0, 1, 1, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0,
+    0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,
   ]
   return pattern
 }
@@ -218,14 +171,8 @@ function createDiagonalPattern(): number[] {
 function createFigureEightPattern(): number[] {
   // Digit 8: two circles stacked (more binary)
   const pattern = [
-    0, 0, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    0, 0, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    1, 1, 0, 0, 0, 0, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 1,
-    0, 1, 1, 1, 1, 1, 1, 0,
+    0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0,
+    0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0,
   ]
   return pattern
 }
@@ -233,14 +180,8 @@ function createFigureEightPattern(): number[] {
 function createInvertedSixPattern(): number[] {
   // Digit 9: circular top, small bottom (more binary)
   const pattern = [
-    0, 0, 1, 1, 1, 1, 0, 0,
-    0, 1, 1, 0, 0, 1, 1, 0,
-    1, 1, 0, 0, 0, 0, 1, 1,
-    1, 1, 0, 0, 0, 0, 1, 1,
-    0, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 1, 1, 0, 0,
-    0, 1, 1, 1, 1, 0, 0, 0,
+    0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
   ]
   return pattern
 }

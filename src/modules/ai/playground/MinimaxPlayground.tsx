@@ -2,11 +2,9 @@
 
 import React, { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaRedo, FaLightbulb, FaPlay, FaPause, FaStepForward } from 'react-icons/fa'
-import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { Tooltip, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { Tooltip, ShareButton } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { TheoryModal } from '@/components/TheoryModal'
 import { MinimaxEngine } from '../engines/MinimaxEngine'
 import { useMinimaxPlayground } from '../hooks/useMinimaxPlayground'
@@ -479,26 +477,9 @@ export function MinimaxPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Minimax Algorithm</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover className="w-4 h-4" />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Minimax Algorithm" onOpenTheory={() => setShowExplanation(true)}>
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           AI decision-making for Tic-Tac-Toe using Minimax with Alpha-Beta Pruning optimization

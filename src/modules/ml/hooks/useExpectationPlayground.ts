@@ -1,5 +1,10 @@
 import { useState, useCallback, useMemo } from 'react'
-import { createBooleanCodec, createNumberCodec, useShareableQueryState, type QueryCodec } from '@/core/share/query-state'
+import {
+  createBooleanCodec,
+  createNumberCodec,
+  useShareableQueryState,
+  type QueryCodec,
+} from '@/core/share/query-state'
 import type { DiceDistribution } from '../engines/ExpectationEngine'
 
 /**
@@ -41,14 +46,9 @@ export function useExpectationPlayground() {
         }
       },
       serialize(value) {
-        return [
-          value.face1,
-          value.face2,
-          value.face3,
-          value.face4,
-          value.face5,
-          value.face6,
-        ].join(',')
+        return [value.face1, value.face2, value.face3, value.face4, value.face5, value.face6].join(
+          ','
+        )
       },
     }),
     []

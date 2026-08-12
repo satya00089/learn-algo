@@ -44,13 +44,17 @@ function quantile(values: number[], q: number): number {
   return sorted[lower] * (1 - weight) + sorted[upper] * weight
 }
 
-function fillMissingValues(points: TimeSeriesPoint[], strategy: TimeSeriesCleanConfig['missingValueStrategy']) {
+function fillMissingValues(
+  points: TimeSeriesPoint[],
+  strategy: TimeSeriesCleanConfig['missingValueStrategy']
+) {
   const filled = points.map((point) => ({ ...point }))
   const notes: string[] = []
 
   if (strategy === 'drop') {
     const removedCount = filled.filter((point) => point.value == null).length
-    if (removedCount > 0) notes.push(`Dropped ${removedCount} missing observations before modeling.`)
+    if (removedCount > 0)
+      notes.push(`Dropped ${removedCount} missing observations before modeling.`)
     return { points: filled.filter((point) => point.value != null), notes }
   }
 
@@ -64,7 +68,11 @@ function fillMissingValues(points: TimeSeriesPoint[], strategy: TimeSeriesCleanC
       }
     }
     for (let index = filled.length - 1; index >= 0; index--) {
-      if (filled[index].value == null && index + 1 < filled.length && filled[index + 1].value != null) {
+      if (
+        filled[index].value == null &&
+        index + 1 < filled.length &&
+        filled[index + 1].value != null
+      ) {
         filled[index].value = filled[index + 1].value
       }
     }
@@ -97,7 +105,8 @@ function fillMissingValues(points: TimeSeriesPoint[], strategy: TimeSeriesCleanC
   }
 
   const result = filled.map((point, index) => ({ ...point, value: values[index] }))
-  if (gapCount > 0) notes.push(`Interpolated ${gapCount} missing observations with linear interpolation.`)
+  if (gapCount > 0)
+    notes.push(`Interpolated ${gapCount} missing observations with linear interpolation.`)
   return { points: result.filter((point) => point.value != null), notes }
 }
 
@@ -120,7 +129,9 @@ function clipOutliers(points: NumericPoint[], clipPercent: number) {
 
   const notes =
     changed > 0
-      ? [`Clipped ${changed} outliers between the ${clipPercent}th and ${100 - clipPercent}th percentiles.`]
+      ? [
+          `Clipped ${changed} outliers between the ${clipPercent}th and ${100 - clipPercent}th percentiles.`,
+        ]
       : ([] as string[])
 
   return { points: clipped, notes }
@@ -141,7 +152,11 @@ function rollingMean(values: number[], window: number, centered: boolean): Array
   return result
 }
 
-function buildSeasonalProfile(values: number[], trend: Array<number | null>, seasonalPeriod: number): number[] {
+function buildSeasonalProfile(
+  values: number[],
+  trend: Array<number | null>,
+  seasonalPeriod: number
+): number[] {
   const safePeriod = Math.max(1, seasonalPeriod)
   const buckets: number[][] = Array.from({ length: safePeriod }, () => [])
 
@@ -164,15 +179,23 @@ function toMetrics(actual: number[], predicted: number[]): TimeSeriesForecastMet
   const mape =
     nonZeroPairs.length === 0
       ? 0
-      : mean(nonZeroPairs.map((pair) => Math.abs((pair.actual - pair.predicted) / pair.actual))) * 100
+      : mean(nonZeroPairs.map((pair) => Math.abs((pair.actual - pair.predicted) / pair.actual))) *
+        100
 
   return { mae, rmse, mape }
 }
 
-function buildBands(predictions: number[], residualStd: number): { lowerBand: Array<number | null>; upperBand: Array<number | null> } {
+function buildBands(
+  predictions: number[],
+  residualStd: number
+): { lowerBand: Array<number | null>; upperBand: Array<number | null> } {
   return {
-    lowerBand: predictions.map((prediction, index) => prediction - 1.96 * residualStd * Math.sqrt(index + 1)),
-    upperBand: predictions.map((prediction, index) => prediction + 1.96 * residualStd * Math.sqrt(index + 1)),
+    lowerBand: predictions.map(
+      (prediction, index) => prediction - 1.96 * residualStd * Math.sqrt(index + 1)
+    ),
+    upperBand: predictions.map(
+      (prediction, index) => prediction + 1.96 * residualStd * Math.sqrt(index + 1)
+    ),
   }
 }
 
@@ -194,12 +217,18 @@ function fitNaiveModel(trainValues: number[], horizon: number): ForecastRun {
   }
 }
 
-function fitSeasonalNaiveModel(trainValues: number[], horizon: number, seasonalPeriod: number): ForecastRun {
+function fitSeasonalNaiveModel(
+  trainValues: number[],
+  horizon: number,
+  seasonalPeriod: number
+): ForecastRun {
   const notes: string[] = []
   const safePeriod = clamp(seasonalPeriod, 1, trainValues.length)
 
   if (trainValues.length < safePeriod * 2) {
-    notes.push('Seasonal naive fell back to naive behavior because there were not enough full seasons.')
+    notes.push(
+      'Seasonal naive fell back to naive behavior because there were not enough full seasons.'
+    )
     return fitNaiveModel(trainValues, horizon)
   }
 
@@ -217,7 +246,11 @@ function fitSeasonalNaiveModel(trainValues: number[], horizon: number, seasonalP
   return { predictions, fitted, notes }
 }
 
-function fitMovingAverageModel(trainValues: number[], horizon: number, rollingWindow: number): ForecastRun {
+function fitMovingAverageModel(
+  trainValues: number[],
+  horizon: number,
+  rollingWindow: number
+): ForecastRun {
   const safeWindow = clamp(rollingWindow, 1, Math.max(1, Math.min(trainValues.length, 24)))
   const history = [...trainValues]
   const fitted = trainValues.map((value, index) => {
@@ -236,11 +269,17 @@ function fitMovingAverageModel(trainValues: number[], horizon: number, rollingWi
   return {
     predictions,
     fitted,
-    notes: [`Moving average uses the most recent ${safeWindow} observations and gradually smooths volatility.`],
+    notes: [
+      `Moving average uses the most recent ${safeWindow} observations and gradually smooths volatility.`,
+    ],
   }
 }
 
-function fitSimpleExponentialSmoothing(trainValues: number[], horizon: number, alpha: number): ForecastRun {
+function fitSimpleExponentialSmoothing(
+  trainValues: number[],
+  horizon: number,
+  alpha: number
+): ForecastRun {
   let level = trainValues[0] ?? 0
   const fitted = trainValues.map((value, index) => {
     if (index === 0) return value
@@ -252,11 +291,18 @@ function fitSimpleExponentialSmoothing(trainValues: number[], horizon: number, a
   return {
     predictions: Array(horizon).fill(level),
     fitted,
-    notes: ['Simple exponential smoothing updates a single level estimate with exponentially decaying memory.'],
+    notes: [
+      'Simple exponential smoothing updates a single level estimate with exponentially decaying memory.',
+    ],
   }
 }
 
-function fitHoltLinear(trainValues: number[], horizon: number, alpha: number, beta: number): ForecastRun {
+function fitHoltLinear(
+  trainValues: number[],
+  horizon: number,
+  alpha: number,
+  beta: number
+): ForecastRun {
   let level = trainValues[0] ?? 0
   let trend = (trainValues[1] ?? trainValues[0] ?? 0) - (trainValues[0] ?? 0)
   const fitted = trainValues.map((value, index) => {
@@ -290,7 +336,9 @@ function fitHoltWintersAdditive(
   const safePeriod = clamp(seasonalPeriod, 2, Math.max(2, Math.min(trainValues.length, 24)))
 
   if (trainValues.length < safePeriod * 2) {
-    notes.push('Holt-Winters fell back to Holt linear because the training data did not contain two full seasons.')
+    notes.push(
+      'Holt-Winters fell back to Holt linear because the training data did not contain two full seasons.'
+    )
     const fallback = fitHoltLinear(trainValues, horizon, alpha, beta)
     return { ...fallback, notes: [...fallback.notes, ...notes] }
   }
@@ -326,7 +374,9 @@ function fitHoltWintersAdditive(
     return level + (index + 1) * trend + (seasonals[seasonIndex] ?? 0)
   })
 
-  notes.push('Holt-Winters additive captures level, trend, and a repeating additive seasonal profile.')
+  notes.push(
+    'Holt-Winters additive captures level, trend, and a repeating additive seasonal profile.'
+  )
   return { predictions, fitted, notes }
 }
 
@@ -391,7 +441,9 @@ export class TimeSeriesForecastEngine {
     const values = cleanedSeries.map((point) => point.value)
 
     if (cleanedSeries.length === 0) {
-      notes.push('No usable numeric observations remained after preprocessing, so the source dataset is returned without a forecast.')
+      notes.push(
+        'No usable numeric observations remained after preprocessing, so the source dataset is returned without a forecast.'
+      )
       return {
         sourceSeries: this.dataset.points,
         cleanedSeries: [],
@@ -421,13 +473,18 @@ export class TimeSeriesForecastEngine {
       const fallbackActual = fallbackTest[0]?.value ?? fallbackValue
       const metrics = toMetrics([fallbackActual], [fallbackValue])
 
-      notes.push('Very short series detected, so the engine fell back to a one-step naive forecast.')
+      notes.push(
+        'Very short series detected, so the engine fell back to a one-step naive forecast.'
+      )
 
       return {
         sourceSeries: this.dataset.points,
         cleanedSeries,
         trainSeries: fallbackTrain,
-        testSeries: fallbackTest.length > 0 ? fallbackTest : [{ ...cleanedSeries.at(-1)!, value: fallbackActual }],
+        testSeries:
+          fallbackTest.length > 0
+            ? fallbackTest
+            : [{ ...cleanedSeries.at(-1)!, value: fallbackActual }],
         trendSeries: Array(cleanedSeries.length).fill(null),
         seasonalSeries: Array(cleanedSeries.length).fill(0),
         residualSeries: Array(cleanedSeries.length).fill(null),
@@ -445,7 +502,10 @@ export class TimeSeriesForecastEngine {
       }
     }
 
-    const minTrainSize = Math.max(this.config.seasonalPeriod * 2, this.dataset.frequency === 'monthly' ? 24 : 28)
+    const minTrainSize = Math.max(
+      this.config.seasonalPeriod * 2,
+      this.dataset.frequency === 'monthly' ? 24 : 28
+    )
     const maxHorizon = Math.max(1, cleanedSeries.length - minTrainSize)
     const horizon = clamp(this.config.forecastHorizon, 1, maxHorizon)
 
@@ -461,7 +521,9 @@ export class TimeSeriesForecastEngine {
 
     const trendSeries = rollingMean(values, this.config.rollingWindow, true)
     const seasonalProfile = buildSeasonalProfile(values, trendSeries, this.config.seasonalPeriod)
-    const seasonalSeries = values.map((_, index) => seasonalProfile[index % this.config.seasonalPeriod] ?? 0)
+    const seasonalSeries = values.map(
+      (_, index) => seasonalProfile[index % this.config.seasonalPeriod] ?? 0
+    )
     const residualSeries = values.map((value, index) => {
       const trendValue = trendSeries[index]
       if (trendValue == null) return null

@@ -46,14 +46,21 @@ function CountryDetailModal({ item, onClose }: { item: CountryMetadata; onClose:
   }, [item.cca3, item.spriteSheetUrl, item.spriteX, item.spriteY, item.spriteW, item.spriteH])
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="absolute inset-0 z-10 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="max-w-md rounded-lg bg-white p-6 shadow-2xl dark:bg-gray-800"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex gap-4">
           {spriteSrc ? (
-            <img src={spriteSrc} alt={item.name} className="h-16 w-24 flex-shrink-0 rounded object-cover" />
+            <img
+              src={spriteSrc}
+              alt={item.name}
+              className="h-16 w-24 flex-shrink-0 rounded object-cover"
+            />
           ) : (
             <div className="h-16 w-24 flex-shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
           )}
@@ -61,9 +68,13 @@ function CountryDetailModal({ item, onClose }: { item: CountryMetadata; onClose:
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{item.name}</h3>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{item.officialName}</p>
             <div className="mt-3 space-y-1 text-sm">
-              {item.capital && <p className="text-gray-700 dark:text-gray-200">Capital: {item.capital}</p>}
+              {item.capital && (
+                <p className="text-gray-700 dark:text-gray-200">Capital: {item.capital}</p>
+              )}
               <p className="text-gray-700 dark:text-gray-200">Region: {item.region || 'Unknown'}</p>
-              <p className="text-gray-700 dark:text-gray-200">Subregion: {item.subregion || 'Unknown'}</p>
+              <p className="text-gray-700 dark:text-gray-200">
+                Subregion: {item.subregion || 'Unknown'}
+              </p>
               <p className="text-gray-700 dark:text-gray-200">
                 Code: {item.cca2 || '-'} / {item.cca3 || '-'}
               </p>

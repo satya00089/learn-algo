@@ -4,11 +4,10 @@ import { useEffect, useRef, useCallback, useState, useMemo } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { TbCircleDotted, TbTopologyRing } from 'react-icons/tb'
-import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle, useTheme } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
+import { useTheme } from '@/core/theme'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { DBSCANEngine } from '../engines/DBSCANEngine'
@@ -288,27 +287,12 @@ export function DBSCANPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              DBSCAN: Density-Based Spatial Clustering
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader
+          title="DBSCAN: Density-Based Spatial Clustering"
+          onOpenTheory={() => setShowExplanation(true)}
+        >
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           <strong>Density-Based Spatial Clustering of Applications with Noise (DBSCAN)</strong> -

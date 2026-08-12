@@ -16,11 +16,9 @@ import {
   FaRulerVertical,
 } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, ShareButton } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { StackEngine } from '../engines/StackEngine'
@@ -334,25 +332,9 @@ export function StackPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1 flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Stack (LIFO)</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Stack (LIFO)" onOpenTheory={() => setShowExplanation(true)}>
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Last In First Out (LIFO) - Elements are added and removed from the top

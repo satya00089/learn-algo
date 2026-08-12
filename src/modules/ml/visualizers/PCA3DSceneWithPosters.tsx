@@ -172,11 +172,16 @@ function MoviePosterPoints({
       })}
       {/* Tooltip for hovered poster */}
       {hoveredIndex !== null && points[hoveredIndex]?.metadata && (
-        <Html position={[points[hoveredIndex].x, points[hoveredIndex].z || 0, -points[hoveredIndex].y]}>
+        <Html
+          position={[points[hoveredIndex].x, points[hoveredIndex].z || 0, -points[hoveredIndex].y]}
+        >
           <div className="pointer-events-none bg-black/90 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-xl transform -translate-y-16">
-            <div className="font-semibold">{(points[hoveredIndex].metadata as MovieMetadata).title}</div>
+            <div className="font-semibold">
+              {(points[hoveredIndex].metadata as MovieMetadata).title}
+            </div>
             <div className="text-xs text-gray-300 mt-1">
-              {(points[hoveredIndex].metadata as MovieMetadata).year} · {(points[hoveredIndex].metadata as MovieMetadata).genre}
+              {(points[hoveredIndex].metadata as MovieMetadata).year} ·{' '}
+              {(points[hoveredIndex].metadata as MovieMetadata).genre}
             </div>
             <div className="text-xs text-gray-400">
               ⭐ {(points[hoveredIndex].metadata as MovieMetadata).rating.toFixed(1)} · 💰 $
@@ -212,10 +217,7 @@ function ComponentVectors({
 
         const direction = new THREE.Vector3(mappedX, mappedY, mappedZ)
         const quaternion = new THREE.Quaternion()
-        quaternion.setFromUnitVectors(
-          new THREE.Vector3(0, 1, 0),
-          direction.clone().normalize()
-        )
+        quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize())
 
         return (
           <group key={`pc-${index}`}>

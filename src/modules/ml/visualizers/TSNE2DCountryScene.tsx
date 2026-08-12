@@ -26,13 +26,7 @@ export interface TSNE2DCountrySceneProps {
   readonly theme: 'light' | 'dark'
 }
 
-function CountryDetailModal({
-  item,
-  onClose,
-}: {
-  item: CountryMetadata
-  onClose: () => void
-}) {
+function CountryDetailModal({ item, onClose }: { item: CountryMetadata; onClose: () => void }) {
   const [spriteSrc, setSpriteSrc] = useState<string | null>(null)
 
   const numberFormatter = new Intl.NumberFormat('en-US')
@@ -77,9 +71,7 @@ function CountryDetailModal({
               {item.capital && (
                 <p className="text-gray-700 dark:text-gray-200">Capital: {item.capital}</p>
               )}
-              <p className="text-gray-700 dark:text-gray-200">
-                Region: {item.region || 'Unknown'}
-              </p>
+              <p className="text-gray-700 dark:text-gray-200">Region: {item.region || 'Unknown'}</p>
               <p className="text-gray-700 dark:text-gray-200">
                 Subregion: {item.subregion || 'Unknown'}
               </p>

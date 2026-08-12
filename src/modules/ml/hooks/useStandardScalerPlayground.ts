@@ -1,5 +1,9 @@
 import { useState, useMemo } from 'react'
-import { createBooleanCodec, createNumberCodec, useShareableQueryState } from '@/core/share/query-state'
+import {
+  createBooleanCodec,
+  createNumberCodec,
+  useShareableQueryState,
+} from '@/core/share/query-state'
 
 /**
  * Hook for managing Standard Scaler playground state

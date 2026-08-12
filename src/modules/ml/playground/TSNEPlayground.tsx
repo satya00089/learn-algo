@@ -12,11 +12,10 @@ import {
   FaCloud,
 } from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
-import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle, useTheme } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
+import { useTheme } from '@/core/theme'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { TheoryModal } from '@/components/TheoryModal'
 import {
   useShareableQueryState,
@@ -352,25 +351,12 @@ export function TSNEPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">t-SNE (t-Distributed Stochastic Neighbor Embedding)</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover className="w-4 h-4" />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader
+          title="t-SNE (t-Distributed Stochastic Neighbor Embedding)"
+          onOpenTheory={() => setShowExplanation(true)}
+        >
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           {dataType === 'mnist-digits'
@@ -391,7 +377,9 @@ export function TSNEPlayground() {
                   <Tooltip text={isPlaying ? 'Pause' : 'Play'}>
                     <button
                       onClick={handlePlayPause}
-                      disabled={(engineState?.phase === 'complete' && !isPlaying) || isFastForwarding}
+                      disabled={
+                        (engineState?.phase === 'complete' && !isPlaying) || isFastForwarding
+                      }
                       className="w-8 h-8 flex items-center justify-center rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isPlaying ? <FaPause size={12} /> : <FaPlay size={12} />}
@@ -452,7 +440,9 @@ export function TSNEPlayground() {
                     max={5000}
                     step={100}
                     onChange={(e) =>
-                      setMaxIterations(Math.max(100, Math.min(5000, Number.parseInt(e.target.value) || 1000)))
+                      setMaxIterations(
+                        Math.max(100, Math.min(5000, Number.parseInt(e.target.value) || 1000))
+                      )
                     }
                     className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     disabled={isPlaying}
@@ -615,7 +605,12 @@ export function TSNEPlayground() {
             <ControlGroup title="Datasets">
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => { setDataType('mnist-digits'); setPerplexity(30); setLearningRate(200); setMaxIterations(1000) }}
+                  onClick={() => {
+                    setDataType('mnist-digits')
+                    setPerplexity(30)
+                    setLearningRate(200)
+                    setMaxIterations(1000)
+                  }}
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     dataType === 'mnist-digits'
@@ -626,7 +621,12 @@ export function TSNEPlayground() {
                   MNIST Digits
                 </button>
                 <button
-                  onClick={() => { setDataType('movies'); setPerplexity(15); setLearningRate(50); setMaxIterations(1000) }}
+                  onClick={() => {
+                    setDataType('movies')
+                    setPerplexity(15)
+                    setLearningRate(50)
+                    setMaxIterations(1000)
+                  }}
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                     dataType === 'movies'
@@ -638,7 +638,12 @@ export function TSNEPlayground() {
                   Movies
                 </button>
                 <button
-                  onClick={() => { setDataType('countries'); setPerplexity(15); setLearningRate(50); setMaxIterations(1000) }}
+                  onClick={() => {
+                    setDataType('countries')
+                    setPerplexity(15)
+                    setLearningRate(50)
+                    setMaxIterations(1000)
+                  }}
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                     dataType === 'countries'
@@ -650,7 +655,12 @@ export function TSNEPlayground() {
                   Countries
                 </button>
                 <button
-                  onClick={() => { setDataType('cloud'); setPerplexity(20); setLearningRate(50); setMaxIterations(1000) }}
+                  onClick={() => {
+                    setDataType('cloud')
+                    setPerplexity(20)
+                    setLearningRate(50)
+                    setMaxIterations(1000)
+                  }}
                   disabled={isPlaying || isLoadingDataset}
                   className={`w-full px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 ${
                     dataType === 'cloud'
@@ -669,7 +679,8 @@ export function TSNEPlayground() {
                     <p>📐 64 dimensions (8×8 pixels)</p>
                     <p>🏷️ 10 categories (digits 0-9)</p>
                     <p className="text-[10px] mt-1 text-gray-500 dark:text-gray-500">
-                      Each point represents an 8×8 grayscale image. t-SNE maps 64D vectors to 2D/3D preserving local neighborhoods.
+                      Each point represents an 8×8 grayscale image. t-SNE maps 64D vectors to 2D/3D
+                      preserving local neighborhoods.
                     </p>
                   </div>
                 ) : dataType === 'movies' ? (
@@ -678,7 +689,8 @@ export function TSNEPlayground() {
                     <p>📐 numeric + genre + keyword features</p>
                     <p>🏷️ Perplexity 15, LR 50 (sklearn auto)</p>
                     <p className="text-[10px] mt-1 text-orange-600 dark:text-orange-400">
-                      Watch genre clusters form live — action, comedy, sci-fi, and horror movies drift together as t-SNE iterates.
+                      Watch genre clusters form live — action, comedy, sci-fi, and horror movies
+                      drift together as t-SNE iterates.
                     </p>
                   </div>
                 ) : dataType === 'countries' ? (
@@ -687,7 +699,8 @@ export function TSNEPlayground() {
                     <p>271 embedding dimensions + sprite metadata</p>
                     <p>Perplexity 15, LR 50 (sklearn auto)</p>
                     <p className="text-[10px] mt-1 text-emerald-600 dark:text-emerald-400">
-                      Watch countries group by region and geography while the sprite sheet keeps the showcase visual and familiar.
+                      Watch countries group by region and geography while the sprite sheet keeps the
+                      showcase visual and familiar.
                     </p>
                   </div>
                 ) : (
@@ -696,7 +709,8 @@ export function TSNEPlayground() {
                     <p>256 embedding dimensions + sprite atlas</p>
                     <p>Perplexity 20, LR 50 (sklearn auto)</p>
                     <p className="text-[10px] mt-1 text-sky-600 dark:text-sky-400">
-                      Watch AWS, Azure, and GCP services settle into product families while their sprite icons stay visible in 2D and 3D.
+                      Watch AWS, Azure, and GCP services settle into product families while their
+                      sprite icons stay visible in 2D and 3D.
                     </p>
                   </div>
                 )}
@@ -742,8 +756,6 @@ export function TSNEPlayground() {
                 </p>
               </div>
             </ControlGroup>
-
-
 
             {/* Algorithm Phases */}
             <ControlGroup title="Algorithm Phases">
@@ -799,7 +811,8 @@ export function TSNEPlayground() {
                       Each digit cluster shows natural writing style diversity.
                     </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                      Tip: Try different perplexity values to see how local and global structure trade off.
+                      Tip: Try different perplexity values to see how local and global structure
+                      trade off.
                     </p>
                   </>
                 ) : dataType === 'movies' ? (
@@ -823,7 +836,8 @@ export function TSNEPlayground() {
                       Watch posters drift into neighborhoods each iteration.
                     </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                      Early exaggeration separates big groups first, then optimization refines their local structure.
+                      Early exaggeration separates big groups first, then optimization refines their
+                      local structure.
                     </p>
                   </>
                 ) : dataType === 'countries' ? (
@@ -832,22 +846,26 @@ export function TSNEPlayground() {
                       <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                         Regional neighborhoods:
                       </span>{' '}
-                      Countries from the same region or subregion should drift toward each other early.
+                      Countries from the same region or subregion should drift toward each other
+                      early.
                     </p>
                     <p>
                       <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                         Semantic overlap:
                       </span>{' '}
-                      Large economies, island nations, and culturally similar countries may share space even across continents.
+                      Large economies, island nations, and culturally similar countries may share
+                      space even across continents.
                     </p>
                     <p>
                       <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                         Showcase readability:
                       </span>{' '}
-                      The sprite atlas should keep country tiles recognizable enough to inspect clusters visually.
+                      The sprite atlas should keep country tiles recognizable enough to inspect
+                      clusters visually.
                     </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                      Regional grouping is a useful sanity check, but embeddings can also surface cross-region similarities.
+                      Regional grouping is a useful sanity check, but embeddings can also surface
+                      cross-region similarities.
                     </p>
                   </>
                 ) : (
@@ -856,22 +874,26 @@ export function TSNEPlayground() {
                       <span className="text-sky-600 dark:text-sky-400 font-semibold">
                         Provider separation:
                       </span>{' '}
-                      AWS, Azure, and GCP services should quickly form broad neighborhoods from provider-specific language.
+                      AWS, Azure, and GCP services should quickly form broad neighborhoods from
+                      provider-specific language.
                     </p>
                     <p>
                       <span className="text-sky-600 dark:text-sky-400 font-semibold">
                         Product families:
                       </span>{' '}
-                      Compute, storage, database, AI, and networking services should create tighter local clusters inside each provider.
+                      Compute, storage, database, AI, and networking services should create tighter
+                      local clusters inside each provider.
                     </p>
                     <p>
                       <span className="text-sky-600 dark:text-sky-400 font-semibold">
                         Icon validation:
                       </span>{' '}
-                      The sprite icons make it easy to check whether related services really landed together.
+                      The sprite icons make it easy to check whether related services really landed
+                      together.
                     </p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-2">
-                      If clustering looks noisy, verify the source descriptions and tags before retuning t-SNE parameters.
+                      If clustering looks noisy, verify the source descriptions and tags before
+                      retuning t-SNE parameters.
                     </p>
                   </>
                 )}
@@ -891,6 +913,3 @@ export function TSNEPlayground() {
     </div>
   )
 }
-
-
-

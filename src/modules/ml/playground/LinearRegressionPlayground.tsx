@@ -14,11 +14,9 @@ import {
   FaMinus,
 } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { GiBookCover } from 'react-icons/gi'
 import { Canvas, useCanvas } from '@/core/canvas'
-import { ControlGroup, Tooltip, Button, ShareButton } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { LinearRegressionEngine } from '../engines/LinearRegressionEngine'
@@ -480,26 +478,9 @@ export function LinearRegressionPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        {/* Header with Breadcrumbs and Theme Toggle */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Linear Regression</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="Linear Regression" onOpenTheory={() => setShowExplanation(true)}>
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Watch gradient descent optimize a line to fit the data points

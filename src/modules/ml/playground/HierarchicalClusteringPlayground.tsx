@@ -5,8 +5,8 @@ import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-ico
 import { TbTopologyRing } from 'react-icons/tb'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip } from '@/core/controls'
-import { ThemeToggle, useTheme } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { useTheme } from '@/core/theme'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { HierarchicalClusteringEngine } from '../engines/HierarchicalClusteringEngine'
 import { drawHierarchicalClustering } from '../visualizers/hierarchicalClusteringVisualizer'
@@ -237,15 +237,7 @@ export function HierarchicalClusteringPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Hierarchical Clustering
-            </h1>
-          </div>
-          <ThemeToggle />
-        </div>
+        <PlaygroundHeader title="Hierarchical Clustering" />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Build a hierarchy of clusters using agglomerative (bottom-up) approach. Watch points merge

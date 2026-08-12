@@ -4,8 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
 import { ControlGroup, Tooltip } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { RecursionEngine } from '../engines/RecursionEngine'
 import { useRecursionPlayground } from '../hooks/useRecursionPlayground'
@@ -493,13 +492,7 @@ export function RecursionPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1 flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Recursion</h1>
-          </div>
-          <ThemeToggle />
-        </div>
+        <PlaygroundHeader title="Recursion" />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Visualize recursive algorithms with call stack tracking

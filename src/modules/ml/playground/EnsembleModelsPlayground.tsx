@@ -6,8 +6,7 @@ import { VscDebugAltSmall } from 'react-icons/vsc'
 import { MdGridOn, MdForest } from 'react-icons/md'
 import { Canvas, useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { EnsembleModelsEngine } from '../engines/EnsembleModelsEngine'
 import type { DataPoint } from '../algorithms/decisionTree'
@@ -324,15 +323,7 @@ export function EnsembleModelsPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Ensemble Models (Random Forest)
-            </h1>
-          </div>
-          <ThemeToggle />
-        </div>
+        <PlaygroundHeader title="Ensemble Models (Random Forest)" />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Ensemble learning using multiple decision trees with bootstrap sampling and majority

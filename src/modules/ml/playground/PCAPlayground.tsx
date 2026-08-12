@@ -14,13 +14,11 @@ import {
   FaFilm,
 } from 'react-icons/fa'
 import { TbRotate360 } from 'react-icons/tb'
-import { GiBookCover } from 'react-icons/gi'
 import { useCanvas } from '@/core/canvas'
 import { ControlGroup, Tooltip, ShareButton } from '@/core/controls'
-import { Button } from '@/core/controls/Button'
-import { ThemeToggle, useTheme } from '@/core/theme'
+import { useTheme } from '@/core/theme'
 import { TheoryModal } from '@/components/TheoryModal'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import {
   useShareableQueryState,
@@ -97,7 +95,15 @@ export function PCAPlayground() {
           defaultValue: 'iris',
           setValue: setDataType,
           codec: createStringCodec({
-            allowedValues: ['iris', 'wine', 'breast-cancer', 'mnist', 'movies', 'countries', 'cloud'],
+            allowedValues: [
+              'iris',
+              'wine',
+              'breast-cancer',
+              'mnist',
+              'movies',
+              'countries',
+              'cloud',
+            ],
           }),
         },
         {
@@ -170,7 +176,7 @@ export function PCAPlayground() {
     (type: 'iris' | 'wine' | 'breast-cancer' | 'mnist' | 'movies' | 'countries' | 'cloud') => {
       // Real datasets are loaded externally, not generated
       if (type === 'movies' || type === 'countries' || type === 'cloud') return []
-      
+
       const newPoints: DataPoint[] = []
       const use3D = view3D || numComponents >= 3
 
@@ -357,9 +363,7 @@ export function PCAPlayground() {
       setEngineState(engineRef.current.getState())
     } catch (error) {
       console.error(`Failed to load ${dataType} dataset:`, error)
-      setDatasetError(
-        `Failed to load ${dataType} dataset. Check console for details.`
-      )
+      setDatasetError(`Failed to load ${dataType} dataset. Check console for details.`)
     } finally {
       setIsLoadingDataset(false)
     }
@@ -475,27 +479,12 @@ export function PCAPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              Principal Component Analysis
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <ShareButton />
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover size={14} />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader
+          title="Principal Component Analysis"
+          onOpenTheory={() => setShowExplanation(true)}
+        >
+          <ShareButton />
+        </PlaygroundHeader>
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Interactive visualization of PCA dimensionality reduction with simulated projections from
@@ -794,7 +783,7 @@ export function PCAPlayground() {
                         ? 'bg-orange-700 text-white'
                         : 'bg-orange-600 hover:bg-orange-700 text-white'
                     }`}
-                    >
+                  >
                     <FaFilm size={12} />
                     Movies
                   </button>

@@ -3,10 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaPlay, FaPause, FaStepForward, FaFastForward, FaRedo } from 'react-icons/fa'
 import { VscDebugAltSmall } from 'react-icons/vsc'
-import { GiBookCover } from 'react-icons/gi'
-import { ControlGroup, Tooltip, Button } from '@/core/controls'
-import { ThemeToggle } from '@/core/theme'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { ControlGroup, Tooltip } from '@/core/controls'
+import { PlaygroundHeader } from '@/components/PlaygroundHeader'
 import { RelatedAlgorithms } from '@/components/RelatedAlgorithms'
 import { TheoryModal } from '@/components/TheoryModal'
 import { StringOperationsEngine } from '../engines/StringOperationsEngine'
@@ -167,24 +165,7 @@ export function StringOperationsPlayground() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col relative">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1 flex items-center">
-            <Breadcrumbs />
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">String Operations</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setShowExplanation(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <GiBookCover className="w-4 h-4" />
-              How It Works
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <PlaygroundHeader title="String Operations" onOpenTheory={() => setShowExplanation(true)} />
 
         <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
           Visualize string manipulation algorithms step-by-step

@@ -57,7 +57,11 @@ const BUBBLE_STEPS = computeBubbleSortSteps(DEMO_BARS)
 
 export function BubbleSortViz() {
   const [stepIdx, setStepIdx] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(true)
+  // Default to paused for users who've asked for less motion; they can still
+  // step through manually via the transport controls below.
+  const [isPlaying, setIsPlaying] = useState(
+    () => !globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  )
   const [speed, setSpeed] = useState<number>(480) // ms per step
 
   useEffect(() => {

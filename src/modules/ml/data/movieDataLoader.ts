@@ -245,10 +245,54 @@ function buildGenreOneHot(genres: string[]): { features: number[][]; labels: str
 
 /** Common English stop words to exclude from keyword TF-IDF. */
 const STOP_WORDS = new Set([
-  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
-  'from', 'as', 'is', 'was', 'are', 'were', 'be', 'been', 'being', 'have', 'has', 'had',
-  'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'not', 'no',
-  'that', 'this', 'these', 'those', 'it', 'its', 'he', 'she', 'they', 'we', 'you',
+  'the',
+  'a',
+  'an',
+  'and',
+  'or',
+  'but',
+  'in',
+  'on',
+  'at',
+  'to',
+  'for',
+  'of',
+  'with',
+  'by',
+  'from',
+  'as',
+  'is',
+  'was',
+  'are',
+  'were',
+  'be',
+  'been',
+  'being',
+  'have',
+  'has',
+  'had',
+  'do',
+  'does',
+  'did',
+  'will',
+  'would',
+  'could',
+  'should',
+  'may',
+  'might',
+  'not',
+  'no',
+  'that',
+  'this',
+  'these',
+  'those',
+  'it',
+  'its',
+  'he',
+  'she',
+  'they',
+  'we',
+  'you',
 ])
 
 /**
@@ -315,8 +359,8 @@ export async function loadMoviesForTSNE(): Promise<{
     m.rating,
     m.votes,
     m.popularity,
-    m.budget > 0 ? m.boxOffice / m.budget : 0,         // ROI
-    m.runtime > 0 ? m.boxOffice / m.runtime : 0,        // box_per_min
+    m.budget > 0 ? m.boxOffice / m.budget : 0, // ROI
+    m.runtime > 0 ? m.boxOffice / m.runtime : 0, // box_per_min
   ])
 
   // ── 2. Genre one-hot (matches notebook Section 3b) ───────────────────────────
@@ -326,7 +370,7 @@ export async function loadMoviesForTSNE(): Promise<{
   // ── 3. Keyword TF-IDF top-30 (matches notebook Section 3c) ──────────────────
   const kwFeatures = computeKeywordsTFIDF(
     metas.map((m) => m.keywords || ''),
-    30,
+    30
   )
 
   // ── 4. Concatenate and z-score normalise (matches notebook Section 3d) ───────
@@ -349,7 +393,7 @@ export async function loadMoviesForTSNE(): Promise<{
 
   console.log(
     `[t-SNE] Feature matrix: ${tsnePoints.length} movies × ${highDimData[0]?.length} features`,
-    `(genre sample: ${(tsnePoints[0]?.category as string) ?? '?'})`,
+    `(genre sample: ${(tsnePoints[0]?.category as string) ?? '?'})`
   )
 
   tsneMoviesCache = { tsnePoints, highDimData }

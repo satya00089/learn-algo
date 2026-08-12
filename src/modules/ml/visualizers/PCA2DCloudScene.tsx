@@ -33,17 +33,32 @@ function CloudDetailModal({ item, onClose }: { item: CloudMetadata; onClose: () 
     return () => {
       cancelled = true
     }
-  }, [item.label, item.provider, item.spriteSheetUrl, item.spriteX, item.spriteY, item.spriteW, item.spriteH])
+  }, [
+    item.label,
+    item.provider,
+    item.spriteSheetUrl,
+    item.spriteX,
+    item.spriteY,
+    item.spriteW,
+    item.spriteH,
+  ])
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="absolute inset-0 z-10 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="max-w-md rounded-lg bg-white p-6 shadow-2xl dark:bg-gray-800"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex gap-4">
           {spriteSrc ? (
-            <img src={spriteSrc} alt={item.label} className="h-16 w-16 flex-shrink-0 rounded object-contain" />
+            <img
+              src={spriteSrc}
+              alt={item.label}
+              className="h-16 w-16 flex-shrink-0 rounded object-contain"
+            />
           ) : (
             <div className="h-16 w-16 flex-shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
           )}
@@ -78,7 +93,9 @@ export function PCA2DCloudScene({ state, theme }: PCA2DCloudSceneProps) {
       theme={theme}
       spriteRect={{ width: 36, height: 36 }}
       getMetadata={(point) => point.metadata as CloudMetadata | undefined}
-      getSpriteBitmap={(metadata) => cloudSpriteBitmapCache.get(`${metadata.provider}:${metadata.label}`)}
+      getSpriteBitmap={(metadata) =>
+        cloudSpriteBitmapCache.get(`${metadata.provider}:${metadata.label}`)
+      }
       loadSpriteBitmap={getCloudSpriteBitmap}
       getFallbackColor={(metadata) => PROVIDER_COLORS[metadata?.provider || 'unknown'] ?? '#6b7280'}
       DetailModal={CloudDetailModal}

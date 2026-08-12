@@ -60,15 +60,17 @@ async function fetchAndParseCloudDataset(): Promise<CloudDataset> {
   }
 
   const csvText = await response.text()
-  const parseResult = await new Promise<Papa.ParseResult<Record<string, string>>>((resolve, reject) => {
-    Papa.parse(csvText, {
-      header: true,
-      dynamicTyping: true,
-      skipEmptyLines: true,
-      complete: resolve,
-      error: reject,
-    })
-  })
+  const parseResult = await new Promise<Papa.ParseResult<Record<string, string>>>(
+    (resolve, reject) => {
+      Papa.parse(csvText, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        complete: resolve,
+        error: reject,
+      })
+    }
+  )
 
   const rows = parseResult.data
   if (rows.length === 0) {

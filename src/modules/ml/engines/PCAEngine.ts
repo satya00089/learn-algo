@@ -54,7 +54,9 @@ export class PCAEngine {
     console.log(`🚀 PCA: Initializing with ${config.points.length} points`)
     const firstPoint = config.points[0]
     if (firstPoint?.embeddings) {
-      console.log(`📊 PCA: Data has embeddings array with ${firstPoint.embeddings.length} dimensions`)
+      console.log(
+        `📊 PCA: Data has embeddings array with ${firstPoint.embeddings.length} dimensions`
+      )
       console.log(`📊 PCA: First point embeddings (first 5):`, firstPoint.embeddings.slice(0, 5))
     } else {
       console.log(`📊 PCA: Low-dimensional data (x, y, z only)`)
@@ -98,9 +100,10 @@ export class PCAEngine {
   }
 
   // Check if data is high-dimensional (has embeddings)
-  private isHighDimensional(): boolean { 
-    return this.state.originalPoints.length > 0 && 
-           this.state.originalPoints[0].embeddings !== undefined
+  private isHighDimensional(): boolean {
+    return (
+      this.state.originalPoints.length > 0 && this.state.originalPoints[0].embeddings !== undefined
+    )
   }
 
   getState(): PCAState {
@@ -181,7 +184,10 @@ export class PCAEngine {
       for (let i = 0; i < dim; i++) {
         meanVector[i] /= n
       }
-      console.log(`📈 PCA: Computed mean vector, dim=${dim}, mean (first 5):`, meanVector.slice(0, 5))
+      console.log(
+        `📈 PCA: Computed mean vector, dim=${dim}, mean (first 5):`,
+        meanVector.slice(0, 5)
+      )
 
       // Compute standard deviation for each dimension
       const stdVector = new Array(dim).fill(0)
@@ -372,7 +378,7 @@ export class PCAEngine {
       // Find principal components using deflation
       // For high-dimensional data, find only as many as we need (up to numComponents)
       const numToCompute = Math.min(this.state.numComponents, dim)
-      
+
       for (let comp = 0; comp < numToCompute; comp++) {
         const { eigenvalue, eigenvector } = this.powerIteration(A, comp)
         this.state.eigenvalues.push(eigenvalue)
@@ -488,11 +494,16 @@ export class PCAEngine {
         const originalFeatures = this.extractFeatures(point.original)
 
         if (this.state.points.indexOf(point) === 0) {
-          console.log(`📍 First point original features (length=${originalFeatures.length}, first 5):`, originalFeatures.slice(0, 5))
+          console.log(
+            `📍 First point original features (length=${originalFeatures.length}, first 5):`,
+            originalFeatures.slice(0, 5)
+          )
         }
 
         // Standardize features: (val - mean) / std (same as during centering)
-        const standardizedFeatures = originalFeatures.map((val, i) => (val - meanVector[i]) / stdVector[i])
+        const standardizedFeatures = originalFeatures.map(
+          (val, i) => (val - meanVector[i]) / stdVector[i]
+        )
 
         // Project onto each principal component (dot product)
         const projections: number[] = []
@@ -500,7 +511,10 @@ export class PCAEngine {
           const eigenvector = this.state.components[i].eigenvector
 
           if (this.state.points.indexOf(point) === 0 && i === 0) {
-            console.log(`📐 PC${i+1} eigenvector (length=${eigenvector.length}, first 5):`, eigenvector.slice(0, 5))
+            console.log(
+              `📐 PC${i + 1} eigenvector (length=${eigenvector.length}, first 5):`,
+              eigenvector.slice(0, 5)
+            )
           }
 
           let projection = 0
@@ -510,7 +524,7 @@ export class PCAEngine {
           projections.push(projection)
 
           if (this.state.points.indexOf(point) === 0) {
-            console.log(`📐 First point PC${i+1} projection = ${projection.toFixed(4)}`)
+            console.log(`📐 First point PC${i + 1} projection = ${projection.toFixed(4)}`)
           }
         }
         allProjections.push(projections)
@@ -528,7 +542,10 @@ export class PCAEngine {
       }
       const ranges = maxs.map((max, i) => max - mins[i] || 1)
       const TARGET_SCALE = 8 // maps to [-4, 4] range
-      console.log(`📐 PCA projection ranges:`, ranges.slice(0, 3).map(r => r.toFixed(2)))
+      console.log(
+        `📐 PCA projection ranges:`,
+        ranges.slice(0, 3).map((r) => r.toFixed(2))
+      )
 
       // Second pass: normalize and assign transformed coordinates
       this.state.points.forEach((point, idx) => {
@@ -540,7 +557,9 @@ export class PCAEngine {
         }
 
         if (idx === 0) {
-          console.log(`✅ First point normalized to: (${point.transformed.x.toFixed(3)}, ${point.transformed.y.toFixed(3)}, ${(point.transformed.z ?? 0).toFixed(3)})`)
+          console.log(
+            `✅ First point normalized to: (${point.transformed.x.toFixed(3)}, ${point.transformed.y.toFixed(3)}, ${(point.transformed.z ?? 0).toFixed(3)})`
+          )
         }
       })
       return
