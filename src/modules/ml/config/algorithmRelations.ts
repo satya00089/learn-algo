@@ -20,6 +20,7 @@ export type MLRoute =
   | 'pca'
   | 'tsne'
   | 'time-series-forecasting'
+  | 'neural-network-playground'
 
 export interface RelatedAlgorithm {
   name: string
@@ -388,6 +389,23 @@ export const mlAlgorithmRelations: Record<MLRoute, RelatedAlgorithm[]> = {
       name: 'Gradient Descent',
       route: 'gradient-descent',
       category: 'Optimization',
+    },
+  ],
+  'neural-network-playground': [
+    {
+      name: 'Logistic Regression',
+      route: 'logistic-regression',
+      category: 'Classification',
+    },
+    {
+      name: 'Gradient Descent',
+      route: 'gradient-descent',
+      category: 'Optimization',
+    },
+    {
+      name: 'K-Nearest Neighbors',
+      route: 'knn',
+      category: 'Classification',
     },
   ],
 }

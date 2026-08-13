@@ -203,6 +203,11 @@ const mlAlgorithmInfo: Record<MLRoute, { title: string; description: string; cat
     description: 'Forecast future values from seasonal and trending historical data',
     category: 'Forecasting',
   },
+  'neural-network-playground': {
+    title: 'Neural Network Playground',
+    description: 'Train a multi-layer perceptron and visualize backpropagation live',
+    category: 'Neural Networks',
+  },
 }
 
 export function RelatedAlgorithms({ route, type, compact = false }: RelatedAlgorithmsProps) {

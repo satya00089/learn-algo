@@ -74,6 +74,34 @@ export function createNumberCodec(options: {
   }
 }
 
+export function createNumberArrayCodec(
+  options: {
+    min?: number
+    max?: number
+    maxLength?: number
+  } = {}
+): QueryCodec<number[]> {
+  const { min, max, maxLength } = options
+
+  return {
+    parse(rawValue) {
+      if (rawValue === null || rawValue === '') return undefined
+      const parts = rawValue.split('-').map(Number)
+      if (parts.length === 0 || parts.some((n) => !Number.isFinite(n))) return undefined
+
+      let values = parts.map((n) => Math.round(n))
+      if (typeof min === 'number') values = values.map((n) => Math.max(min, n))
+      if (typeof max === 'number') values = values.map((n) => Math.min(max, n))
+      if (typeof maxLength === 'number') values = values.slice(0, maxLength)
+
+      return values
+    },
+    serialize(value) {
+      return value.join('-')
+    },
+  }
+}
+
 export function useShareableQueryState(definitions: readonly ShareableParamDefinition<any>[]) {
   const [isReady, setIsReady] = useState(false)
   const lastSearchParamsRef = useRef('')

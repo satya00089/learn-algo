@@ -285,6 +285,21 @@ export default function MLPage() {
     },
   ]
 
+  const neuralNetwork = [
+    {
+      title: 'Neural Network Playground',
+      description: 'Train a configurable multi-layer perceptron and watch it learn live',
+      href: '/ml/neural-network-playground',
+      icon: '/icons/ml/machine-learning.png',
+      iconType: 'image' as const,
+      color: 'text-indigo-600 dark:text-indigo-400',
+      darkFilter: 'dark:invert',
+      difficulty: 'Advanced',
+      comingSoon: true,
+      category: 'Neural Networks',
+    },
+  ]
+
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 p-4">
       <div className="h-full flex flex-col">
@@ -464,6 +479,84 @@ export default function MLPage() {
                       </span>
                     </div>
                     {!algo.comingSoon && (
+                      <span className="text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
+                        Try it →
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Neural Networks Section */}
+          <div className="mb-4 max-w-full">
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+              <Image
+                src={'/icons/ml/hierarchical.png'}
+                alt="Neural Networks"
+                width={48}
+                height={48}
+                className={`object-contain dark:invert`}
+              />
+              Neural Networks
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Go beyond linear models — build and train multi-layer perceptrons and watch
+              backpropagation reshape decision boundaries live
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            {neuralNetwork.map((topic) => (
+              <Link
+                key={topic.href}
+                href={topic.comingSoon ? '#' : topic.href}
+                className={`group ${topic.comingSoon ? 'pointer-events-none' : ''}`}
+              >
+                <div
+                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5 h-full transition-all duration-300 border-l-4 border-indigo-500 ${
+                    topic.comingSoon ? 'opacity-70' : 'hover:shadow-2xl hover:-translate-y-2'
+                  }`}
+                >
+                  <div className="mb-3">
+                    {topic.iconType === 'image' ? (
+                      <Image
+                        src={topic.icon}
+                        alt={topic.title}
+                        width={88}
+                        height={64}
+                        className={`object-contain h-16 ${topic.darkFilter}`}
+                      />
+                    ) : (
+                      <div className="text-4xl">{topic.icon}</div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-start mb-2">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+                      {topic.title}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      {topic.comingSoon && (
+                        <span className="text-xs bg-yellow-100 text-yellow-800 mx-2 px-2 py-1 rounded">
+                          Soon
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 mb-3 text-sm">
+                    {topic.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">
+                        {topic.category}
+                      </span>
+                      <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+                        {topic.difficulty}
+                      </span>
+                    </div>
+                    {!topic.comingSoon && (
                       <span className="text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform text-sm">
                         Try it →
                       </span>

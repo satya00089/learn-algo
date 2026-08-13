@@ -214,6 +214,14 @@ const mlPages: OGImageConfig[] = [
     filename: 'og-ml-logistic-regression.png',
   },
   {
+    title: 'Neural Network Playground',
+    subtitle: 'Multi-Layer Perceptron & Backpropagation',
+    description: 'Configure hidden layers and watch a network learn live',
+    category: 'ML • Neural Networks',
+    categoryColor: '#10B981',
+    filename: 'og-ml-neural-network-playground.png',
+  },
+  {
     title: 'K-Nearest Neighbors',
     subtitle: 'Instance-Based Learning',
     description: 'Classify based on K closest training examples',

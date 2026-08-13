@@ -205,6 +205,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'Logistic Regression - binary classification with sigmoid function visualizations',
     },
     {
+      url: '/ml/neural-network-playground',
+      priority: 0.8,
+      changeFrequency: 'monthly' as const,
+      description:
+        'Neural Network Playground - build and train a multi-layer perceptron live, exploring activation functions, regularization, and decision boundaries',
+    },
+    {
       url: '/ml/minmax-scaler',
       priority: 0.8,
       changeFrequency: 'monthly' as const,
