@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
 import { HomepageStructuredData } from '@/components/HomepageStructuredData'
+import { TourButton } from '@/components/tour/TourButton'
 
 import { BubbleSortViz } from '@/components/home/BubbleSortViz'
 import { CountUpStat } from '@/components/home/CountUpStat'
@@ -171,7 +172,10 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <ThemeToggle />
+              <div className="flex items-center gap-2">
+                <TourButton />
+                <ThemeToggle />
+              </div>
             </header>
           </div>
 

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
+import { TourButton } from '@/components/tour/TourButton'
 
 export default function AIPage() {
   const algorithms = [
@@ -54,7 +55,10 @@ export default function AIPage() {
             >
               <span>←</span> Back to Home
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <TourButton />
+              <ThemeToggle />
+            </div>
           </div>
           <h1 className="text-4xl uppercase tracking-widest font-bold mb-2 text-orange-500">
             Artificial Intelligence
