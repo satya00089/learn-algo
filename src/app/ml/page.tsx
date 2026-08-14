@@ -493,7 +493,7 @@ export default function MLPage() {
           <div className="mb-4 max-w-full">
             <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
               <Image
-                src={'/icons/ml/hierarchical.png'}
+                src={'/icons/nn/neural-network.png'}
                 alt="Neural Networks"
                 width={48}
                 height={48}
