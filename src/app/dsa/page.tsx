@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeToggle } from '@/core/theme'
+import { TourButton } from '@/components/tour/TourButton'
 
 export default function DSAPage() {
   const algorithms = [
@@ -192,7 +193,10 @@ export default function DSAPage() {
             >
               <span>←</span> Back to Home
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <TourButton />
+              <ThemeToggle />
+            </div>
           </div>
           <h1 className="text-4xl font-bold uppercase tracking-widest mb-2 text-orange-500">
             Data Structures & Algorithms

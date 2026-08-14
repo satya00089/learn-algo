@@ -260,24 +260,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue = useMemo(() => ({ isActive, startTour }), [isActive, startTour])
 
-  return (
-    <TourContext.Provider value={contextValue}>
-      {children}
-      {!isActive && (
-        <button
-          type="button"
-          onClick={startTour}
-          className="glass-surface fixed bottom-4 left-4 z-40 inline-flex min-h-11 items-center gap-2 rounded-full border border-gray-200 bg-white/95 px-4 py-2 text-sm font-semibold text-gray-800 shadow-lg backdrop-blur transition hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:border-gray-700 dark:bg-gray-900/95 dark:text-white"
-          aria-label="Start the guided tour"
-        >
-          <span aria-hidden="true" className="text-base">
-            ?
-          </span>
-          Tour
-        </button>
-      )}
-    </TourContext.Provider>
-  )
+  return <TourContext.Provider value={contextValue}>{children}</TourContext.Provider>
 }
 
 export function useTour() {

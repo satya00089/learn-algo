@@ -8,6 +8,7 @@ import { FaArrowLeft } from 'react-icons/fa'
 import { Button, Tooltip } from '@/core/controls'
 import { ThemeToggle } from '@/core/theme'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { TourButton } from '@/components/tour/TourButton'
 
 const SECTION_LABELS: Record<string, string> = {
   dsa: 'DSA',
@@ -68,6 +69,7 @@ export function PlaygroundHeader({ title, onOpenTheory, children }: PlaygroundHe
             <span className="hidden sm:inline">How It Works</span>
           </Button>
         )}
+        <TourButton />
         <ThemeToggle />
       </div>
     </div>
