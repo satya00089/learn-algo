@@ -251,7 +251,14 @@ export default function PrivacyPolicy() {
                     Our service is available to users of all ages. We do not knowingly collect
                     personal information from children under 13 without parental consent. If you are
                     a parent or guardian and believe your child has provided us with personal
-                    information, please contact us.
+                    information, please email{' '}
+                    <a
+                      href="mailto:hello@learn-algo.com?subject=Privacy%20Question"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      hello@learn-algo.com
+                    </a>
+                    .
                   </p>
                 </section>
 
@@ -274,7 +281,21 @@ export default function PrivacyPolicy() {
                     10. Contact Us
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                    If you have any questions about this Privacy Policy, please contact us:
+                    For privacy questions, email{' '}
+                    <a
+                      href="mailto:hello@learn-algo.com?subject=Privacy%20Question"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      hello@learn-algo.com
+                    </a>
+                    . For help using Learn-Algo, contact{' '}
+                    <a
+                      href="mailto:support@learn-algo.com?subject=Learn-Algo%20Support"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      support@learn-algo.com
+                    </a>
+                    .
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                     <p className="text-gray-600 dark:text-gray-400">

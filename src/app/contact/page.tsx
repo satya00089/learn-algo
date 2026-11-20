@@ -84,6 +84,44 @@ export default function Contact() {
               </p>
             </div>
 
+            <div className="max-w-4xl mx-auto mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <a
+                href="mailto:support@learn-algo.com?subject=Learn-Algo%20Support"
+                className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all block"
+              >
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  Product support
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Questions or problems using Learn-Algo? Email us and we&apos;ll help.
+                </p>
+                <span className="text-blue-600 dark:text-blue-400 font-medium break-all">
+                  support@learn-algo.com
+                </span>
+                <span className="block mt-4 text-sm font-semibold text-blue-600 dark:text-blue-400">
+                  Email Support
+                </span>
+              </a>
+
+              <a
+                href="mailto:hello@learn-algo.com?subject=Hello%20Learn-Algo"
+                className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-lg transition-all block"
+              >
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  General feedback &amp; collaboration
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Share an idea, ask a general question, or discuss working together.
+                </p>
+                <span className="text-purple-600 dark:text-purple-400 font-medium break-all">
+                  hello@learn-algo.com
+                </span>
+                <span className="block mt-4 text-sm font-semibold text-purple-600 dark:text-purple-400">
+                  Email the Learn-Algo team
+                </span>
+              </a>
+            </div>
+
             <div className="max-w-2xl mx-auto mb-12">
               {/* GitHub */}
               <a
@@ -109,8 +147,8 @@ export default function Contact() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">GitHub</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      The best way to reach us! Report bugs, request features, or contribute to the
-                      project
+                      Report public bugs, request features, or contribute to the project. For
+                      private questions, email us directly.
                     </p>
                     <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium">
                       <span>Visit Repository</span>

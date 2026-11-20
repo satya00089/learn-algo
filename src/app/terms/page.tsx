@@ -290,7 +290,21 @@ export default function TermsOfService() {
                     13. Contact Information
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                    If you have any questions about these Terms, please contact us:
+                    For questions about these Terms, email{' '}
+                    <a
+                      href="mailto:hello@learn-algo.com?subject=Terms%20Question"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      hello@learn-algo.com
+                    </a>
+                    . For help using Learn-Algo, contact{' '}
+                    <a
+                      href="mailto:support@learn-algo.com?subject=Learn-Algo%20Support"
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      support@learn-algo.com
+                    </a>
+                    .
                   </p>
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                     <p className="text-gray-600 dark:text-gray-400">

@@ -669,6 +669,14 @@ export default function Home() {
                         Report an Issue
                       </a>
                     </li>
+                    <li>
+                      <a
+                        href="mailto:support@learn-algo.com?subject=Learn-Algo%20Support"
+                        className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
+                        Email Support
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </div>
